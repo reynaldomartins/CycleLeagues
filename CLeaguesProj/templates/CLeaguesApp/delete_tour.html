@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+{% extends "CLeaguesApp/tour_details_segments.html" %}
+
+{% load staticfiles %}
+
+{% block delete_tour_block %}
+
+<div class="enhance-action">
+  <form class="" action="{% url 'CLeaguesApp:delete_tourURLName' %}?tour={{tour.tr_id}}" method="post">
+
+      {% csrf_token %}
+
+      <h4>Your are about to <span class="strong-danger">DELETE</span> this Tour. You will not be able to recovery this Tour in the future.</h4>
+      <br>
+
+      <button type="button" class="cancel-button btn btn"
+            data-href="{% url 'CLeaguesApp:league_detailsURLName' %}?league={{tour.tr_lg.lg_id}}" >Cancel</button>
+      <input type="submit" class="btn btn-danger" name="btn_delete_tour" id="btn_delete_tour" value="Delete Tour"></input>
+    </form>
+</div>
+<br>
+
+{% endblock delete_tour_block %}

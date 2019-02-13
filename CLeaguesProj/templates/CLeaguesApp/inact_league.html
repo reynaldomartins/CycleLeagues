@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+{% extends "CLeaguesApp/league_details_base.html" %}
+
+{% load staticfiles %}
+
+{% block league_details_block %}
+
+    <!-- <div class="enhance-action">
+      <form class="" action="{% url 'CLeaguesApp:inact_leagueURLName' %}?league={{league.lg_id}}" method="post">
+          {% csrf_token %}
+          {{ ext_league_form.as_p }}
+          <input type="submit" class="btn btn-default" name="btn_inact_league" value="Inactivate League"></input>
+      </form>
+    </div>
+    <br> -->
+
+    <div class="enhance-action">
+      <form class="" action="{% url 'CLeaguesApp:inact_leagueURLName' %}?league={{league.lg_id}}" method="post">
+
+          {% csrf_token %}
+
+          <div class="modal in" style="display: none;" id="modal-box">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title">Inactivate League</h4>
+                </div>
+                <div class="modal-body">
+                  <p>Are you sure you want to Inactivate League <strong>{{ league.lg_name }}</strong> ?</p>
+                  <br>
+                  <div class="row">
+                      <div class="col-12-xs text-center">
+                        <button type="button" class="cancel-button btn btn btn-md"
+                              data-href="{% url 'CLeaguesApp:league_detailsURLName' %}?league={{league.lg_id}}" >Cancel</button>
+                          <input type="submit" class="btn btn-danger btn-md" name="btn_inact_league" id="btn_inact_league" value="Inactivate League"></input>
+                      </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h4>Your are about to <span class="strong-danger">INACTIVATE</span>&nbsp;League&nbsp;
+            <img class="img-circle" width="60" height="60" src="{{ MEDIA_URL }}{{ league.lg_pic }}" />
+            &nbsp;<strong>{{ league.lg_name }}</strong>
+          </h4>
+          <br>
+          <h4>If you inactive this League, the following will happen :</h4>
+          <ul><strong>
+            <li>All Running Tours will be cancelled and lost</li>
+            <li>All To Be Started Tours will be cancelled and lost</li>
+            <li>You, as the league creator :</li>
+            <ul>
+                <li>will not be able to update this League</li>
+                <li>will not be able to create Tours for this League</li>
+                <li>will not be able to invite Athletes for this League</li>
+            </ul>
+            <li>Pending invitations for this League will be cancelled and lost</li>
+            <li>This League details will not be visibible to anyone except for you</li>
+            <li>Nevertheless, Athletes will still be able to see the Finished Tours he/she took part in this League</li>
+          </strong></ul>
+          <br>
+
+          <button type="button" class="cancel-button btn btn"
+                data-href="{% url 'CLeaguesApp:league_detailsURLName' %}?league={{league.lg_id}}" >Cancel</button>
+          <button type="button" class="btn btn-danger" name="btn_inact_league_prev" id="btn_inact_league_prev">Inactivate League</button>
+        </form>
+    </div>
+    <br>
+
+{% endblock league_details_block %}

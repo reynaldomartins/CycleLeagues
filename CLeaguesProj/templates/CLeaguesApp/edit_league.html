@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+{% extends "CLeaguesApp/base.html" %}
+
+{% load staticfiles %}
+{% load widget_tweaks %}
+
+{% block body_block %}
+
+  <h3><span class="strong-enhance">Edit League</span>
+    <img class="img-circle" width="80" height="80" src="{{ MEDIA_URL }}{{ league.lg_pic }}"/>
+    <strong>{{lg_name}}</strong>
+  </h3>
+  <br>
+
+  <form class="" action="{% url 'CLeaguesApp:edit_leagueURLName' %}?league={{league.lg_id}}" method="POST" enctype="multipart/form-data">
+
+    {% csrf_token %}
+
+    <div class="fieldWrapper">
+        <label class="field-label top-label" for="{{ league_form.lg_name.id_for_label }}">League Name</label>
+        {{ league_form.lg_name | add_class:'field-box'}}
+    </div>
+
+    {% if league_form.errors %}
+      <br>
+      <span class="form-error">
+        {{ league_form.non_field_errors | striptags }}
+        {{ league_form.lg_name.errors | striptags }}
+        {{ league_form.lg_pic.errors | striptags }}
+      </span>
+      <br>
+
+    {% endif %}
+
+    <br>
+    <div class="div-pic-input">
+      <div class="fieldWrapper">
+          <label class="field-label" for="{{ league_form.lg_pic.id_for_label }}">Upload a picture for this League</label>
+          {{ league_form.lg_pic }}
+      </div>
+    </div>
+    <br>
+    <br>
+
+    <button type="button" class="cancel-button btn btn"
+          data-href="{% url 'CLeaguesApp:league_detailsURLName' %}?league={{league.lg_id}}" >Cancel</button>
+    <input type="submit" class="btn btn-primary" value="Update League"></input>
+
+  </form>
+
+{% endblock %}

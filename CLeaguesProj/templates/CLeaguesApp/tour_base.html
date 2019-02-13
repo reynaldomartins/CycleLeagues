@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+{% extends "CLeaguesApp/base.html" %}
+
+{% load staticfiles %}
+{% load static %}
+{% load tour_status_str from stex_filters %}
+{% load is_you from stex_filters %}
+{% load rank_translation_small from stex_filters %}
+
+  {% block body_block %}
+
+  {% block delete_tour_block %}
+  {% endblock delete_tour_block %}
+
+  <div class="div-elements-centered">
+        <div class="info-bubble table-responsive" >
+          {% if tour.tr_lg.lg_atl_creator.atl_id == logged_strive_athlete.atl_id and not dont_edit %}
+            {% if tour.tour_status == "A" or tour.tour_status == "T" %}
+              <a class="first-right-glyph"
+                  href="{% url 'CLeaguesApp:edit_tourURLName' %}?tour={{tour.tr_id}}" align=center>
+                  <span class="glyphicon glyphicon-edit"
+                    data-toggle="tooltip" data-placement="right" title="Edit Tour"></span>
+              </a>
+            {% endif %}
+          {% endif %}
+
+          <h3><span class="strong-enhance">Tour</span>&nbsp;&nbsp;
+            <img class="img-circle" width="80" height="80" src="{{ MEDIA_URL }}{{ tour.tr_pic }}"/>
+            <strong>{{tour.tr_name}}</strong>
+          </h3>
+
+          <table class="summary-table">
+              <thead>
+                <th>Athletes</th>
+                <th>Segments</th>
+                <th>Start</th>
+                <th>Finish</th>
+                {% if days_to_go >= 0 %}
+                  <th>Days to Go</th>
+                  <th>Status</th>
+                  <th><span class="you">Your</span>&nbsp;Rank</th>
+                  <th><strong>Leader</strong></th>
+                {% else %}
+                  <th>Status</th>
+                  <th><span class="you">Your</span>&nbsp;Rank</th>
+                  <th><strong>Winner</strong></th>
+                {% endif %}
+              </thead>
+              <tbody>
+                    <tr>
+                      <td class='not-last-td'>{{num_athletes}}</td>
+                      <td class='not-last-td'>{{num_segments}}</td>
+                      <td class='not-last-td'>{{tour.tr_start_date}}</td>
+                      <td class='not-last-td'>{{tour.tr_finish_date}}</td>
+                      {% if days_to_go >= 0 %}
+                        <td class='not-last-td'>{{days_to_go}}</td>
+                      {% endif %}
+                      <td class='not-last-td'>{% tour_status_str tour.tour_status %}</td>
+                      <td class='not-last-td'>
+                        <span class="td-text-realce">{% rank_translation_small logged_atl_in_tour.ait_rank  logged_atl_in_tour.ait_points %} </span>/ {{ num_athletes }}
+                      </td>
+                      <td class='last-td'>
+                        {% if leader_pic %}
+                          <img class="img-circle" width="40" height="40" src="{{ MEDIA_URL }}{{ leader_pic }}"/>
+                        {% endif %}
+                        <strong>
+                          {{leader_name}}
+                          <span class="you">{% is_you leader_id %}</span>
+                        </strong>
+                      </td>
+                    </tr>
+              </tbody>
+          </table>
+          <p align=left><span class="minor-text"><strong>Scoring System :&nbsp<i>{{ tour.tr_ss.ss_name }}</i></strong></span></p>
+          <p align=left><span class="minor-text"><strong>From League :&nbsp<i>
+            <img class="img-circle" width="40" height="40" src="{{ MEDIA_URL }}{{tour.tr_lg.lg_pic}}"/>
+            {% if atl_in_league_status == "A" %}
+              <a href="{% url 'CLeaguesApp:league_detailsURLName' %}?league={{tour.tr_lg.lg_id}}">{{tour.tr_lg.lg_name}}</a>
+            {% else %}
+              {{tour.tr_lg.lg_name}}
+            {% endif %}
+          </i></strong></span></p>
+        </div>
+    </div>
+    {% if not dont_edit %}
+      <div class='dropdown' id='feed-filter-view'>
+        <button aria-haspopup class='btn btn-white btn-icon btn-select-view btn-icon-right dropdown-toggle'
+            data-toggle='dropdown' id='feed-filter-view-btn' tabindex='0'>
+            {% if view == "Rank" %}
+                Ranking
+            {% elif view == "Segments" %}
+                Segments
+            {% endif %}
+            <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
+        </button>
+        <ul aria-labelledby='feed-filter-view-btn' class='options dropdown-menu' role='menu' id="feed-filter-view-id">
+          <li><a class="replace-selection"
+              href="{% url 'CLeaguesApp:tour_details_rankURLName' %}?tour={{tour.tr_id}}">Ranking</a></li>
+          <li><a class="replace-selection"
+            href="{% url 'CLeaguesApp:tour_details_segmentsURLName' %}?tour={{tour.tr_id}}&select=NoSelection">Segments</a></li>
+        </ul>
+      </div>
+    {% endif %}
+
+    <script>
+    $(document).ready(function(){
+      $(".dropdown-toggle").dropdown();
+    });
+    </script>
+
+    {% block tour_block %}
+
+    {% endblock tour_block %}
+
+  {% endblock body_block %}

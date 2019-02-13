@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+{% extends "CLeaguesApp/league_details_base.html" %}
+
+{% load staticfiles %}
+
+{% block league_details_block %}
+
+  <div class="enhance-action">
+
+
+    <form class="" action="{% url 'CLeaguesApp:confirm_join_leagueURLName' %}?league={{league.lg_id}}" method="post">
+
+    <div class="modal in" style="display: none;" id="modal-box">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Join League</h4>
+          </div>
+          <div class="modal-body">
+            <p>Are you sure you DON'T want to Join League <strong>{{ league.lg_name }}</strong> ?</p>
+            <br>
+            <div class="row">
+                <div class="col-12-xs text-center">
+                    <button type="button" class="btn btn btn-md" id="cancel-dont-join-button" >I Changed My Mind</button>
+                    <input type="submit" class="btn btn-warning" name="btn_dismiss_league" value="I DONT Wanna Join"></input>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h4>Your are about to <span class="strong-go">JOIN</span>&nbsp;League&nbsp;
+      <img class="img-circle" width="60" height="60" src="{{ MEDIA_URL }}{{ league.lg_pic }}" />
+      &nbsp;<strong>{{ league.lg_name }}</strong>
+    </h4>
+    <br>
+
+        {% csrf_token %}
+
+        <button type="button" class="cancel-button btn btn"
+              data-href="{% url 'CLeaguesApp:leagues_feedURLName' %}" >Cancel</button>
+        <button type="button" class="btn btn-warning btn-md" id="btn_dismiss_league_prev">Dismiss</button>
+        <input type="submit" class="btn btn-success" name="btn_join_league" value="Join League"></input>
+        <br>
+        <br>
+
+        {{ ext_league_form.as_p }}
+
+    </form>
+  </div>
+  <br>
+
+{% endblock league_details_block %}

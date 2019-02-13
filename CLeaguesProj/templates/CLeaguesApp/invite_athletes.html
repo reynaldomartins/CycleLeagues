@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+{% extends "CLeaguesApp/base.html" %}
+
+{% load stex_filters %}
+{% load staticfiles %}
+
+{% block body_block %}
+
+<!-- The code bellow is from Double List Box
+    https://bootsnipp.com/snippets/z8d4r -->
+  <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+
+  <div class="container">
+
+      <a class="first-left-glyph"
+          href="{% url 'CLeaguesApp:league_detailsURLName' %}?league={{league.lg_id}}" align=center>
+          <span class="glyphicon glyphicon-arrow-left"
+            data-toggle="tooltip" data-placement="right" title="Back to League"></span>
+      </a>
+
+    <br>
+    <h4><span class="strong-enhance">Invite Athletes</span> to League&nbsp;
+      <img class="img-circle" width="60" height="60" src="{{ MEDIA_URL }}{{ league.lg_pic }}"/>
+      <strong>{{ league.lg_name }}</strong>
+    </h4>
+    <h5>Athletes in this League</h5>
+    {% for atl_in_lg in list_athletes_league %}
+      <div class="info-pill-container">
+        <div class="info-pill">
+              <img class="img-circle" width="40" height="40" src="{{ MEDIA_URL }}{{ atl_in_lg.atl.atl_pic }}" />
+              &nbsp;{{ atl_in_lg.atl.atl_name_strava }} ({% athlete_status_str atl_in_lg.atl_in_league_status %})
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  <br>
+
+  <!-- The code bellow is from Double List Box
+        https://bootsnipp.com/snippets/z8d4r -->
+
+<div class="container div-selection">
+
+  <form class="" method="post">
+
+      {% csrf_token %}
+
+      <div class="row container">
+        <div class="col-md-9">
+          <input type="submit" class="btn btn-primary" name="btn_search_atl" value="Search Athletes"</input>
+          <div class="fieldWrapper inline-element">
+              <label class="field-label" for="{{ search_atl_form.atl_name_strava.id_for_label }}">Athlete's Name :</label>
+              {{ search_atl_form.atl_name_strava }}&nbsp;&nbsp;&nbsp;
+          </div>
+          <div class="fieldWrapper inline-element">
+              <label class="field-label" for="{{ search_atl_form.atl_city_strava.id_for_label }}">Athlete's City :</label>
+              {{ search_atl_form.atl_city_strava }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          </div>
+          <br>
+          {% if search_atl_form.errors %}
+            <span class="form-error">
+              {{ search_atl_form.non_field_errors | striptags }}
+              {{ search_atl_form.atl_name_strava.errors | striptags }}
+              {{ search_atl_form.atl_city_strava.errors | striptags }}
+            </span>
+            <br>
+            <br>
+          {% endif %}
+        </div>
+
+        <!-- <div class="col-md-2 text-right div-add-button">
+          <input type="submit" class="btn btn-success add-right-button" name="btn_add_selected_atl" value="Invite Selected Athletes"</input>
+        </div> -->
+
+        <div class="col-md-3 text-right div-right-button">
+          <input type="submit" class="btn btn-success right-button" name="btn_add_selected_atl" value="Invite Selected Athletes"</input>
+        </div>
+
+    </div>
+
+    <div class="container">
+      <div class="row">
+            <div class="dual-list top-list-unselected col-md-6">
+                <div class="well">
+                    <div class="row">
+                        <div class="col-md-12 form-group">
+                            <div class="input-group">
+                                <span class="input-group-addon glyphicon glyphicon-search" style="top: 0px;"></span>
+                                <input type="text" name="SearchDualList" class="form-control" placeholder="search">
+                                <span class="input-group-addon glyphicon glyphicon-unchecked selector" style="cursor: pointer; top: 0px;" title="Select All"></span>
+                                <span class="input-group-addon glyphicon glyphicon-plus move-left" style="cursor: pointer; top: 0px;" title="Add Selected"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <ul class="list-group" id="list-unselected">
+                      {% for atl in list_select_athletes %}
+                        <li class="list-group-item" data-value="{{ atl.atl_id }}">
+                          <strong>{{ atl.atl_name_strava }}</strong>&nbsp;
+                          ({{atl.atl_city_strava}} / {{atl.atl_country_strava}})
+                        </li>
+                      {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div class="dual-list top-list-selected col-md-6">
+                <div class="well text-right">
+                    <div class="row">
+                        <div class="col-md-12 form-group">
+                            <div class="input-group">
+                                <span class="input-group-addon glyphicon glyphicon-search" style="top: 0px;"></span>
+                                <input type="text" name="SearchDualList" class="form-control" placeholder="search">
+                                <span class="input-group-addon glyphicon glyphicon-unchecked selector" style="cursor: pointer; top: 0px;" title="Select All"></span>
+                                <span class="input-group-addon glyphicon glyphicon-minus move-right" style="cursor: pointer; top: 0px;" title="Remove Selected"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <ul class="list-group" id="list-selected">
+                        <!-- <li class="list-group-item" data-value="1">Option 1</li> -->
+                    </ul>
+                </div>
+            </div>
+            <select id="dual-list-options" name="dual-list-options[]" multiple="multiple" style="display: none;" size="10">
+                <!-- <option value="1" selected="selected">Option 1</option> -->
+            </select>
+         </div>
+
+    </div>
+
+  </form>
+
+  <p>Securty Notes:</p>
+  <ul>
+    <li>For security reasons Strava does not allow 3rd party applications search for Athletes in its database</li>
+    <li>Thus, this search is limited to those Athletes who already registered themselves in CycleLeagues</li>
+    <li>For those who are not registered, ask them to access <strong>"www.CycleLeagues.com"</strong></li>
+  </ul>
+
+</div>
+
+<script>
+$(document).ready(function(){
+$(".dropdown-toggle").dropdown();
+});
+</script>
+
+
+{% endblock %}

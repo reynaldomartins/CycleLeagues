@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+{% extends "CLeaguesApp/base.html" %}
+
+{% load staticfiles %}
+
+{% block body_block %}
+{% load widget_tweaks %}
+
+  <form class="" action="{% url 'CLeaguesApp:join_leagueURLName' %}" method="POST">
+      {% csrf_token %}
+
+      <h3><span class="strong-enhance">Join League</span></h3>
+      <br>
+
+      <div class="fieldWrapper">
+          <label class="field-label top-label" for="{{ join_league_form.lg_activation_code.id_for_label }}">Inform the League 6-digit Activation Code provided to You</label>
+          {{ join_league_form.lg_activation_code | add_class:'field-box'}}
+      </div>
+      <br>
+
+      {% if join_league_form.errors %}
+        <br>
+      {% endif %}
+      <span class="form-error">
+        {% if join_league_form.non_field_errors %}
+          {{ join_league_form.non_field_errors | striptags }}<br>
+        {% endif %}
+        {% if join_league_form.lg_activation_code.errors %}
+          {{ join_league_form.lg_activation_code.errors | striptags }}<br>
+        {% endif %}
+      </span>
+
+
+
+
+      <br>
+      <button type="button" class="cancel-button btn btn"
+            data-href="{% url 'CLeaguesApp:leagues_feedURLName' %}" >Cancel</button>
+      <input type="submit" class="btn btn-primary" value="Submit Code to Join League"></input>
+  </form>
+
+{% endblock %}

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+{% extends "CLeaguesApp/league_details_base.html" %}
+
+{% load staticfiles %}
+
+{% block league_details_block %}
+
+  <div class="enhance-action">
+
+    <h4>Your are about to <span class="strong-go">REACTIVATE</span>&nbsp;League&nbsp;
+      <img class="img-circle" width="60" height="60" src="{{ MEDIA_URL }}{{ league.lg_pic }}" />
+      &nbsp;<strong>{{ league.lg_name }}</strong>
+    <br>
+
+    <form class="" action="{% url 'CLeaguesApp:react_leagueURLName' %}?league={{league.lg_id}}" method="post">
+        {% csrf_token %}
+
+        {{ ext_league_form.as_p }}
+
+        <button type="button" class="cancel-button btn btn"
+              data-href="{% url 'CLeaguesApp:league_detailsURLName' %}?league={{league.lg_id}}" >Cancel</button>
+        <input type="submit" class="btn btn-success" name="btn_react_league" value="Reactivate League"></input>
+    </form>
+  </div>
+  <br>
+
+{% endblock league_details_block %}

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+{% extends "CLeaguesApp/base.html" %}
+
+{% load staticfiles %}
+{% load static %}
+
+{% load strive_status from stex_filters %}
+{% load filter_league_feed_by_status from stex_filters %}
+{% load create_list from stex_filters %}
+{% load is_you from stex_filters %}
+{% load count_list from stex_filters %}
+{% load define from stex_filters %}
+{% load add_one from stex_filters %}
+{% load append_list from stex_filters %}
+{% load filter_league_feed_by_status_athlete from stex_filters %}
+
+{% block body_block %}
+
+  <form class="">
+      <a class="first-right-glyph"
+          href="{% url 'CLeaguesApp:create_leagueURLName' %}" align=center>
+          <span class="glyphicon glyphicon-plus"
+            data-toggle="tooltip" data-placement="left" title="Create your own League"></span>
+      </a>
+      <a class="second-right-glyph"
+          href="{% url 'CLeaguesApp:join_leagueURLName' %}" align=center>
+          <span class="glyphicon glyphicon-share-alt"
+            data-toggle="tooltip" data-placement="left" title="Join a League"></span>
+      </a>
+  </form>
+
+  {% filter_league_feed_by_status list_leagues_feed "A" as list_leagues_feed_active %}
+  {% filter_league_feed_by_status_athlete list_leagues_feed_active "A" as list_leagues_feed_active_active %}
+  {% filter_league_feed_by_status_athlete list_leagues_feed_active "I" as list_leagues_feed_active_inactive %}
+  {% filter_league_feed_by_status_athlete list_leagues_feed_active "C" as list_leagues_feed_pending %}
+  {% filter_league_feed_by_status list_leagues_feed "I" as list_leagues_feed_inactive %}
+  {% append_list list_leagues_feed_active_inactive list_leagues_feed_inactive as list_leagues_feed_former %}
+
+  {% create_list list_leagues_feed_active_active list_leagues_feed_pending list_leagues_feed_former as list_list_leagues_feed %}
+
+  {% define 0 as num_block %}
+
+  <div class="div-elements-centered">
+    <div class="info-bubble table-responsive">
+      <h4 align=center><span class="strong-enhance">Leagues</span>&nbsp;Summary of&nbsp;&nbsp;
+            <img class="img-circle" width="60" height="60"src="{{ logged_strive_athlete.atl_pic.url }}" />
+            {{ logged_strive_athlete.atl_name_strava }}
+      </h4>
+      <table align=center class="summary-table">
+          <thead>
+            <th>Active</th>
+            <th>Invited</th>
+            <th>Former</th>
+          </thead>
+          <tbody>
+            <tr>
+              <td class='not-last-td summary-link' id="summary-current-id">{% count_list list_leagues_feed_active_active %}</td>
+              <td class='not-last-td summary-link' id="summary-pending-id">{% count_list list_leagues_feed_pending %}</td>
+              <td class='last-td summary-link' id="summary-former-id">{% count_list list_leagues_feed_former %}</td>
+            </tr>
+          </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class='dropdown' id='feed-filter-view-leagues-feed-id'>
+    <button aria-haspopup class='btn btn-white btn-icon btn-select-view btn-icon-right dropdown-toggle'
+        data-toggle='dropdown' id='feed-filter-view-btn' tabindex='0'>
+            Active Leagues
+        <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
+    </button>
+    <ul aria-labelledby='feed-filter-view-btn' class='options dropdown-menu' role='menu' id="feed-filter-view-leagues-feed-id">
+      <li><a class="replace-selection"
+        href="#">Active Leagues</a></li>
+      <li><a class="replace-selection"
+          href="#">Invited Leagues</a></li>
+      <li><a class="replace-selection"
+        href="#">Former Leagues</a></li>
+    </ul>
+  </div>
+
+  <script>
+  $(document).ready(function(){
+    $(".dropdown-toggle").dropdown();
+  });
+  </script>
+
+    {% for list_leagues_feed in list_list_leagues_feed %}
+
+      {% if list_leagues_feed %}
+
+        {% if num_block == 0 %}
+          <div class="leagues-feed-block-current">
+        {% elif num_block == 1 %}
+          <div class="leagues-feed-block-invited" style="display:none">
+        {% elif num_block == 2 %}
+          <div class="leagues-feed-block-former" style="display:none">
+        {% endif %}
+
+          <div class="leagues-feed table-responsive">
+          <table class="hoverTable">
+              <thead>
+                <th style="width: 30%;">League</th>
+                <th style="width: 8%;">Athletes</th>
+                <th style="width: 8%;">To be Started Tours</th>
+                <th style="width: 8%;">Running Tours</th>
+                <th style="width: 8%;">Finished Tours</th>
+                <th style="width: 25%;">Created by</th>
+                <th style="width: 13%;">League Status</th>
+              </thead>
+              <tbody class="hoverTableBody">
+              {% for league_feed in list_leagues_feed %}
+                  <!-- In case the Athlete is Active in the League and the League is Active
+                    The Athlete can see the League Details
+                  -->
+                  {% if league_feed.logged_strive_atl_league_status == "A" and num_block != 2 %}
+                  <tr class='clickable-row' data-href="{% url 'CLeaguesApp:league_detailsURLName' %}?league={{league_feed.league.lg_id}}">
+                    <td class='not-last-td td-text-left'>
+                        <img class="img-circle" width="60" height="60" src="{{ MEDIA_URL }}{{ league_feed.league.lg_pic }}" />
+                        &nbsp;&nbsp;
+                        <a href="{% url 'CLeaguesApp:league_detailsURLName' %}?league={{league_feed.league.lg_id}}">{{ league_feed.league.lg_name }}</a>
+                    </td>
+
+                    <!-- In case the Athlete has a Pending Invitation for the League and the League is Active
+                      The Athlete will be redirected to Accpet the Invitation
+                    -->
+                  {% elif league_feed.logged_strive_atl_league_status == "C" and num_block != 2 %}
+                  <tr class='clickable-row' data-href="{% url 'CLeaguesApp:confirm_join_leagueURLName' %}?league={{league_feed.league.lg_id}}">
+                    <td class='not-last-td td-text-left'>
+                        <img class="img-circle" width="60" height="60" src="{{ MEDIA_URL }}{{ league_feed.league.lg_pic }}" />
+                        &nbsp;&nbsp;
+                        <a href="{% url 'CLeaguesApp:confirm_join_leagueURLName' %}?league={{league_feed.league.lg_id}}">{{ league_feed.league.lg_name }}</a>
+                    </td>
+
+                  <!-- In case the List of League is Inactive and League is Active but Athlte is Inactive in this Leagues
+                      (the logic described above is done by the lists manipulation inside this template)
+                      If the Athlete is the creator of this League, he can see the League details
+                  -->
+                  {% elif num_block == 2 and league_feed.league.lg_atl_creator.atl_id == logged_strive_athlete.atl_id %}
+                  <tr class='clickable-row' data-href="{% url 'CLeaguesApp:league_detailsURLName' %}?league={{league_feed.league.lg_id}}">
+                      <td class='not-last-td td-text-left'>
+                          <img class="img-circle" width="60" height="60" src="{{ MEDIA_URL }}{{ league_feed.league.lg_pic }}" />
+                          &nbsp;&nbsp;
+                          <a href="{% url 'CLeaguesApp:league_detailsURLName' %}?league={{league_feed.league.lg_id}}">{{ league_feed.league.lg_name }}</a>
+                      </td>
+                  {% else %}
+                  <tr class="league-inactivate-for-athlete">
+                      <td class='not-last-td td-text-left'>
+                          <img class="img-circle" width="60" height="60" src="{{ MEDIA_URL }}{{ league_feed.league.lg_pic }}" />
+                          &nbsp;&nbsp;
+                          {{ league_feed.league.lg_name }}
+                      </td>
+                  {% endif %}
+                    <td class='not-last-td'>{{ league_feed.summary.num_athletes }}</td>
+                    <td class='not-last-td'>{{ league_feed.summary.unstarted_tours }}</td>
+                    <td class='not-last-td'>{{ league_feed.summary.active_tours }}</td>
+                    <td class='not-last-td'>{{ league_feed.summary.finished_tours }}</td>
+                    <td class='not-last-td td-text-left'>
+                        <img class="img-circle" width="40" height="40" src="{{ MEDIA_URL }}{{ league_feed.league.lg_atl_creator.atl_pic }}" />
+                        &nbsp;{{ league_feed.league.lg_atl_creator.atl_name_strava }}
+                        <span class="you">{% is_you league_feed.league.lg_atl_creator.atl_id %}</span>
+                    </td>
+                    <td class='last-td'>{% strive_status league_feed.league.lg_status %}</td>
+                </tr>
+              {% endfor %}
+              </tbody>
+          </table>
+          </div>
+
+      {% else %}
+          {% if num_block == 0 %}
+            <div class="leagues-feed-block-current">
+              <br>
+              <h4>You are not taking part of any League right now</h4>
+              <br>
+          {% elif num_block == 1 %}
+            <div class="leagues-feed-block-invited" style="display:none">
+              <br>
+              <h4>There is no invitation for you to join a League at this moment</h4>
+              <br>
+          {% elif num_block == 2 %}
+            <div class="leagues-feed-block-former" style="display:none">
+              <br>
+              <h4>There is no League you took part in the past</h4>
+              <br>
+          {% endif %}
+      {% endif %}
+
+    </div>
+
+    {% add_one num_block as num_block %}
+
+    {% endfor %}
+
+{% endblock %}

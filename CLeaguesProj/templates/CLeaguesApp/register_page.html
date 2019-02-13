@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+{% extends "CLeaguesApp/base.html" %}
+
+{% load staticfiles %}
+
+{% block body_block %}
+
+{% if logged_strava_atl_id is 0 %}
+
+  <h3>You are not logged using Strava</h3>
+  <p></p>
+  <a href="{% url 'indexURLName' %}"><h4>Go to CycleLeagues main page to do so</h4></a>
+
+{% elif logged_strava_atl_id is not 0 and logged_strive_status is False %}
+
+  <br>
+  <h4>Welcome <b><span class="strong-enhance">{{ logged_strava_athlete.firstname }}</span></b> to <strong>CycleLeagues</strong>
+    <img width="60" height="60" src="{% static 'images/CycleLeaguesIcon.png' %}"/>&nbsp;&nbsp;Register Page</h4>
+  <br>
+  <h5>If your Strava data bellow are correct, press Register to proceed</h5>
+  <br>
+  <div class="info-bubble">
+    <p>Name : <strong>{{ logged_strava_athlete.firstname }} {{logged_strava_athlete.lastname}}</strong></p>
+    <!-- <p>Email : <strong>{{ logged_strava_athlete.email }}</strong></p> -->
+    <p>City / Country : <strong>{{ logged_strava_athlete.city }} / {{ logged_strava_athlete.country }}</strong></p>
+    <p>Sex : <strong>{{ logged_strava_athlete.sex }}</strong></p>
+    <p>You are a Strava Athlete since : <strong>{{ logged_strava_athlete.created_at }}</strong></p>
+  </div>
+
+  <form class="" action="{% url 'CLeaguesApp:register_pageURLName' %}" method="POST" name="accept_striveForm">
+      {% csrf_token %}
+      <br>
+      <br>
+      <p><strong>Service Agreement</strong></p>
+      <textarea readonly rows="6" cols="100">
+CycleLeagues Terms of Service Template
+Please read these terms of service ("terms", "terms of service") carefully before using CycleLeagues website (the "service") operated by CycleLeagues.
+
+Conditions of Use
+We will provide their services to you, which are subject to the conditions stated below in this document. Every time you visit this website or use its services, you accept the following conditions. This is why we urge you to read them carefully.
+
+Copyright
+Content published on this website (digital downloads, images, texts, graphics, logos) is the property of CycleLeagues and/or its content creators and protected by international copyright laws. The entire compilation of the content found on this website is the exclusive property of CycleLeagues, with copyright authorship for this compilation by CycleLeagues.
+
+Communications
+The entire communication with us is electronic. Every time you send us an email or visit our website, you are going to be communicating with us. You hereby consent to receive communications from us. If you subscribe to the news on our website, you are going to receive regular emails from us. We will continue to communicate with you by posting news and notices on our website and by sending you emails. You also agree that all notices, disclosures, agreements and other communications we provide to you electronically meet the legal requirements that such communications be in writing.
+
+Applicable Law
+By visiting this website, you agree that the laws of Brazil, without regard to principles of conflict laws, will govern these terms of service, or any dispute of any sort that might come between CycleLeagues and you, or its business partners and associates.
+
+Disputes
+Any dispute related in any way to your visit to this website shall be arbitrated by state or federal court of Brazil and you consent to exclusive jurisdiction and venue of such courts.
+
+Comments, Reviews, and Emails
+Visitors may post content as long as it is not obscene, illegal, defamatory, threatening, infringing of intellectual property rights, invasive of privacy or injurious in any other way to third parties. Content has to be free of software viruses, political campaign, and commercial solicitation.
+We reserve all rights (but not the obligation) to remove and/or edit such content. When you post your content, you grant CycleLeagues non-exclusive, royalty-free and irrevocable right to use, reproduce, publish, modify such content throughout the world in any media.
+
+License and Site Access
+We grant you a limited license to access and make personal use of this website. You are not allowed to download or modify it. This may be done only with written consent from us.
+
+User Account
+If you are an owner of an account on this website, you are solely responsible for maintaining the confidentiality of your private user details (username and password). You are responsible for all activities that occur under your account or password.
+
+Disclaimer of Warranties and Liability
+YOU EXPRESSLY AGREE THAT YOUR ATHLETIC ACTIVITIES (INCLUDING, BUT NOT LIMITED TO, CYCLING) CARRY CERTAIN INHERENT AND SIGNIFICANT RISKS OF PROPERTY DAMAGE, BODILY INJURY OR DEATH AND THAT YOU VOLUNTARILY ASSUME ALL KNOWN AND UNKNOWN RISKS ASSOCIATED WITH THESE ACTIVITIES EVEN IF CAUSED IN WHOLE OR PART BY THE ACTION, INACTION OR NEGLIGENCE OF CYCLELEAGUES OR BY THE ACTION, INACTION OR NEGLIGENCE OF OTHERS.
+
+We reserve all rights to terminate accounts, edit or remove content and cancel orders in their sole discretion.
+      </textarea>
+      <div class="checkbox">
+        <label> <input type="checkbox" required="true">I have read and agree to CycleLeagues terms of use</label>
+      </div>
+      <br>
+      <button type="submit" class="btn btn-success">Register</button>
+  </form>
+
+{% else %}
+
+  <h4>{{logged_strive_athlete.atl_name_strava}}, you have just completed your registration and you are logged in CycleLeagues</h4>
+  <h5>You can create now your own League/Tours or get registered in Leagues/Tours you were invited to</h5>
+
+{% endif %}
+
+{% endblock %}

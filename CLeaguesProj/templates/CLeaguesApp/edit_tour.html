@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+{% extends "CLeaguesApp/base.html" %}
+
+{% load staticfiles %}
+{% load widget_tweaks %}
+
+{% block body_block %}
+
+  <h3><span class="strong-enhance">Edit Tour</span>&nbsp;
+    <img class="img-circle" width="80" height="80" src="{{ MEDIA_URL }}{{ tour.tr_pic }}"/>
+    <strong>{{tr_name}}</strong><span class="minor-minor-text"><i>, from league&nbsp;
+    <img class="img-circle" width="40" height="40" src="{{ MEDIA_URL }}{{ tour.tr_lg.lg_pic }}"/>
+    {{tour.tr_lg.lg_name}}</i></span>
+  </h3>
+
+  <form class="" action="{% url 'CLeaguesApp:edit_tourURLName' %}?tour={{tour.tr_id}}" method="POST" enctype="multipart/form-data">
+
+    {% csrf_token %}
+
+    <br>
+    <div class="fieldWrapper inline-element">
+        <label class="field-label top-label" for="{{ tour_form.tr_name.id_for_label }}">Tour Name</label>
+        {{ tour_form.tr_name | add_class:'field-box field-box-not-last'}}
+    </div>
+    <div class="fieldWrapper inline-element">
+        <label class="field-label top-label" for="{{ tour_form.tr_ss.id_for_label }}">Scoring System</label>
+        {{ tour_form.tr_ss  | add_class:'field-box'}}
+    </div>
+    <br>
+    <br>
+    <div class="fieldWrapper inline-element">
+        <label class="field-label top-label" for="{{ tour_form.tr_start_date.id_for_label }}">Start Date</label>
+        <span class="glyphicon glyphicon-calendar"></span>
+        {{ tour_form.tr_start_date | add_class:'field-box' }}&nbsp;&nbsp;
+    </div>
+
+    <div class="fieldWrapper inline-element">
+        <label class="field-label top-label" for="{{ tour_form.tr_finish_date.id_for_label }}">Finish Date</label>
+        <span class="glyphicon glyphicon-calendar"></span>
+        {{ tour_form.tr_finish_date | add_class:'field-box' }}
+    </div>
+    <br>
+
+    {% if tour_form.errors %}
+      <br>
+    {% endif %}
+    <span class="form-error">
+      {% if tour_form.non_field_errors %}
+        {{ tour_form.non_field_errors | striptags }}<br>
+      {% endif %}
+      {% if tour_form.tr_name.errors %}
+        {{ tour_form.tr_name.errors | striptags }}<br>
+      {% endif %}
+      {% if tour_form.tr_ss.errors %}
+        {{ tour_form.tr_ss.errors | striptags }}<br>
+      {% endif %}
+      {% if tour_form.tr_start_date.errors %}
+        {{ tour_form.tr_start_date.errors | striptags }}<br>
+      {% endif %}
+      {% if tour_form.tr_finish_date.errors %}
+        {{ tour_form.tr_finish_date.errors | striptags }}<br>
+      {% endif %}
+      {% if tour_form.tr_pic.errors %}
+        {{ tour_form.tr_pic.errors | striptags }}<br>
+      {% endif %}
+    </span>
+
+    <div class="div-pic-input">
+      <div class="fieldWrapper">
+          <label class="field-label" for="{{ tour_form.tr_pic.id_for_label }}">Upload a picture for this Tour</label>
+          {{ tour_form.tr_pic }}
+      </div>
+    </div>
+    <br>
+
+    <button type="button" class="cancel-button btn btn"
+          data-href="{% url 'CLeaguesApp:tour_details_rankURLName' %}?tour={{tour.tr_id}}" >Cancel</button>
+    <input type="submit" class="btn btn-primary" value="Update Tour"></input>
+
+  </form>
+
+{% endblock %}

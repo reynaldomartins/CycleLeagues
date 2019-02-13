@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+{% extends "CLeaguesApp/base.html" %}
+
+{% load staticfiles %}
+
+{% block body_block %}
+
+<div class="enhance-action">
+  <form class="" action="{% url 'CLeaguesApp:react_athlete_leagueURLName' %}?league={{league.lg_id}}&athlete={{athlete.atl_id}}" method="post">
+
+      {% csrf_token %}
+
+      <h4>Your are about to <span class="strong-go">REACTIVATE</span>&nbsp;Athlete&nbsp;
+          <img class="img-circle" width="60" height="60" src="{{ MEDIA_URL }}{{ athlete.atl_pic_mini }}" />
+          &nbsp;<strong>{{ athlete.atl_name_strava }}</strong>
+      in League&nbsp;
+        <img class="img-circle" width="60" height="60" src="{{ MEDIA_URL }}{{ league.lg_pic }}" />
+        &nbsp;<strong>{{ league.lg_name }}</strong>
+      </h4>
+      <br>
+      <ul>
+        <li>The running Tours of this League will have their ranking updated within 24 hours, considering the Athlete's Efforts</li>
+      </ul>
+      <br>
+      <button type="button" class="cancel-button btn btn"
+            data-href="{% url 'CLeaguesApp:league_detailsURLName' %}?league={{league.lg_id}}" >Cancel</button>
+      <input type="submit" class="btn btn-success btn-md" name="btn_react_athlete_league" id="btn_react_athlete_league" value="Reactivate Athlete in the League"></input>
+    </form>
+</div>
+<br>
+
+{% endblock body_block %}

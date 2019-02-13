@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+{% extends "CLeaguesApp/base.html" %}
+
+{% load staticfiles %}
+{% load widget_tweaks %}
+
+{% block body_block %}
+
+  <form class="" action="{% url 'CLeaguesApp:create_leagueURLName' %}" method="POST" enctype="multipart/form-data">
+
+    {% csrf_token %}
+
+    <h3><span class="strong-enhance">Create League</span></h3>
+    <br>
+
+    <!-- The codes bellow show the error in form validation -->
+    <!-- {% for key, key_errors in league_form.errors.as_data.items %}
+        {{ key }}
+        {% for error in key_errors %}
+            {{error.code}}
+        {% endfor %}
+    {% endfor %} -->
+
+    <div class="fieldWrapper">
+        <label class="field-label top-label" for="{{ league_form.lg_name.id_for_label }}">League Name</label>
+        {{ league_form.lg_name | add_class:'field-box'}}
+    </div>
+
+    {% if league_form.errors %}
+      <br>
+      <span class="form-error">
+        {{ league_form.non_field_errors | striptags }}
+        {{ league_form.lg_name.errors | striptags }}
+        {{ league_form.lg_pic.errors | striptags }}
+      </span>
+      <br>
+
+    {% endif %}
+
+    <br>
+    <div class="div-pic-input">
+      <div class="fieldWrapper">
+          <label class="field-label" for="{{ league_form.lg_pic.id_for_label }}">Upload a picture for this League</label>
+          {{ league_form.lg_pic }}
+      </div>
+    </div>
+    <br>
+    <br>
+
+
+    <button type="button" class="cancel-button btn btn"
+          data-href="{% url 'CLeaguesApp:leagues_feedURLName' %}" >Cancel</button>
+    <input type="submit" class="btn btn-primary" value="Create League"></input>
+
+  </form>
+
+
+{% endblock %}

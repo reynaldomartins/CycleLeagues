@@ -1,0 +1,674 @@
+html, body {
+    scroll-behavior: smooth;
+    background-color: #b0d8e8;
+    font-family: 'Roboto', sans-serif;
+    font-weight: normal;
+    font-size: 15px;
+    color : black;
+}
+
+h1,h2,h3,h4,h5 {
+  margin: 1px;
+  padding: 1px;
+}
+
+a {
+  font-weight: bold;
+  color:DodgerBlue;
+}
+
+a:hover {
+  color:blue;
+}
+
+td.summary-link {
+  font-weight: bold;
+  color:DodgerBlue;
+}
+
+td.summary-link:hover {
+  cursor : pointer;
+  color:blue;
+  text-decoration: underline;
+}
+
+.navbar .navbar-nav li > a{
+  color: orangered !important;
+}
+
+.navbar .navbar-brand {
+  color: orangered !important;
+}
+
+.navbar .navbar-nav li > a:hover{
+  color: red !important;
+  text-decoration: underline;
+}
+
+.navbar .navbar-brand:hover {
+  color: red !important;
+  text-decoration: underline;
+}
+
+/*
+color:CornflowerBlue;
+color:DodgerBlue;
+color:MediumSlateBlue;
+color:RoyalBlue;
+color:lightblue;
+color:darkblue;
+ */
+
+li {
+  font-weight:100;
+}
+
+strong li {
+  font-weight: 400;
+}
+
+table, th, td {
+  text-align: center;
+  border: 1px solid white;
+  border-collapse: separate;
+  padding:5px;
+  color:black;
+}
+
+/* Code bellow for permiting the site become responsive */
+
+/* For mobile phones: */
+/* [class*="col-"] {
+  width: 100%;
+} */
+
+/* For tablets: */
+/* @media only screen and (min-width: 600px) and (max-width: 768px) {
+  .col-s-1 {width: 8.33%;}
+  .col-s-2 {width: 16.66%;}
+  .col-s-3 {width: 25%;}
+  .col-s-4 {width: 33.33%;}
+  .col-s-5 {width: 41.66%;}
+  .col-s-6 {width: 50%;}
+  .col-s-7 {width: 58.33%;}
+  .col-s-8 {width: 66.66%;}
+  .col-s-9 {width: 75%;}
+  .col-s-10 {width: 83.33%;}
+  .col-s-11 {width: 91.66%;}
+  .col-s-12 {width: 100%;}
+} */
+
+/* For desktop: */
+/* @media only screen and (min-width: 768px) {
+  .col-1 {width: 8.33%;}
+  .col-2 {width: 16.66%;}
+  .col-3 {width: 25%;}
+  .col-4 {width: 33.33%;}
+  .col-5 {width: 41.66%;}
+  .col-6 {width: 50%;}
+  .col-7 {width: 58.33%;}
+  .col-8 {width: 66.66%;}
+  .col-9 {width: 75%;}
+  .col-10 {width: 83.33%;}
+  .col-11 {width: 91.66%;}
+  .col-12 {width: 100%;}
+} */
+
+/* Code above for permiting the site become responsive */
+
+.container {
+  padding:0px;
+  margin:0px;
+}
+
+.carousel-title {
+  font-family: 'Roboto', sans-serif;
+  font-weight:900;
+  font-size : 2.5em;
+}
+
+.carousel-subtitle {
+  font-family: 'Roboto', sans-serif;
+  font-weight:900;
+  font-size : 1.5em;
+}
+
+.carousel-caption {
+    position:absolute;
+    top:10px;
+}
+
+.logo-on-nav {
+    position: relative;
+    left:10px;
+    top:5px;
+    margin-right:20px;
+}
+
+.navbar-right {
+  margin-right : 5px;
+}
+
+.index-div {
+  position:relative;
+  display: inline-block;
+  background: white;
+}
+
+.inline-element {
+  display: inline-block;
+}
+
+.carousel-img {
+  width:100%;
+}
+
+.welcome-head {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding:0px;
+  border:0px;
+}
+
+.welcome-title {
+  display:inline-block;
+  position: relative;
+  top:0px;
+  right: 80px;
+  font-weight:900;
+  font-size:1.9em;
+}
+
+.welcome-logo {
+  position: relative;
+  top:0 px;
+  right:5px;
+}
+
+.btn-strava-login {
+  background-color: orangered;
+  border-color: orangered;
+  color:white;
+  font-weight: bold;
+  position: relative;
+  top:-5px;
+}
+
+.btn-strava-login:hover,
+.btn-strava-login:focus {
+  color:white;
+  background-color: green;
+  box-shadow: green;
+  outline: green;
+}
+
+#myCarousel {
+  width:100%;
+}
+
+.strong-go {
+  font-weight:bold;
+  color:green;
+}
+
+.strong-danger {
+  font-weight:bold;
+  color:red;
+}
+
+.strong-enhance {
+  font-weight:bold;
+  color:orangered;
+}
+
+.minor-minor-text {
+  font-size:.6em;
+}
+
+.minor-text {
+  font-size:.8em;
+}
+
+.major-text {
+  font-size:1.2em;
+}
+
+.modal-title {
+  font-weight:bold;
+}
+
+.modal-body p {
+  font-weight:normal;
+}
+
+.first-right-glyph {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+.first-left-glyph {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+.second-right-glyph {
+  position: absolute;
+  top: 60px;
+  right: 20px;
+}
+
+.right-button {
+  position:float;
+}
+
+.div-right-button {
+  padding:5px;
+}
+
+.page-alert {
+  margin-top: 60px;
+}
+
+.field-label {
+  font-weight:normal;
+  padding-top:8px;
+  padding-bottom:0px;
+  padding-left:0px;
+}
+
+.field-box {
+  border:0px;
+  border-bottom: 2px lightblue solid;
+  padding:3px;
+  color: MediumSlateBlue;
+}
+
+.field-box:focus,
+.field-box:hover {
+  border: 0px;
+  border-bottom: 2px MediumSlateBlue solid;
+  box-shadow: none;
+  outline: none;
+}
+
+.field-box-not-last {
+  margin-right:30px;
+}
+
+.top-label {
+  margin-top:10px;
+  display:grid;
+}
+
+.div-pic-input {
+  border: 2px lightblue solid;
+  border-radius: 5px;
+  display: inline-block;
+  padding: 10px;
+  margin-bottom:30px;
+  margin-top:30px;
+}
+
+.form-error {
+  color:red;
+  font-weight:bold;
+}
+
+.glyphicon {
+  font-size: 1.3em;
+}
+
+.glyphicon.glyphicon.glyphicon-plus.plus-little {
+  font-size: 1em;
+}
+
+.glyphicon.glyphicon-remove-circle {
+  color:orangered;
+  font-size: 0.8em;
+}
+
+.glyphicon.glyphicon-remove {
+  color:black;
+  font-size: 0.8em;
+}
+
+.glyphicon.glyphicon-calendar {
+  top:5px;
+  color:MediumSlateBlue;
+}
+
+.glyphicon.glyphicon-trash {
+  color:orangered;
+  font-size: 1em;
+}
+
+.td-text-realce
+{
+  font-size:1.2em;
+  color:red;
+}
+
+.info-pill-container {
+  float:left;
+}
+
+.info-pill {
+  padding: 3px;
+  border: lightblue 1px solid;
+}
+
+.sc-block p {
+  color: black;
+  font-size : 1em;
+  padding: 0px;
+  margin: 0px;
+}
+
+.sc-block {
+  position:relative;
+  margin-top: 10px;
+  background-color: white;
+  border-radius: 10px;
+  padding : 10px;
+  font-family: 'Roboto', sans-serif;
+  color: black;
+  font-size : 1em;
+}
+
+.info-bubble p {
+  color: black;
+  font-size : 1em;
+  padding: 0px;
+  margin: 0px;
+}
+
+.info-bubble {
+  position:relative;
+  margin: 5px;
+  background-color: white;
+  border-radius: 10px;
+  border : 3px solid lightblue;
+  padding : 10px;
+  font-family: 'Roboto', sans-serif;
+  color:black;
+  font-size: 1em;
+  display: inline-block;
+}
+
+
+
+.info-bubble-warning {
+  position:relative;
+  margin: 5px;
+  background-color: lightyellow;
+  border-radius: 10px;
+  border : 1px solid black;
+  padding : 10px;
+  font-family: 'Roboto', sans-serif;
+  color:black;
+  font-size: 1em;
+  display: inline-block;
+}
+
+.col-lg-10,
+.col-lg-2 {
+  padding:5px;
+}
+
+#notification-div {
+  display : none;
+}
+
+.not-visible {
+  display : none;
+}
+
+.summary-link:hover {
+  cursor : pointer;
+  color:darkblue;
+  text-decoration: underline;
+}
+
+.summary-link {
+  color:DodgerBlue;
+}
+
+/*
+color:CornflowerBlue;
+color:DodgerBlue;
+color:MediumSlateBlue;
+color:RoyalBlue;
+color:lightblue;
+color:darkblue;
+ */
+
+.league-details-column {
+  position : relative;
+  margin:0px;
+  padding:5px;
+}
+
+.div-selection {
+  position : relative;
+  border : 1px black solid;
+  padding : 5px;
+  border-radius : 10px;
+}
+
+.sc-navbar {
+  background-color: white;
+  font-family: 'Roboto', sans-serif;
+}
+
+.btn-white {
+  background-color: white;
+}
+
+.btn-select-view {
+  font-size: 1.1em;
+  font-weight: normal;
+}
+
+.you {
+  font-family: 'Satisfy', cursive;
+  color:red;
+  font-weight: normal;
+}
+
+.main-row {
+  margin:0px;
+}
+
+@media(min-width:768px) {
+    .main-row > .athlete-summary-column {
+        position: fixed;
+    }
+}
+
+.athlete-summary-column {
+    position:relative;
+    top: 0px;
+    left: 0px;
+    bottom: 0px;
+}
+
+.athlete-summary {
+  padding-top : 15px;
+  padding-bottom : 5px;
+  margin-top: 60px;
+  margin-left: 10px;
+  margin-right: 5px;
+  border-radius: 10px;
+
+  background-color: white;
+
+  font-family: 'Roboto', sans-serif;
+  color : black;
+  font-size: 0.9em;
+}
+
+.sc-feed p {
+  font-size : 1em;
+  padding: 0px;
+  margin: 0px;
+}
+
+.sc-feed {
+  position:relative;
+  margin-top: 60px;
+  margin-left:5px;
+  margin-right: 10px;
+  background-color: white;
+  border-radius: 10px;
+  padding : 10px;
+  font-family: 'Roboto', sans-serif;
+  color: black;
+  font-size : 1em;
+}
+
+.div-elements-centered {
+  text-align: center;
+}
+
+.tour-rank,
+.tour-segments {
+  background-color: white;
+  padding: 5px;
+  border-radius: 10px;
+  font-weight: normal;
+  overflow-y: hidden;
+}
+
+.leagues-feed {
+  font-size: 0.9em;
+  font-weight: normal;
+  overflow-y: hidden;
+}
+
+.tours-feed {
+  font-size: 0.8em;
+  font-weight: normal;
+  overflow-y: hidden;
+}
+
+.collapsed-table-row {
+  visibility: collapse;
+}
+
+.tr-uncollapsed {
+  visibility: visible;
+}
+
+.collapsed-table-div {
+  background-color: white;
+  padding: 5px;
+  border-radius: 10px;
+  border: black 1px solid;
+  display:inline-block;
+  margin-bottom: 25px;
+  margin-top:0px;
+  float: left;
+  font-size: 0.9em;
+}
+
+.collapsed-table-div-tours-feed {
+  background-color: white;
+  padding: 5px;
+  border-radius: 10px;
+  border: black 1px solid;
+  display:inline-block;
+  margin-bottom: 25px;
+  margin-top:0px;
+  float: left;
+}
+
+.summary-table {
+  font-weight: normal;
+}
+
+.athletes-list,
+.tours-list,
+.segments-list
+{
+  background-color: white;
+  padding: 5px;
+  border-radius: 10px;
+  border: lightblue 3px solid;
+}
+
+.enhance-action {
+  background-color: lightyellow;
+  padding: 10px;
+  border-radius: 10px;
+  border: whitesmoke 3px solid;
+}
+
+.not-last-td {
+  border-color : white lightblue white white;
+}
+
+.last-td {
+  border-color : white;
+}
+
+.td-text-left {
+  text-align:left;
+}
+
+.td-text-right {
+  text-align:right;
+}
+
+.glyph-in-the-middle-td {
+  vertical-align: middle;
+}
+
+/* The code bellow is from Double List Box
+https://bootsnipp.com/snippets/z8d4r */
+
+.list-left li, .list-right li {
+    cursor: pointer;
+}
+
+.dual-list .list-group {
+    margin-top: 8px;
+    font-size: 0.8em;
+}
+
+.list-arrows button {
+    margin-bottom: 20px;
+}
+
+.left-check-col {
+    padding-left: 0px;
+}
+
+/* Selectable row in a table */
+
+.hoverTable {
+  border-collapse: separate;
+  border-spacing: 0 2px;
+}
+
+.hoverTableBody tr:hover {
+  background-color: #ebf5f9;
+  cursor : pointer;
+}
+
+.hoverTableBody .league-inactivate-for-athlete:hover {
+  background-color: white;
+  cursor:not-allowed;
+}
+
+.collapsed-table-row,
+.collapsed-table-row td,
+.collapsed-table-row tr,
+.collapsed-table-row thead,
+.collapsed-table-row tbody,
+.collapsed-table-row table,
+.collapsed-table-row th {
+  background-color:white;
+  cursor:default;
+}

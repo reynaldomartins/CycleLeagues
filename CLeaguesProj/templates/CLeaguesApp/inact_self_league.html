@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+{% extends "CLeaguesApp/base.html" %}
+
+{% load staticfiles %}
+
+{% block body_block %}
+
+    <div class="enhance-action">
+      <form class="" action="{% url 'CLeaguesApp:inact_self_leagueURLName' %}?league={{league.lg_id}}&athlete={{athlete.atl_id}}" method="post">
+
+          {% csrf_token %}
+
+          <div class="modal in" style="display: none;" id="modal-box">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title">Inactivate Yourself from League</h4>
+                </div>
+                <div class="modal-body">
+                  <p>Are you sure you want to Inactive Yourself from League <strong>{{ league.lg_name }}</strong> ?</p>
+                  <br>
+                  <div class="row">
+                      <div class="col-12-xs text-center">
+                          <button type="button" class="cancel-button btn btn btn-md"
+                              data-href="{% url 'CLeaguesApp:league_detailsURLName' %}?league={{league.lg_id}}" >Cancel</button>
+                          <input type="submit" class="btn btn-danger btn-md" name="btn_inact_self_league" id="btn_inact_self_league" value="OK"></input>
+                      </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h4>Your are about to <span class="strong-danger">INACTIVATE YOURSELF</span>&nbsp;<strong>(
+              <img class="img-circle" width="60" height="60" src="{{ MEDIA_URL }}{{ athlete.atl_pic_mini }}" />
+              &nbsp;{{ athlete.atl_name_strava }})</strong>
+          from League&nbsp;
+            <img class="img-circle" width="60" height="60" src="{{ MEDIA_URL }}{{ league.lg_pic }}" />
+            &nbsp;<strong>{{ league.lg_name }}</strong>
+          </h4>
+          <br>
+          <h4>If you inactive YourSelf, the following will happen :</h4>
+          <ul><strong>
+            <li>You will not take part of new Tours in this League</li>
+            <li>You will be taken out from Running and To be Started Tours in this League</li>
+            <li>You will not be able to see this League details from now on</li>
+            <li>The running Tours of this League will have their ranking updated within 24 hours, dismissing your Efforts</li>
+            <li>Nevertheless, You will still be able to see the Finished Tours he/she took part in this League</li>
+          </strong></ul>
+          <br>
+          <button type="button" class="cancel-button btn btn"
+                data-href="{% url 'CLeaguesApp:league_detailsURLName' %}?league={{league.lg_id}}" >Cancel</button>
+          <button type="button" class="btn btn-danger" name="btn_inact_self_league_prev" id="btn_inact_self_league_prev">Inactivate YOURSELF from League</button>
+        </form>
+    </div>
+    <br>
+
+{% endblock body_block %}

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+{% extends "CLeaguesApp/base.html" %}
+
+{% load staticfiles %}
+{% load static %}
+{% load stex_filters %}
+
+{% block body_block %}
+
+  {% block league_details_block %}
+          <!-- everyhting outside this block will be inherited -->
+  {% endblock league_details_block %}
+
+  <div class="container">
+    {% if league_admin and editable %}
+      {% if league.lg_status == "A" %}
+        <a class="first-right-glyph"
+            href="{% url 'CLeaguesApp:edit_leagueURLName' %}?league={{league.lg_id}}" align=center>
+            <span class="glyphicon glyphicon-edit"
+              data-toggle="tooltip" data-placement="right" title="Edit League"></span>
+        </a>
+        <a class="second-right-glyph"
+            href="{% url 'CLeaguesApp:inact_leagueURLName' %}?league={{league.lg_id}}">
+            <span class="glyphicon glyphicon-remove-circle pull-right" id="inactivate-league"
+              data-toggle="tooltip" data-placement="right" title="Inactivate League"></span>
+        </a>
+      {% else %}
+        <a class="first-right-glyph"
+            href="{% url 'CLeaguesApp:react_leagueURLName' %}?league={{league.lg_id}}">
+            <span class="glyphicon glyphicon-plus pull-right" id="reactivate-league"
+              data-toggle="tooltip" data-placement="right" title="Reactivate League"></span>
+        </a>
+      {% endif %}
+    {% endif %}
+
+    <div class="div-elements-centered">
+      <h3><span class="strong-enhance">League</span>&nbsp;
+        <img class="img-circle" width="80" height="80" src="{{ MEDIA_URL }}{{ league.lg_pic }}" />
+        <b>{{ league.lg_name }}</b>
+        <i><span class="minor-minor-text">, created by &nbsp;
+        <img class="img-circle" width="40" height="40" src="{{ MEDIA_URL }}{{ league.lg_atl_creator.atl_pic }}" />
+        {{ league.lg_atl_creator.atl_name_strava }}
+        <span class="you">{% is_you league.lg_atl_creator.atl_id %}</span>
+        </span></i>
+        {% if league.lg_status == "I" %}
+        <h4>This League is currently <span class="strong-enhance">Inactive</span></h4>
+        {% endif %}
+      </h3>
+      <br>
+    </div>
+    <div class="col-lg-4 col-sm-4 boxy league-details-column">
+      <form class="">
+        {% if league_admin and league.lg_status != "I" and editable %}
+          <a class="first-right-glyph"
+              href="{% url 'CLeaguesApp:invite_athletesURLName' %}?league={{league.lg_id}}" align=center>
+              <span class="glyphicon glyphicon-plus plus-little"
+                data-toggle="tooltip" data-placement="right" title="Invite Athletes to Your League"></span>
+          </a>
+        {% endif %}
+      </form>
+      <div class="athletes-list table-responsive">
+        <table class="hoverTable">
+            <thead>
+              <th>Athletes in the League</th>
+            </thead>
+            <tbody class="hoverTableBody">
+            {% for atl_in_lg in list_athletes_league %}
+                <tr class='clickable-row' data-href="#">
+                  <td class='last-td td-text-left' >
+
+                    <img class="img-circle" width="40" height="40" src="{{ MEDIA_URL }}{{ atl_in_lg.atl.atl_pic }}" />
+                    <div class="inline-element">
+                      &nbsp;<strong>{{ atl_in_lg.atl.atl_name_strava }}</strong>
+                      <span class="you">{% is_you atl_in_lg.atl.atl_id %}</span>
+                      ({% athlete_status_str atl_in_lg.atl_in_league_status %})&nbsp;&nbsp;&nbsp;
+                      {% if league_admin and league.lg_status != "I" and editable %}
+                        {% if atl_in_lg.atl_in_league_status == "A" %}
+                          {% if league.lg_atl_creator.atl_id != atl_in_lg.atl.atl_id %}
+                          <a href="{% url 'CLeaguesApp:inact_athlete_leagueURLName' %}?league={{league.lg_id}}&athlete={{atl_in_lg.atl.atl_id}}">
+                              <span class="glyphicon glyphicon-remove-circle pull-right glyph-in-the-middle-td" id="inactivate-athlete-league"
+                                data-toggle="tooltip" data-placement="right" title="Inactivate Athlete from League"></span>
+                          </a>
+                          {% endif %}
+                      {% elif atl_in_lg.atl_in_league_status == "I" %}
+                          <a href="{% url 'CLeaguesApp:react_athlete_leagueURLName' %}?league={{league.lg_id}}&athlete={{atl_in_lg.atl.atl_id}}">
+                              <span class="glyphicon glyphicon-plus pull-right glyph-in-the-middle-td" id="reactivate-athlete-league"
+                                data-toggle="tooltip" data-placement="right" title="Reactivate Athlete in League"></span>
+                          </a>
+                        {% endif %}
+                      {% elif atl_in_lg.atl.atl_id == logged_strive_athlete.atl_id and editable and league.lg_status == "A" %}
+                        {% if atl_in_lg.atl_in_league_status == "A" or atl_in_lg.atl_in_league_status == "C" %}
+                          <a href="{% url 'CLeaguesApp:inact_self_leagueURLName' %}?league={{league.lg_id}}&athlete={{atl_in_lg.atl.atl_id}}">
+                              <span class="glyphicon glyphicon-remove-circle pull-right glyph-in-the-middle-td" id="inactivate-selfleague"
+                                data-toggle="tooltip" data-placement="right" title="Inactivate Yourself from League"></span>
+                          </a>
+                        {% endif %}
+                      {% endif %}
+                    </div>
+                  </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col-lg-8 col-sm-8 boxy league-details-column">
+        {% if league_admin and league.lg_status != "I" and editable %}
+          <form class="">
+              <a class="first-right-glyph"
+                  href="{% url 'CLeaguesApp:create_tourURLName' %}?league={{league.lg_id}}" align=center>
+                  <span class="glyphicon glyphicon-plus plus-little"
+                    data-toggle="tooltip" data-placement="left" title="Create a new Tour for your League"></span>
+              </a>
+          </form>
+        {% endif %}
+      <div class="tours-list table-responsive">
+        <table class="hoverTable">
+            <thead>
+              <th style="width:40%;">Tours in the League</th>
+              <th style="width:18%;">Start Date</th>
+              <th style="width:18%;">Finish Date</th>
+              <th style="width:24%;">Status</th>
+            </thead>
+            <tbody class="hoverTableBody">
+            {% for tour in list_tours_league %}
+                <tr class='clickable-row' data-href="{% url 'CLeaguesApp:tour_details_rankURLName' %}?tour={{tour.tr_id}}">
+                    <td class='not-last-td td-text-left'>
+                        <img class="img-circle" width="40" height="40" src="{{ MEDIA_URL }}{{ tour.tr_pic }}" />
+                        &nbsp;<strong>{{ tour.tr_name }}</strong>
+                      </td>
+                    <td class='not-last-td'>{{ tour.tr_start_date }}</td>
+                    <td class='not-last-td'>{{ tour.tr_finish_date }}</td>
+                    <td class='last-td'>
+                      {% if league_admin and tour.tour_status == "T" %}
+                        <a href="{% url 'CLeaguesApp:delete_tourURLName' %}?tour={{tour.tr_id}}">
+                            <span class="glyphicon glyphicon-trash pull-right glyph-in-the-middle-td" id="delete-tour"
+                              data-toggle="tooltip" data-placement="right" title="Delete Tour"></span>
+                        </a>
+                      {% endif %}
+                      {% tour_status_str tour.tour_status %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+{% endblock body_block %}

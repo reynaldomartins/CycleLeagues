@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+{% extends "CLeaguesApp/tour_base.html" %}
+
+{% load staticfiles %}
+
+{% block tour_block %}
+
+{% load filter_atl_best_trial_feed_by_atl from stex_filters %}
+{% load is_you from stex_filters %}
+{% load rank_translation from stex_filters %}
+{% load subtract from stex_filters %}
+
+{% if list_atl_in_tour %}
+    <div class="tour-rank table-responsive">
+      <table class="hoverTable" >
+          <thead>
+            <th>Rank</th>
+            <th>Athlete</th>
+            <th>Points</th>
+            <th>Segments Riden</th>
+            <th>Segments to Ride</th>
+          </thead>
+          <tbody class="hoverTableBody">
+                {% for ait in list_atl_in_tour %}
+                  {% if ait.ait_status == "A" %}
+                    <tr class="collapsable-table-row">
+                      <td class='not-last-td'>{% rank_translation ait.ait_rank ait.ait_points %}</td>
+                      <td class='not-last-td td-text-left'>
+                          <img class="img-circle" width="40" height="40"src="{{ ait.ait_atl.atl_pic_mini.url }}" />
+                          &nbsp;&nbsp;{{ait.ait_atl.atl_name_strava}}
+                          <span class="you">{% is_you ait.ait_atl.atl_id %}</span>
+                      </td>
+                      <td class='not-last-td'>{{ait.ait_points}}</td>
+                      <td class='not-last-td'>{{ait.ait_ridden}}</td>
+                      <td class='last-td'>{{num_segments|subtract:ait.ait_ridden}}</td>
+                    </tr>
+
+                    {% filter_atl_best_trial_feed_by_atl list_best_trial_tour_feed ait.ait_atl.atl_id as list_best_trial_atl_feed %}
+
+                      <tr class="collapsed-table-row">
+                        <td colspan="5">
+                          <div class="collapsed-table-div">
+                            {% if list_best_trial_atl_feed %}
+                              <table>
+                                  <thead>
+                                    <th>Segment</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Rank</th>
+                                    <th>Points</th>
+                                  </thead>
+                                  <tbody>
+                                    {% for best_trial_atl_feed in list_best_trial_atl_feed %}
+                                      <tr>
+                                        <td class='not-last-td td-text-right'>{{ best_trial_atl_feed.sg_name_strava }}</td>
+                                        <td class='not-last-td'>{{ best_trial_atl_feed.atl_best_trial.abt_date }}</td>
+                                        <td class='not-last-td'>{{ best_trial_atl_feed.atl_best_trial.abt_time|time:"H:i:s" }}</td>
+                                        <td class='not-last-td'>{{ best_trial_atl_feed.atl_best_trial.abt_rank }}</td>
+                                        <td class='not-last'>{{ best_trial_atl_feed.atl_best_trial.abt_points }}</td>
+                                      </tr>
+                                    {% endfor %}
+                                  </tbody>
+                              </table>
+                            {% else %}
+                              <p><strong>No segments riden by this Athlete were registered so far</strong></p>
+                            {% endif %}
+                          </div>
+                        </td>
+                      </tr>
+                  {% endif %}
+                {% endfor %}
+          </tbody>
+      </table>
+    </div>
+    <br>
+{% else %}
+  <h4>There is no ranking for this Tour yet</h4>
+{% endif %}
+
+{% endblock tour_block %}

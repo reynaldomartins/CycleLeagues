@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+{% extends "CLeaguesApp/base.html" %}
+
+{% load staticfiles %}
+
+{% block body_block %}
+
+{% load is_you from stex_filters %}
+{% load tour_status_str from stex_filters %}
+{% load rank_translation from stex_filters %}
+{% load rank_translation_small from stex_filters %}
+{% load subtract from stex_filters %}
+{% load filter_tour_feed_by_strstatus from stex_filters %}
+{% load create_list from stex_filters %}
+{% load count_list from stex_filters %}
+{% load define from stex_filters %}
+{% load add_one from stex_filters %}
+{% load append_list from stex_filters %}
+
+{% filter_tour_feed_by_strstatus list_tours_feed "A" as list_tours_feed_active %}
+{% filter_tour_feed_by_strstatus list_tours_feed "T" as list_tours_feed_tobestarted %}
+{% filter_tour_feed_by_strstatus list_tours_feed "F" as list_tours_feed_finished1 %}
+{% filter_tour_feed_by_strstatus list_tours_feed "Z" as list_tours_feed_finished2 %}
+{% append_list list_tours_feed_finished1 list_tours_feed_finished2 as list_tours_feed_finished %}
+{% filter_tour_feed_by_strstatus list_tours_feed "I" as list_tours_feed_inactive %}
+{% create_list list_tours_feed_active list_tours_feed_tobestarted list_tours_feed_finished list_tours_feed_inactive as list_list_tours_feed %}
+
+{% define 0 as num_block %}
+
+<div class="div-elements-centered">
+  <div class="info-bubble table-responsive">
+    <h4 align=center><span class="strong-enhance">Tours&nbsp;</span>Summary of&nbsp;&nbsp;
+          <img class="img-circle" width="60" height="60"src="{{ logged_strive_athlete.atl_pic.url }}" />
+          {{ logged_strive_athlete.atl_name_strava }}
+    </h4>
+    <table align=center class="summary-table">
+        <thead>
+          <th>Running</th>
+          <th>To be Started</th>
+          <th>Finished</th>
+        </thead>
+        <tbody>
+          <tr>
+            <td class='not-last-td summary-link' id="summary-active-id">{% count_list list_tours_feed_active %}</td>
+            <td class='not-last-td summary-link' id="summary-tobestarted-id">{% count_list list_tours_feed_tobestarted %}</td>
+            <td class='last-td summary-link' id="summary-finished-id">{% count_list list_tours_feed_finished %}</td>
+          </tr>
+        </tbody>
+    </table>
+  </div>
+</div>
+
+<div class='dropdown' id='feed-filter-view-tours-feed-id'>
+  <button aria-haspopup class='btn btn-white btn-icon btn-select-view btn-icon-right dropdown-toggle'
+      data-toggle='dropdown' id='feed-filter-view-btn' tabindex='0'>
+          Running Tours
+      <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
+  </button>
+  <ul aria-labelledby='feed-filter-view-btn' class='options dropdown-menu' role='menu' id="feed-filter-view-tours-feed-id">
+    <li><a class="replace-selection"
+      href="#">Running Tours</a></li>
+    <li><a class="replace-selection"
+      href="#">To be Started Tours</a></li>
+    <li><a class="replace-selection"
+      href="#">Finished Tours</a></li>
+  </ul>
+</div>
+
+<script>
+$(document).ready(function(){
+  $(".dropdown-toggle").dropdown();
+});
+</script>
+
+  {% for list_tours_feed in list_list_tours_feed %}
+
+    {% if list_tours_feed %}
+
+      {% if num_block == 0 %}
+        <div class="tours-feed-block-active">
+      {% elif num_block == 1 %}
+        <div class="tours-feed-block-to-be-started" style="display:none">
+      {% elif num_block == 2 %}
+        <div class="tours-feed-block-finished" style="display:none">
+      {% endif %}
+          <div class="tours-feed table-responsive">
+            <table class="hoverTable">
+              <thead>
+                <th style="width: 25%;">Tour</th>
+                <th style="width: 16%;">League</th>
+                <th style="width: 8%;">Start</th>
+                <th style="width: 8%;">Finish</th>
+                <th style="width: 3%;">Segs.</th>
+                <th style="width: 3%;"><span class="you">Your</span>&nbsp;Rank</th>
+                <th style="width: 15%;">Leader</th>
+                <th style="width: 13%;">Creator</th>
+              </thead>
+              <tbody class="hoverTableBody">
+                {% for tours_feed in list_tours_feed %}
+                <tr class="collapsable-table-row">
+                    <td class='not-last-td td-text-left'>
+                          <img class="img-circle" width="60" height="60" src="{{ MEDIA_URL }}{{ tours_feed.tour.tr_pic }}" />
+                          &nbsp;&nbsp;
+                          <span class="major-text"><strong>
+                            <a class="action-in-tour-row" href="{% url 'CLeaguesApp:tour_details_rankURLName' %}?tour={{tours_feed.tour.tr_id}}">{{ tours_feed.tour.tr_name }}</a>
+                          </strong></span>
+                    </td>
+                    <!-- Athlete can see League details if the League is active and he is active in the League
+                         If thr AThlete is the creator of the League, He can see is anyway
+                    -->
+                    <td class='not-last-td td-text-left'>
+                      {% if tours_feed.league.lg_status == "A" %}
+                        {% if tours_feed.atl_in_league.ail_status == "A" %}
+                            <a class="action-in-tour-row" href="{% url 'CLeaguesApp:league_detailsURLName' %}?league={{ tours_feed.league.lg_id }}">{{ tours_feed.league.lg_name }}</a>
+                        {% else %}
+                          <span class='league-inactivate-for-athlete'>{{ tours_feed.league.lg_name }}</span>
+                        {% endif %}
+                      {% else %}
+                        {% if tours_feed.league.lg_atl_creator.atl_id == logged_strive_athlete.atl_id %}
+                          <a class="action-in-tour-row" href="{% url 'CLeaguesApp:league_detailsURLName' %}?league={{ tours_feed.league.lg_id }}">{{ tours_feed.league.lg_name }}</a>
+                        {% else %}
+                          <span class='league-inactivate-for-athlete'>{{ tours_feed.league.lg_name }}</span>
+                        {% endif %}
+                      {% endif %}
+                    </td>
+                    <td class='not-last-td'>{{tours_feed.tour.tr_start_date}}</td>
+                    <td class='not-last-td'>{{tours_feed.tour.tr_finish_date}}</td>
+                    <td class='not-last-td'>{{tours_feed.summary.num_segments}}</td>
+                    <td class='not-last-td'>
+                      <span class="td-text-realce">{% rank_translation_small tours_feed.atl_in_tour_rank tours_feed.atl_in_tour_points %} </span>/ {{ tours_feed.summary.num_athletes }}
+                    </td>
+                    <td class='not-last-td'>
+                      {% if tours_feed.summary.leader_pic %}
+                        <img class="img-circle" width="40" height="40" src="{{ MEDIA_URL }}{{ tours_feed.summary.leader_pic }}"/>
+                      {% endif %}
+                      <strong>
+                        {{tours_feed.summary.leader_name}}
+                        <span class="you">{% is_you tours_feed.summary.leader_id %}</span>
+                      </strong>
+                    </td>
+                    <td class='last-td td-text-left'>
+                          <!-- <img class="img-circle" width="40" height="40" src="{{ MEDIA_URL }}{{ tours_feed.league.lg_atl_creator.atl_pic_mini }}" />
+                          &nbsp;&nbsp; -->
+                          {{ tours_feed.league.lg_atl_creator.atl_name_strava }}
+                          <span class="you">{% is_you  tours_feed.league.lg_atl_creator.atl_id %}</span>
+                    </td>
+                </tr>
+                <tr class="collapsed-table-row">
+                    <td colspan="5">
+                      <div class="collapsed-table-div-tours-feed">
+                        {% if tours_feed.list_atl_in_tour %}
+                            <table>
+                                <thead>
+                                  <th>Rank</th>
+                                  <th>Athlete</th>
+                                  <th>Points</th>
+                                  <th>Segments Riden</th>
+                                  <th>Segments to Ride</th>
+                                </thead>
+                                <tbody>
+                                    {% for ait in tours_feed.list_atl_in_tour %}
+                                      <tr>
+                                        <td class='not-last-td'>{% rank_translation ait.ait_rank ait.ait_points %}</td>
+                                        <td sclass='not-last-td td-text-left'>
+                                            <img class="img-circle" width="40" height="40"src="{{ ait.ait_atl.atl_pic_mini.url }}" />
+                                            &nbsp;&nbsp;{{ait.ait_atl.atl_name_strava}}
+                                            <span class="you">{% is_you ait.ait_atl.atl_id %}</span>
+                                        </td>
+                                        <td class='not-last-td'>{{ait.ait_points}}</td>
+                                        <td class='not-last-td'>{{ait.ait_ridden}}</td>
+                                        <td class='last-td'>{{tours_feed.summary.num_segments|subtract:ait.ait_ }}</td>
+                                      </tr>
+                                    {% endfor %}
+                                </tbody>
+                              </table>
+                          {% else %}
+                            <p>There is no Athletes to be ranked in this Tour yet<p>
+                          {% endif %}
+                      </div>
+                    </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+    {% else %}
+
+      {% if num_block == 0 %}
+        <div class="tours-feed-block-active">
+          <br>
+          <h4>You are not taking part of any Tour which is currently running</h4>
+          <br>
+      {% elif num_block == 1 %}
+        <div class="tours-feed-block-to-be-started" style="display:none">
+          <br>
+          <h4>At this moment, there is no Tour scheduled to be started which you are taking part</h4>
+          <br>
+      {% elif num_block == 2 %}
+        <div class="tours-feed-block-finished" style="display:none">
+          <br>
+          <h4>You have not finished any Tour so far</h4>
+          <br>
+      {% endif %}
+
+    {% endif %}
+
+  {% add_one num_block as num_block %}
+
+  </div>
+
+  {% endfor %}
+
+{% endblock %}

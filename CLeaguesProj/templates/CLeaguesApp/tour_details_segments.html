@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+{% extends "CLeaguesApp/tour_base.html" %}
+
+{% load staticfiles %}
+
+{% block tour_block %}
+
+  {% load filter_atl_best_trial_feed_by_seg from stex_filters %}
+  {% load is_you from stex_filters %}
+  {% load rank_translation from stex_filters %}
+  {% load define from stex_filters %}
+
+  {% define tour.tour_status as tr_status %}
+
+  <!-- The code bellow is from Double List Box
+      https://bootsnipp.com/snippets/z8d4r -->
+  <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+
+  <div class="modal in" style="display: none;" id="modal-box-search-segment">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Select Segments from your Last Activities</h4>
+        </div>
+        <div class="modal-body">
+          <p>CycleLeagues brings Segments riden in your last 20 activities within the last 90 days.</p>
+          <p>This Search from Strava can take some minutes.</p>
+          <br>
+          <p>Are your sure you want to proceed ?</p>
+          <br>
+          <div class="row">
+              <div class="col-12-xs text-center">
+                <button type="button" class="cancel-button btn btn btn-md"
+                      data-href="{% url 'CLeaguesApp:tour_details_segmentsURLName' %}?tour={{tour.tr_id}}&select=NoSelection">Cancel</button>
+                <button type="button" class="confirm-button btn btn-warning btn-md"
+                      data-href="{% url 'CLeaguesApp:tour_details_segmentsURLName' %}?tour={{tour.tr_id}}&select=FromActivities">Search</button>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <form id="form-delete-segment" action="{% url 'CLeaguesApp:tour_details_segmentsURLName' %}?tour={{tour.tr_id}}&select={{select}}&delete=" method="post">
+
+    {% csrf_token %}
+
+    <div class="modal in" style="display: none;" id="modal-box-delete-segment">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Delete Segment from Tour</h4>
+          </div>
+          <div class="modal-body">
+            <p id="modal-box-delete-text"></p>
+            <br>
+            <div class="row">
+                <div class="col-12-xs text-center">
+                  <button type="button" class="btn btn btn-md" id="btn-cancel-delete-segment">Cancel</button>
+                  <!-- <input type="button" class="confirm-button btn btn-danger btn-md" id="btn-delete-segment" id="btn-delete-segment" value="Delete"></input> -->
+                  <button type="submit" class="btn btn-danger btn-md">Delete</button>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
+{% if list_tour_segments %}
+      <div class="tour-segments table-responsive">
+        <table class="hoverTable" >
+            <thead>
+              <th class="not-visible">sg_id</th>
+              <th>Name</th>
+              <th>Distance</th>
+              <th>Average Grade</th>
+              <th>Elevation Diff.</th>
+            </thead>
+            <tbody class="hoverTableBody" >
+                  {% for seg in list_tour_segments %}
+                  <tr class="collapsable-table-row">
+                    <td class="not-visible" id="column-seg-id">{{ seg.sg_id }}</td>
+                    <td class='not-last-td td-text-left' id="column-seg-name">{{seg.sg_name_strava}}</td>
+                    <td class='not-last-td'>{{seg.sg_distance}} Kms</td>
+                    <td class='not-last-td'>{{seg.sg_avg_grade}} %</td>
+                    <td class='last-td'>
+                      {% if logged_strive_athlete.atl_id == tour.tr_lg.lg_atl_creator.atl_id and tr_status == "T" %}
+                        {% if not dont_edit %}
+                          <span class="glyphicon glyphicon-trash pull-right glyph-in-the-middle-td delete-segment"
+                            data-toggle="tooltip" data-placement="right" title="Delete Segment"></span>
+                        {% endif %}
+                      {% endif %}
+                      {{seg.sg_elev_dif}} Mts
+                    </td>
+                  </tr>
+
+                  {% filter_atl_best_trial_feed_by_seg list_best_trial_tour_feed seg.sg_id as list_best_trial_seg_feed %}
+                  <tr class="collapsed-table-row">
+                      <td colspan="5">
+                        <div class="collapsed-table-div">
+                        {% if list_best_trial_seg_feed %}
+                            <table>
+                                <thead>
+                                  <th>Rank</th>
+                                  <th>Athlete</th>
+                                  <th>Date</th>
+                                  <th>Time</th>
+                                  <th>Points</th>
+                                </thead>
+                                <tbody>
+                                  {% for best_trial_seg_feed in list_best_trial_seg_feed %}
+                                    {% if best_trial_seg_feed.atl_best_trial.abt_status == "A" and best_trial_seg_feed.atl_best_trial.abt_rank != -1 %}
+                                      <tr>
+                                        <td class='not-last-td'>{% rank_translation best_trial_seg_feed.atl_best_trial.abt_rank best_trial_seg_feed.atl_best_trial.abt_points %}</td>
+                                        <td class='not-last-td td-text-left'>
+                                          <img class="img-circle" width="40" height="40"src="{{ best_trial_seg_feed.atl_best_trial.abt_atl.atl_pic_mini.url }}"/>
+                                          {{ best_trial_seg_feed.atl_name_strava }}
+                                          <span class="you">{% is_you best_trial_seg_feed.atl_best_trial.abt_atl.atl_id %}</span>
+                                        </td>
+                                        <td class='not-last-td'>{{ best_trial_seg_feed.atl_best_trial.abt_date }}</td>
+                                        <td class='not-last-td'>{{ best_trial_seg_feed.atl_best_trial.abt_time|time:"H:i:s" }}</td>
+                                        <td class='not-last'>{{ best_trial_seg_feed.atl_best_trial.abt_points }}</td>
+                                      </tr>
+                                    {% endif %}
+                                  {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p><strong>>No rides in this Segment for this Tour were registered so far</strong</p>
+                        {% endif %}
+                        </div>
+                      </td>
+                  </tr>
+                  {% endfor %}
+            </tbody>
+        </table>
+      </div>
+  {% else %}
+      <br>
+      <h4>No Segments were registered for this Tour</h4>
+  {% endif %}
+  <br>
+
+  {% if logged_strive_athlete.atl_id == tour.tr_lg.lg_atl_creator.atl_id and tr_status == "T" %}
+    {% if not dont_edit %}
+    <div class="div-selection container">
+
+      <form class="" method="post">
+
+      {% csrf_token %}
+
+        <h4>Add Segments to this Tour</h4>
+
+      <div class="row container">
+        <div class="col-md-9">
+            <div class='dropdown' id='feed-filter-select'>
+              <button aria-haspopup class='btn btn-white btn-icon btn-icon-right dropdown-toggle'
+                  data-toggle='dropdown' id='feed-filter-select-btn' tabindex='0'>
+                  {% if select == "NoSelection" %}
+                      --- Choose how you want to select Segments for this Tour ---
+                  {% elif select == "FromLeague" %}
+                      Select Segments already used in the League of this Tour
+                  {% elif select == "FromActivities" %}
+                      Select Segments from your Last Activities
+                  {% elif logged_strive_athlete.atl_id ==  1 %}
+                      All Segments
+                  {% endif %}
+                  <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
+              </button>
+              <ul aria-labelledby='feed-filter-select-btn' class='options dropdown-menu' role='menu' id="feed-filter-select-id">
+                <li><a class="replace-selection"
+                    href="{% url 'CLeaguesApp:tour_details_segmentsURLName' %}?tour={{tour.tr_id}}&select=FromLeague">Select Segments already used in the League of this Tour</a></li>
+                <li><a class="replace-selection"
+                    href="#">Select Segments from your Last Activities</a></li>
+                {% if logged_strive_athlete.atl_id ==  1 %}
+                  <li><a class="replace-selection"
+                    href="{% url 'CLeaguesApp:tour_details_segmentsURLName' %}?tour={{tour.tr_id}}&select=FromAll">All Segments</a></li>
+                {% endif %}
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-3 text-right div-right-button">
+            <input type="submit" class="btn btn-success right-button" name="button-add-select" value="Add Selected Segments"</input>
+          </div>
+        </div>
+
+          <!-- The code bellow is from Double List Box
+                https://bootsnipp.com/snippets/z8d4r -->
+          {% if select == "FromActivities" or select == "FromLeague" or select == "FromAll" %}
+            <div class="container">
+            	<div class="row">
+                    <div class="dual-list top-list-unselected col-md-6">
+                        <div class="well">
+                            <div class="row">
+                                <div class="col-md-12 form-group">
+                                    <div class="input-group">
+                                        <span class="input-group-addon glyphicon glyphicon-search" style="top: 0px;"></span>
+                                        <input type="text" name="SearchDualList" class="form-control" placeholder="search">
+                                        <span class="input-group-addon glyphicon glyphicon-unchecked selector" style="cursor: pointer; top: 0px;" title="Select All"></span>
+                                        <span class="input-group-addon glyphicon glyphicon-plus move-left" style="cursor: pointer; top: 0px;" title="Add Selected"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <ul class="list-group" id="list-unselected">
+                              {% for segment in list_select_segments %}
+                                <li class="list-group-item" data-value="{{ segment.sg_id_strava }}">
+                                  <strong>{{ segment.sg_name_strava }} </strong>
+                                  (Dist. {{segment.sg_distance}} kms / Avg.Grade {{segment.sg_avg_grade}} %)
+                                </li>
+                              {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="dual-list top-list-selected col-md-6">
+                        <div class="well text-right">
+                            <div class="row">
+                                <div class="col-md-12 form-group">
+                                    <div class="input-group">
+                                        <span class="input-group-addon glyphicon glyphicon-search" style="top: 0px;"></span>
+                                        <input type="text" name="SearchDualList" class="form-control" placeholder="search">
+                                        <span class="input-group-addon glyphicon glyphicon-unchecked selector" style="cursor: pointer; top: 0px;" title="Select All"></span>
+                                        <span class="input-group-addon glyphicon glyphicon-minus move-right" style="cursor: pointer; top: 0px;" title="Remove Selected"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <ul class="list-group" id="list-selected">
+                                <!-- <li class="list-group-item" data-value="1">Option 1</li> -->
+                            </ul>
+                        </div>
+                    </div>
+                    <select id="dual-list-options" name="dual-list-options[]" multiple="multiple" style="display: none;" size="10">
+                        <!-- <option value="1" selected="selected">Option 1</option> -->
+                    </select>
+            	   </div>
+               {% endif %}
+             {% endif %}
+          </div>
+  </form>
+</div>
+{% elif logged_strive_athlete.atl_id == tour.tr_lg.lg_atl_creator.atl_id and tr_status == "A" %}
+  <div class="info-bubble-warning">
+    <p><strong>You cannot Add Segments to a Tour that is already running</strong></p>
+  </div>
+{% endif %}
+
+
+<script>
+$(document).ready(function(){
+  $(".dropdown-toggle").dropdown();
+});
+</script>
+
+{% endblock %}
