@@ -32,6 +32,7 @@ def filter_atl_best_trial_feed_by_atl(list_best_trial_feed, atl_id):
 def filter_tour_feed_by_strstatus(list_tours_feed, status):
     list_tours_feed_filtered = []
     for tour_feed in list_tours_feed:
+        # print("De novo {}".format(tour_feed.tour.tr_name))
         if tour_feed.tour.tour_status() == status:
             list_tours_feed_filtered.append(tour_feed)
     return list_tours_feed_filtered
@@ -78,6 +79,7 @@ def strive_status(status):
         return "Inactive"
 
 def rank_translation(rank,points):
+    # print("I am translating")
     if rank == NOT_RANKED:
         return "Not Ranked"
     elif points == 0:
@@ -102,21 +104,21 @@ def resize_image(uploaded_image, width_height):
         try:
             imageTemporary = Image.open(uploaded_image)
             original_width, original_height = imageTemporary.size
-            print("{} {}".format(original_width, original_height))
+            # print("{} {}".format(original_width, original_height))
             if original_width > original_height:
                 start_point = (original_width-original_height)/2
                 imageTemporary = imageTemporary.crop((start_point,0,start_point+original_height,original_height))
                 cropped_size = original_height
-                print("{} {}".format(start_point, cropped_size))
+                # print("{} {}".format(start_point, cropped_size))
             elif original_width < original_height:
                 start_point = (original_height-original_width)/2
                 imageTemporary = imageTemporary.crop((0,start_point,original_width,start_point+original_width))
                 cropped_size = original_width
-                print("{} {}".format(start_point, cropped_size))
+                # print("{} {}".format(start_point, cropped_size))
             else:
                 cropped_size = original_width
             if cropped_size > width_height:
-                print("I will resized from {} to {}".format(cropped_size,width_height))
+                # print("I will resized from {} to {}".format(cropped_size,width_height))
                 imageTemporary = imageTemporary.resize( (width_height, width_height) )
             outputIoStream = BytesIO()
             imageTemporary.save(outputIoStream , format='JPEG', quality=100)

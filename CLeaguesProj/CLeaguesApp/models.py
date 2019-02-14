@@ -109,7 +109,7 @@ class Athlete(models.Model):
     def get_tours_feed(self):
         list_tours_feed = []
         list_tours = self.get_visible_tours()
-        print("Len Tours Feed {}".format(len(list_tours)))
+        # print("Len Tours Feed {}".format(len(list_tours)))
         for tour in list_tours:
             this_atl_in_tour_qs = AtlInTour.objects.all().filter(ait_atl__atl_id = self.atl_id,
                                                             ait_tr__tr_id = tour.tr_id)
@@ -133,7 +133,7 @@ class Athlete(models.Model):
                 tour_feed.league = tour.tr_lg
                 tour_feed.summary = tour.get_summary()
                 list_tours_feed.append(tour_feed)
-                # print(tour.tr_name)
+                # print("Tour: {}".format(tour.tr_name))
         return list_tours_feed
 
     def download_pic_from_strava(self, strava_authObj, size):

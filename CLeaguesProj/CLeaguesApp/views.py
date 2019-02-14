@@ -866,7 +866,9 @@ class tours_feedViewClass(View):
 
     @logged_user_required
     def get(self, request, *args, **kwargs):
+        print("Entrei in Get")
         list_tours_feed = strive_authObj.logged_strive_athlete.get_tours_feed()
+        print("Sai do get tours feed")
         if strive_authObj.logged_strive_athlete.are_pending_invites():
             notification = "There are pending League inviations waiting for your decision"
         else:
@@ -874,6 +876,7 @@ class tours_feedViewClass(View):
         context = { **general_context(),
                     'list_tours_feed' : list_tours_feed,
                     'notification' : notification, }
+        print("Vou entrar no render")
         return render(request, "CLeaguesApp/tours_feed.html", context=context)
 
     # @logged_user_required
