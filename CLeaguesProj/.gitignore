@@ -3,3 +3,9 @@
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
+# Caches
+CLeaguesApp/__pycache__/*
+CLeaguesApp/migrations/__pycache__/*
+CLeaguesApp/templatetags/__pycache__/*
+CLeaguesProj/__pycache__/*
