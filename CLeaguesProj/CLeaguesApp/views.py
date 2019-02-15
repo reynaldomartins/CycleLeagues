@@ -246,7 +246,7 @@ class indexViewClass(View):
         # print("I am in index POST")
         strava_authForm=strava_authFormClass(request.POST)
         if strava_authForm.is_valid():
-            return HttpResponseRedirect(strava_authObj.strava_url)
+            return HttpResponseRedirect(strava_authObj.get_strava_url(request))
         context = { **general_context(), }
         return render(request, "CLeaguesApp/index.html", context=context)
 
