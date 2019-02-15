@@ -18,11 +18,11 @@ class strava_authClass():
     def get_strava_url(self, request):
         self.MY_STRAVA_CLIENT_ID = 30858
         host_port = request.get_host()
-        # print(host)
+        print("This is host_port {}".format(host_port))
         url = self.client.authorization_url(client_id=self.MY_STRAVA_CLIENT_ID,
                                             redirect_uri='http://' + host_port + '/CLeaguesApp/authorization')
         # print("enviar essa URL")
-        # print(url)
+        print("This is url {}".format(url))
         return url
 
     def __init__(self):
