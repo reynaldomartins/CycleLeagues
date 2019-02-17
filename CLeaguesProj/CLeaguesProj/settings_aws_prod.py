@@ -76,32 +76,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'CLeaguesProj.wsgi.application'
 
-
 import pymysql
 pymysql.install_as_MySQLdb()
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'TSC',
+        'NAME': 'tsc',
         'USER': 'root',
-        'PASSWORD': 'dogbert',
-        'HOST': 'localhost',
-        'PORT': '3306',
+        'PASSWORD': 'ratbert2010',
+        'HOST': 'cycleleagues-cluster.cluster-cw1nhyv3vgfe.us-west-2.rds.amazonaws.com',
+        'PORT': 3306,
     }
 }
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'tsc',
-#         'USER': 'root',
-#         'PASSWORD': 'ratbert2010',
-#         'HOST': 'cycleleagues-cluster.cluster-cw1nhyv3vgfe.us-west-2.rds.amazonaws.com',
-#         'PORT': 3306,
-#     }
-# }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators

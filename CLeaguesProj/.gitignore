@@ -9,3 +9,6 @@ CLeaguesApp/__pycache__/*
 CLeaguesApp/migrations/__pycache__/*
 CLeaguesApp/templatetags/__pycache__/*
 CLeaguesProj/__pycache__/*
+
+# Media
+media/*
