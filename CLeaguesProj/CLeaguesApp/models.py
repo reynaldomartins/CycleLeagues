@@ -210,7 +210,7 @@ class Athlete(models.Model):
 def league_file_name(instance, filename):
     ext = filename.split('.')[-1]
     filename = "%s.%s" % (instance.lg_id, ext)
-    return os.path.join('leagues', filename)
+    return os.path.join('leagues/repo', filename)
 
 class league_feedClass():
     league : ''
@@ -531,7 +531,7 @@ class Tour(models.Model):
     tr_status = models.CharField(db_column='TR_status', max_length=1)  # Field name made lowercase.
     # tr_creation_timestamp = models.DateTimeField(db_column='TR_creation_timestamp')  # Field name made lowercase.
     # tr_inactivation_timestamp = models.DateTimeField(db_column='TR_inactivation_timestamp')  # Field name made lowercase.
-    tr_pic = models.ImageField(db_column='TR_pic', blank=True,upload_to="tours",default='tours/default_tour.jpg')
+    tr_pic = models.ImageField(db_column='TR_pic', blank=True,upload_to="tours/repo",default='tours/default_tour.jpg')
 
     class Meta:
         managed = False

@@ -11,4 +11,7 @@ CLeaguesApp/templatetags/__pycache__/*
 CLeaguesProj/__pycache__/*
 
 # Media
-media/*
+media/athletes/*
+media/athletes_mini/*
+media/leagues/repo/*
+media/tours/repo/*
