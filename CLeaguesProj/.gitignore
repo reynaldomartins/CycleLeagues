@@ -12,6 +12,8 @@ CLeaguesProj/__pycache__/*
 
 # Media
 media/athletes/*
+media/athletes/*.jpg
 media/athletes_mini/*
+media/athletes_mini/*.jpg
 media/leagues/repo/*
 media/tours/repo/*
