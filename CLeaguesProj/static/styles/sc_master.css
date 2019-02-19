@@ -124,13 +124,29 @@ table, th, td {
 .carousel-title {
   font-family: 'Roboto', sans-serif;
   font-weight:900;
-  font-size : 2.5em;
+  font-size : 1.5em;
+}
+
+@media(min-width:768px) {
+   .carousel-title {
+     /* font-family: 'Roboto', sans-serif;
+     font-weight:900; */
+     font-size : 2.5em;
+   }
 }
 
 .carousel-subtitle {
   font-family: 'Roboto', sans-serif;
   font-weight:900;
-  font-size : 1.5em;
+  font-size : 0.8em;
+}
+
+@media(min-width:768px) {
+   .carousel-subtitle {
+     /* font-family: 'Roboto', sans-serif;
+     font-weight:900; */
+     font-size : 1.5em;
+   }
 }
 
 .carousel-caption {
@@ -139,10 +155,14 @@ table, th, td {
 }
 
 .logo-on-nav {
-    position: relative;
-    left:10px;
-    top:5px;
-    margin-right:20px;
+    /* position: relative; */
+    /* left:10px; */
+    /* top:5px; */
+    margin-right:10px;
+    margin-left:10px;
+    margin-top:5px;
+    margin-bottom:5px;
+    padding: 0px;
 }
 
 .navbar-right {
@@ -174,9 +194,9 @@ table, th, td {
   display:inline-block;
   position: relative;
   top:0px;
-  right: 80px;
+  right: 30px;
   font-weight:900;
-  font-size:1.9em;
+  font-size:1.3em;
 }
 
 .welcome-logo {
@@ -204,6 +224,7 @@ table, th, td {
 
 #myCarousel {
   width:100%;
+  margin-top:10px;
 }
 
 .strong-go {
@@ -245,18 +266,21 @@ table, th, td {
   position: absolute;
   top: 20px;
   right: 20px;
+  z-index:1000;
 }
 
 .first-left-glyph {
   position: absolute;
   top: 10px;
   left: 10px;
+  z-index:1000;
 }
 
 .second-right-glyph {
   position: absolute;
-  top: 60px;
+  top: 70px;
   right: 20px;
+  z-index:1000;
 }
 
 .right-button {
@@ -423,6 +447,12 @@ table, th, td {
 
 .not-visible {
   display : none;
+  visibility: hidden;
+}
+
+.visible {
+  display : block;
+  visibility: visible;
 }
 
 .summary-link:hover {
@@ -459,7 +489,12 @@ color:darkblue;
 
 .sc-navbar {
   background-color: white;
+}
+
+.sc-navbar a {
   font-family: 'Roboto', sans-serif;
+  margin-top:5px;
+  font-size: 1.3em;
 }
 
 .btn-white {
@@ -492,14 +527,19 @@ color:darkblue;
     top: 0px;
     left: 0px;
     bottom: 0px;
+    right:0px;
+    text-align: center;
 }
 
 .athlete-summary {
   padding-top : 15px;
   padding-bottom : 5px;
   margin-top: 60px;
-  margin-left: 10px;
-  margin-right: 5px;
+  display:block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 90%;
+  margin-bottom:0px;
   border-radius: 10px;
 
   background-color: white;
@@ -507,6 +547,14 @@ color:darkblue;
   font-family: 'Roboto', sans-serif;
   color : black;
   font-size: 0.9em;
+}
+
+@media(min-width:768px) {
+  .athlete-summary {
+  margin-left: 10px;
+  margin-right: 5px;
+  width:auto;
+}
 }
 
 .sc-feed p {
@@ -517,7 +565,7 @@ color:darkblue;
 
 .sc-feed {
   position:relative;
-  margin-top: 60px;
+  margin-top: 5px;
   margin-left:5px;
   margin-right: 10px;
   background-color: white;
@@ -526,6 +574,21 @@ color:darkblue;
   font-family: 'Roboto', sans-serif;
   color: black;
   font-size : 1em;
+}
+
+@media(min-width:768px) {
+  .sc-feed {
+    /* position:relative; */
+    margin-top: 60px;
+    /* margin-left:5px;
+    margin-right: 10px;
+    background-color: white;
+    border-radius: 10px;
+    padding : 10px;
+    font-family: 'Roboto', sans-serif;
+    color: black;
+    font-size : 1em; */
+  }
 }
 
 .div-elements-centered {
@@ -553,12 +616,20 @@ color:darkblue;
   overflow-y: hidden;
 }
 
-.collapsed-table-row {
+/* .collapsed-table-row {
   visibility: collapse;
 }
 
 .tr-uncollapsed {
   visibility: visible;
+} */
+
+.collapsed-table-row {
+  display:none;
+}
+
+.tr-uncollapsed {
+  display:table-row;
 }
 
 .collapsed-table-div {
@@ -566,7 +637,7 @@ color:darkblue;
   padding: 5px;
   border-radius: 10px;
   border: black 1px solid;
-  display:inline-block;
+  display: table-cell;
   margin-bottom: 25px;
   margin-top:0px;
   float: left;
@@ -578,7 +649,7 @@ color:darkblue;
   padding: 5px;
   border-radius: 10px;
   border: black 1px solid;
-  display:inline-block;
+  display:table-cell;
   margin-bottom: 25px;
   margin-top:0px;
   float: left;

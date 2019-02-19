@@ -51,8 +51,7 @@
     <div class="container">
             <nav class="navbar navbar-default navbar-fixed-top sc-navbar">
               <div class="navbar-header sc-navbar">
-                <img class="logo-on-nav navbar-nav" width="40" height="40" src="{% static 'images/CycleLeaguesIcon.png' %}"/>
-                <a href="{% url 'CLeaguesApp:tours_feedURLName' %}" class="navbar-brand">Tours</a>
+                <img class="logo-on-nav navbar-brand" width="60" height="60" src="{% static 'images/CycleLeaguesIcon.png' %}"/>
 
                 <!-- The code bellow is used to present a hamburger icon in case the navbar collapses -->
                 <!-- it is inside navbar header area-->
@@ -71,6 +70,7 @@
               <!-- if a list of itens goes outside the div collapse it will no collapse into the hamburger -->
               <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                   <ul class="nav navbar-nav sc-navbar">
+                    <li> <a href="{% url 'CLeaguesApp:tours_feedURLName' %}">Tours</a></li>
                     <li> <a href="{% url 'CLeaguesApp:leagues_feedURLName' %}">Leagues</a></li>
                     <!-- <li> <a href="{% url 'CLeaguesApp:blankURLName' %}">Palmares</a></li> -->
                     {% if logged_strive_athlete.atl_id ==  1 %}
@@ -86,7 +86,7 @@
 
       <div class="row main-row">
 
-          <div class="col-lg-2 col-md-4 col-sm-4 col-xs-11 boxy athlete-summary-column" >
+          <div class="col-lg-2 col-md-4 col-sm-4 col-xs-12 boxy athlete-summary-column" >
               <div class="athlete-summary jumbotron table-responsive" >
                   <div align=center>
                       <img class="img-circle" width="124" height="124"src="{{ logged_strive_athlete.atl_pic.url }}" />

@@ -161,7 +161,7 @@ $(document).ready(function(){
                                     {% for ait in tours_feed.list_atl_in_tour %}
                                       <tr>
                                         <td class='not-last-td'>{% rank_translation ait.ait_rank ait.ait_points %}</td>
-                                        <td sclass='not-last-td td-text-left'>
+                                        <td class='not-last-td td-text-left'>
                                             <img class="img-circle" width="40" height="40"src="{{ ait.ait_atl.atl_pic_mini.url }}" />
                                             &nbsp;&nbsp;{{ait.ait_atl.atl_name_strava}}
                                             <span class="you">{% is_you ait.ait_atl.atl_id %}</span>

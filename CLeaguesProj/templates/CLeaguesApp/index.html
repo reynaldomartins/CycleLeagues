@@ -6,14 +6,20 @@
 
 {% block body_block %}
 
+<script type="text/javascript">
+  $('body').css("background","white");
+  $('html').css("background","white");
+</script>
+
 <form align=center class="" action="{% url 'indexURLName' %}" method="post" name="login_stravaForm">
-    {% csrf_token %}
+      {% csrf_token %}
+
       <div class="welcome-head">
-        <h4 class="welcome-title">
+        <h5 class="welcome-title">
           <img class="welcome-logo" width="60" height="60" src="{% static 'images/CycleLeaguesIcon.png' %}"/>
             &nbsp;
             <span>Welcome to CycleLeagues!</span>
-        </h4>
+        </h5>
         <input type="submit" class="btn btn-success btn-lg btn-strava-login"
                 value="Log in using Strava">
       </div>

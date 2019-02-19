@@ -27,7 +27,7 @@ jQuery(document).ready(function($) {
 jQuery(document).ready(function($) {
     var alert_visible = localStorage.getItem('alert_visible');
     var has_notification = localStorage.getItem('has_notification');
-    $(".sc-feed").css("margin-top","60px");
+    // $(".sc-feed").css("margin-top","60px");
     if (alert_visible == 'YES' & has_notification == 'YES')
     {
         $("#notification-div").css("display","block");

@@ -127,7 +127,7 @@
                                 </tbody>
                             </table>
                         {% else %}
-                            <p><strong>>No rides in this Segment for this Tour were registered so far</strong</p>
+                            <p><strong>No rides in this Segment for this Tour were registered so far</strong</p>
                         {% endif %}
                         </div>
                       </td>
@@ -158,11 +158,11 @@
               <button aria-haspopup class='btn btn-white btn-icon btn-icon-right dropdown-toggle'
                   data-toggle='dropdown' id='feed-filter-select-btn' tabindex='0'>
                   {% if select == "NoSelection" %}
-                      --- Choose how you want to select Segments for this Tour ---
+                      --- Choose how to select Segments ---
                   {% elif select == "FromLeague" %}
-                      Select Segments already used in the League of this Tour
+                      Segments used in other Tours of this League
                   {% elif select == "FromActivities" %}
-                      Select Segments from your Last Activities
+                      Segments from your Last Activities
                   {% elif logged_strive_athlete.atl_id ==  1 %}
                       All Segments
                   {% endif %}

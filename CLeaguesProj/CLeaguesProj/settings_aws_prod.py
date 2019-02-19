@@ -30,7 +30,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = [ '127.0.0.1',
                   'localhost',
-                  'django-env.j6nzkpsnp3.us-west-2.elasticbeanstalk.com' ]
+                  'django-env.j6nzkpsnp3.us-west-2.elasticbeanstalk.com',
+                  'www.cycleleagues.com', ]
 
 # Application definition
 
