@@ -170,9 +170,9 @@
               </button>
               <ul aria-labelledby='feed-filter-select-btn' class='options dropdown-menu' role='menu' id="feed-filter-select-id">
                 <li><a class="replace-selection"
-                    href="{% url 'CLeaguesApp:tour_details_segmentsURLName' %}?tour={{tour.tr_id}}&select=FromLeague">Select Segments already used in the League of this Tour</a></li>
+                    href="{% url 'CLeaguesApp:tour_details_segmentsURLName' %}?tour={{tour.tr_id}}&select=FromLeague">Segments used in other Tours of this League</a></li>
                 <li><a class="replace-selection"
-                    href="#">Select Segments from your Last Activities</a></li>
+                    href="#">Segments from your Last Activities</a></li>
                 {% if logged_strive_athlete.atl_id ==  1 %}
                   <li><a class="replace-selection"
                     href="{% url 'CLeaguesApp:tour_details_segmentsURLName' %}?tour={{tour.tr_id}}&select=FromAll">All Segments</a></li>
@@ -189,7 +189,7 @@
                 https://bootsnipp.com/snippets/z8d4r -->
           {% if select == "FromActivities" or select == "FromLeague" or select == "FromAll" %}
             <div class="container">
-            	<div class="row">
+            	<div class="row row-dual-list">
                     <div class="dual-list top-list-unselected col-md-6">
                         <div class="well">
                             <div class="row">

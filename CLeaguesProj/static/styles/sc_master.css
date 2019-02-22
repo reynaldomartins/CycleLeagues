@@ -743,3 +743,34 @@ https://bootsnipp.com/snippets/z8d4r */
   background-color:white;
   cursor:default;
 }
+
+.row-dual-list {
+  display: flex;
+  flex-direction: column;
+}
+
+@media(min-width:768px) {
+.row-dual-list {
+  display: flex;
+  flex-direction: row;
+}
+}
+
+.top-list-selected {
+  order:1;
+}
+
+@media(min-width:768px) {
+  .top-list-selected {
+    order:2;
+  }
+}
+
+.top-list-unselected {
+  order:2;
+
+@media(min-width:768px) {
+  .top-list-unselected {
+    order:1;
+  }
+}

@@ -298,12 +298,13 @@ jQuery(document).ready(function($) {
     });
 
     // When click a list-group-item in a list-group, change the class of it to active
-    $('body').on('click', '.list-group .list-group-item', function () {
+    $(document).on('touchstart click', '.list-group .list-group-item', function (e) {
         $(this).toggleClass('active');
+        e.preventDefault();
     });
 
     // When click the - signal in the list on the right side
-    $('body').on('click', '.glyph-move-to-unselected', function (e) {
+    $(document).on('touchstart click', '.glyph-move-to-unselected', function (e) {
 
         // Prevent to call the default click function of this event which
         // will be (? the item in the list ?)
@@ -333,7 +334,7 @@ jQuery(document).ready(function($) {
     });
 
 
-    $('body').on('click', '.glyph-move-to-selected', function (e) {
+    $(document).on('touchstart click', '.glyph-move-to-selected', function (e) {
         e.preventDefault();
 
         actives = $(this).parent();
