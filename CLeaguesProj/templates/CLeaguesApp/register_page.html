@@ -5,26 +5,26 @@
 
 {% block body_block %}
 
-{% if logged_strava_atl_id is 0 %}
+{% if not strava_authObj.logged_strava_athlete %}
 
   <h3>You are not logged using Strava</h3>
   <p></p>
   <a href="{% url 'indexURLName' %}"><h4>Go to CycleLeagues main page to do so</h4></a>
 
-{% elif logged_strava_atl_id is not 0 and logged_strive_status is False %}
+{% elif not logged_cleagues_athlete %}
 
   <br>
-  <h4>Welcome <b><span class="strong-enhance">{{ logged_strava_athlete.firstname }}</span></b> to <strong>CycleLeagues</strong>
+  <h4>Welcome <b><span class="strong-enhance">{{ strava_authObj.logged_strava_athlete.firstname }}</span></b> to <strong>CycleLeagues</strong>
     <img width="60" height="60" src="{% static 'images/CycleLeaguesIcon.png' %}"/>&nbsp;&nbsp;Register Page</h4>
   <br>
   <h5>If your Strava data bellow are correct, press Register to proceed</h5>
   <br>
   <div class="info-bubble">
-    <p>Name : <strong>{{ logged_strava_athlete.firstname }} {{logged_strava_athlete.lastname}}</strong></p>
+    <p>Name : <strong>{{ strava_authObj.logged_strava_athlete.firstname }} {{ strava_authObj.logged_strava_athlete.lastname}}</strong></p>
     <!-- <p>Email : <strong>{{ logged_strava_athlete.email }}</strong></p> -->
-    <p>City / Country : <strong>{{ logged_strava_athlete.city }} / {{ logged_strava_athlete.country }}</strong></p>
-    <p>Sex : <strong>{{ logged_strava_athlete.sex }}</strong></p>
-    <p>You are a Strava Athlete since : <strong>{{ logged_strava_athlete.created_at }}</strong></p>
+    <p>City / Country : <strong>{{ strava_authObj.logged_strava_athlete.city }} / {{ strava_authObj.logged_strava_athlete.country }}</strong></p>
+    <p>Sex : <strong>{{ strava_authObj.logged_strava_athlete.sex }}</strong></p>
+    <p>You are a Strava Athlete since : <strong>{{ strava_authObj.logged_strava_athlete.created_at }}</strong></p>
   </div>
 
   <form class="" action="{% url 'CLeaguesApp:register_pageURLName' %}" method="POST" name="accept_striveForm">
@@ -75,7 +75,7 @@ We reserve all rights to terminate accounts, edit or remove content and cancel o
 
 {% else %}
 
-  <h4>{{logged_strive_athlete.atl_name_strava}}, you have just completed your registration and you are logged in CycleLeagues</h4>
+  <h4>{{logged_cleagues_athlete.atl_name_strava}}, you have just completed your registration and you are logged in CycleLeagues</h4>
   <h5>You can create now your own League/Tours or get registered in Leagues/Tours you were invited to</h5>
 
 {% endif %}

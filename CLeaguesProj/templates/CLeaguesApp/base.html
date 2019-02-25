@@ -47,7 +47,8 @@
         }
     </script>
 
-    {% if logged_strive_athlete and logged_strava_athlete %}
+    {% if logged_cleagues_status %}
+
     <div class="container">
             <nav class="navbar navbar-default navbar-fixed-top sc-navbar">
               <div class="navbar-header sc-navbar">
@@ -73,7 +74,7 @@
                     <li> <a href="{% url 'CLeaguesApp:tours_feedURLName' %}">Tours</a></li>
                     <li> <a href="{% url 'CLeaguesApp:leagues_feedURLName' %}">Leagues</a></li>
                     <!-- <li> <a href="{% url 'CLeaguesApp:blankURLName' %}">Palmares</a></li> -->
-                    {% if logged_strive_athlete.atl_id ==  1 %}
+                    {% if logged_cleagues_athlete.atl_id ==  1 %}
                       <li> <a href="{% url 'CLeaguesApp:test_stravaURLName' %}"><b>Update Ranks</b></a></li>
                     {% endif %}
                   </ul>
@@ -89,9 +90,9 @@
           <div class="col-lg-2 col-md-4 col-sm-4 col-xs-12 boxy athlete-summary-column" >
               <div class="athlete-summary jumbotron table-responsive" >
                   <div align=center>
-                      <img class="img-circle" width="124" height="124"src="{{ logged_strive_athlete.atl_pic.url }}" />
+                      <img class="img-circle" width="124" height="124"src="{{ logged_cleagues_athlete.atl_pic.url }}" />
                   </div>
-                  <p align=center>{{ logged_strive_athlete.atl_name_strava }}</p>
+                  <p align=center>{{ logged_cleagues_athlete.atl_name_strava }}</p>
                   <table align=center>
                     <header>
                       <th>Tours</th>
@@ -122,6 +123,9 @@
               </div>
 
               <div class="sc-feed jumbotron">
+
+                <p>{{logged_cleagues_athlete.atl_id}}</p>
+
             {% else %}
 
               <script type="text/javascript">
@@ -134,12 +138,16 @@
 
           {% else%}
 
-            {% if not logged_strive_athlete and not logged_strava_athlete %}
+            {% if strava_authObj.logged_strava_atl_id == 0 %}
+
+              <!-- Index view for login -->
 
               <div>
                 <div class="index-div">
 
             {% else %}
+
+            <!-- Index view for Register -->
 
               <div align=center>
                 <div align=left class="jumbotron info-bubble">

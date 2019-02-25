@@ -95,6 +95,12 @@ def rank_translation_small(rank,points):
     else:
         return rank
 
+def is_you(logged_atl_id, atl_id):
+    if logged_atl_id == atl_id:
+        return "you!"
+    else:
+        return ''
+
 def resize_image(uploaded_image, width_height):
         '''
         Get a class ImageField object and resize it, formating it as JPEG

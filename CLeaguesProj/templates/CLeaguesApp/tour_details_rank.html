@@ -28,7 +28,7 @@
                       <td class='not-last-td td-text-left'>
                           <img class="img-circle" width="40" height="40"src="{{ ait.ait_atl.atl_pic_mini.url }}" />
                           &nbsp;&nbsp;{{ait.ait_atl.atl_name_strava}}
-                          <span class="you">{% is_you ait.ait_atl.atl_id %}</span>
+                          <span class="you">{% is_you logged_cleagues_athlete.atl_id ait.ait_atl.atl_id %}</span>
                       </td>
                       <td class='not-last-td'>{{ait.ait_points}}</td>
                       <td class='not-last-td'>{{ait.ait_ridden}}</td>

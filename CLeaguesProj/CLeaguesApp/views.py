@@ -14,23 +14,34 @@ from urllib.parse import urlencode
 
 LAST_ACTIVITIES = 20
 DAYS_ACTIVITIES = 90
-global_pending_invites = True
 
-def general_context():
+def get_cleagues_authObj(request):
+    session_cleagues_id = request.session.get('session_cleagues_id', None)
+    if session_cleagues_id:
+        session_cleagues_id_str = str(session_cleagues_id)
+        if session_cleagues_id_str in list_logged_cleagues:
+            return list_logged_cleagues[session_cleagues_id_str]
+    return cleagues_authClass()
+
+def general_context(request):
+    cleagues_authObj = get_cleagues_authObj(request)
     context = {
-        **strava_authObj.auth_context(),
-        **strive_authObj.auth_context(),
+        **cleagues_authObj.auth_context(),
     }
+    print(list_logged_cleagues)
     return context
 
 # Decorator for Views accesses
 
 def logged_user_required(func):
     def _wrapped_func(request, *args, **kwargs):
-        if strive_authObj.logged_strive_athlete and strava_authObj.logged_strava_athlete:
-            return func(request, *args, **kwargs)
-        else:
-            return HttpResponseRedirect("/CLeaguesApp/main")
+        httprequest = args[0]
+        cleagues_authObj = get_cleagues_authObj(httprequest)
+        if cleagues_authObj:
+            if cleagues_authObj.logged_cleagues_athlete and cleagues_authObj.strava_authObj:
+                if cleagues_authObj.logged_cleagues_athlete.atl_id and cleagues_authObj.strava_authObj.logged_strava_athlete:
+                    return func(request, *args, **kwargs)
+        return HttpResponseRedirect("/CLeaguesApp/main")
     return _wrapped_func
 
 def exist_league(func):
@@ -84,8 +95,10 @@ def exist_athlete(func):
 def permit_to_update_league(func):
     def _wrapped_func(request, *args, **kwargs):
         league = kwargs['league']
-        logged_strive_athlete = strive_authObj.logged_strive_athlete
-        if logged_strive_athlete.atl_id == league.lg_atl_creator.atl_id:
+        httprequest = args[0]
+        cleagues_authObj = get_cleagues_authObj(httprequest)
+        logged_cleagues_athlete = cleagues_authObj.logged_cleagues_athlete
+        if logged_cleagues_athlete.atl_id == league.lg_atl_creator.atl_id:
             return func(request, *args, **kwargs)
         else:
             base_url = "/CLeaguesApp/oops"
@@ -98,8 +111,10 @@ def permit_to_update_league(func):
 def permit_to_update_athlete(func):
     def _wrapped_func(request, *args, **kwargs):
         athlete = kwargs['athlete']
-        logged_strive_athlete = strive_authObj.logged_strive_athlete
-        if logged_strive_athlete.atl_id == athlete.atl_id:
+        httprequest = args[0]
+        cleagues_authObj = get_cleagues_authObj(httprequest)
+        logged_cleagues_athlete = cleagues_authObj.logged_cleagues_athlete
+        if logged_cleagues_athlete.atl_id == athlete.atl_id:
             return func(request, *args, **kwargs)
         else:
             base_url = "/CLeaguesApp/oops"
@@ -112,8 +127,10 @@ def permit_to_update_athlete(func):
 def permit_to_update_tour(func):
     def _wrapped_func(request, *args, **kwargs):
         tour = kwargs['tour']
-        logged_strive_athlete = strive_authObj.logged_strive_athlete
-        if logged_strive_athlete.atl_id == tour.tr_lg.lg_atl_creator.atl_id:
+        httprequest = args[0]
+        cleagues_authObj = get_cleagues_authObj(httprequest)
+        logged_cleagues_athlete = cleagues_authObj.logged_cleagues_athlete
+        if logged_cleagues_athlete.atl_id == tour.tr_lg.lg_atl_creator.atl_id:
             return func(request, *args, **kwargs)
         else:
             base_url = "/CLeaguesApp/oops"
@@ -126,15 +143,17 @@ def permit_to_update_tour(func):
 def permit_to_see_league(func):
     def _wrapped_func(request, *args, **kwargs):
         league = kwargs['league']
-        logged_strive_athlete = strive_authObj.logged_strive_athlete
+        httprequest = args[0]
+        cleagues_authObj = get_cleagues_authObj(httprequest)
+        logged_cleagues_athlete = cleagues_authObj.logged_cleagues_athlete
 
         # if the League is Inactive only the League Creator can see its details
         if league.lg_status == "I":
-            if league.lg_atl_creator.atl_id == logged_strive_athlete.atl_id:
+            if league.lg_atl_creator.atl_id == logged_cleagues_athlete.atl_id:
                 return func(request, *args, **kwargs)
         else:
             # If the League is Active, the Athlete can see the League details only if he is active in the League
-            atl_in_league_qs = AtlInLeague.objects.all().filter(ail_atl__atl_id = logged_strive_athlete.atl_id,
+            atl_in_league_qs = AtlInLeague.objects.all().filter(ail_atl__atl_id = logged_cleagues_athlete.atl_id,
                                                                 ail_lg__lg_id = league.lg_id)
             if atl_in_league_qs:
                 if atl_in_league_qs[0].ail_status == "A":
@@ -150,8 +169,11 @@ def permit_to_see_league(func):
 def permit_to_see_tour(func):
     def _wrapped_func(request, *args, **kwargs):
         tour = kwargs['tour']
-        logged_strive_athlete = strive_authObj.logged_strive_athlete
-        if logged_strive_athlete.can_see_tour(tour):
+        httprequest = args[0]
+        cleagues_authObj = get_cleagues_authObj(httprequest)
+        logged_cleagues_athlete = cleagues_authObj.logged_cleagues_athlete
+
+        if logged_cleagues_athlete.can_see_tour(tour):
             return func(request, *args, **kwargs)
         else:
             base_url = "/CLeaguesApp/oops"
@@ -183,71 +205,58 @@ class oopsViewClass(View):
             message = "You cannot see the League you have informed in the URL, since you do not belong to it"
         elif error == "NoTourSeePermit":
             message = "You cannot see the Tour you have informed in the URL, since you do not belong to its League"
-        context = { **general_context(),
+        context = { **general_context(request),
                     'message' : message }
         return render(request, "CLeaguesApp/oops.html", context=context)
-    # def post(self, request, *args, **kwargs):
-    #     context = { **general_context(),
-    #                 'message' : message }
-    #     return render(request, "CLeaguesApp/oops.html", context=context)
 
 class indexViewClass(View):
     def get(self, request, *args, **kwargs):
-        global strava_authObj
-        global strive_authObj
+        cleagues_authObj = get_cleagues_authObj(request)
 
         print("I am in index GET")
 
         if request.path.find('logout') != -1 :
-            strava_authObj.logout()
-            strive_authObj.logout()
-        # Handle the authorization posted by Strava
+            cleagues_authObj.logout(request)
         elif request.path.find('authorization') != -1 :
             atl_strava_code = request.GET.get('code')
-            strava_authObj.logout()
-            strive_authObj.logout()
-            strava_authObj.strava_login(atl_strava_code)
-            # print(strava_authObj.logged_strava_atl_id)
+            cleagues_authObj.logout(request)
+
+            # Cleagues will log in Strava
+            # The strava athlete objected will be created inside cleagues_authObj
+            cleagues_authObj.login(atl_strava_code,request)
 
             # If it was possible to get the Athlete Id from Strava
             # (It means the code returned by Strava is valid)
-            # Try to the log Athlete from StriveChampionship database
-            if strava_authObj.logged_strava_atl_id != 0:
-                # print(strava_authObj.logged_strava_atl_id)
-                strive_authObj.strive_login(strava_authObj.logged_strava_atl_id)
+            # Try to the log Athlete from CLeagues database
+            if cleagues_authObj.strava_authObj.logged_strava_atl_id:
+                print(cleagues_authObj.strava_authObj.logged_strava_atl_id)
 
-                # If the Strava athlete is not registered in StriveChampionship database
+                # If the athlete is not registered in CLeagues database
                 # Start the registering process
-                if not strive_authObj.logged_strive_athlete :
+                if not cleagues_authObj.logged_cleagues_athlete :
                     # print("I will go to register_page")
                     return HttpResponseRedirect("/CLeaguesApp/register_page/")
                 else:
                     # print("I am a user already registered. Let's begin using it")
-                    # print(strive_authObj.logged_strive_athlete)
-                    strive_authObj.get_updated_atl_stat()
-                    # return render(request, "CLeaguesApp/index.html", context=general_context())
+                    # print(cleagues_authObj.logged_cleagues_athlete)
+                    cleagues_authObj.get_updated_atl_stat()
+                    # return render(request, "CLeaguesApp/index.html", context=general_context(request))
                     return HttpResponseRedirect("/CLeaguesApp/tours_feed/")
         else:
-            strava_authObj.logout()
-            strive_authObj.logout()
+            cleagues_authObj.logout(request)
             print("I logged out completely")
-            print(strava_authObj.logged_strava_athlete)
-            print(strive_authObj.logged_strive_athlete)
         print("I am getting out of Index GET")
-        context = { **general_context(), }
-        print(context['logged_strava_athlete'])
-        print(context['logged_strive_athlete'])
+        context = { **general_context(request), }
         return render(request, "CLeaguesApp/index.html", context=context)
 
     def post(self, request, *args, **kwargs):
-        global strava_authObj
-        global strive_authObj
+        cleagues_authObj = get_cleagues_authObj(request)
 
         # print("I am in index POST")
         strava_authForm=strava_authFormClass(request.POST)
         if strava_authForm.is_valid():
-            return HttpResponseRedirect(strava_authObj.get_strava_url(request))
-        context = { **general_context(), }
+            return HttpResponseRedirect(cleagues_authObj.strava_authObj.get_strava_url(request))
+        context = { **general_context(request), }
         return render(request, "CLeaguesApp/index.html", context=context)
 
 class leagues_feedViewClass(View):
@@ -256,59 +265,48 @@ class leagues_feedViewClass(View):
     def get(self, request, *args, **kwargs):
         list_atl_leagues = []
         list_atl_leagues_updated = []
-        if strive_authObj.logged_strive_athlete:
-            list_atl_leagues = strive_authObj.logged_strive_athlete.get_leagues()
+        cleagues_authObj = get_cleagues_authObj(request)
+        if cleagues_authObj.logged_cleagues_athlete:
+            list_atl_leagues = cleagues_authObj.logged_cleagues_athlete.get_leagues()
         for league in list_atl_leagues:
             league_feed = league_feedClass()
             league_feed.league = league
             league_feed.summary = league.get_summary()
-            atl_in_league_qs = AtlInLeague.objects.all().filter(ail_atl__atl_id = strive_authObj.logged_strive_athlete.atl_id,
+            atl_in_league_qs = AtlInLeague.objects.all().filter(ail_atl__atl_id = cleagues_authObj.logged_cleagues_athlete.atl_id,
                                                              ail_lg__lg_id = league.lg_id)
             if atl_in_league_qs:
                 league_feed.logged_strive_atl_league_status = atl_in_league_qs[0].ail_status
             else:
                 league_feed.logged_strive_atl_league_status = "I"
             list_atl_leagues_updated.append(league_feed)
-        if strive_authObj.logged_strive_athlete.are_pending_invites():
+        if cleagues_authObj.logged_cleagues_athlete.are_pending_invites():
             notification = "There are pending League inviations waiting for your decision"
         else:
             notification = ''
         context = { 'list_leagues_feed' : list_atl_leagues_updated,
                     'notification' : notification,
-                    **general_context() }
+                    **general_context(request) }
         return render(request, "CLeaguesApp/leagues_feed.html", context=context)
-
-    # @logged_user_required
-    # def post(self, request, *args, **kwargs):
-    #     list_atl_leagues = strive_authObj.logged_strive_athlete.get_leagues()
-    #     context = { 'list_atl_leagues' : list_atl_leagues,
-    #                 **general_context() }
-    #     return render(request, "CLeaguesApp/leagues_feed.html", context=context)
 
 class register_pageViewClass(View):
     def get(self, request, *args, **kwargs):
-        # print("I am in register_page GET")
-        # if not strive_authObj.logged_strive_athlete:
-        #     # print("I have to do the register routine")
-        # else:
-        #     # print("I am already a strive user registered")
-        # # print(general_context())
-        context = { **general_context(), }
+        context = { **general_context(request), }
         return render(request, "CLeaguesApp/register_page.html", context=context)
 
     def post(self, request, *args, **kwargs):
         # print("I am in register_page POST")
-        if not strive_authObj.logged_strive_athlete:
-            strive_authObj.logged_strive_athlete = Athlete()
-            strive_authObj.logged_strive_athlete.set_at_creation()
-            strive_authObj.logged_strive_athlete.update_from_strava(strava_authObj)
-            strive_authObj.logged_strive_athlete.download_pic_from_strava(strava_authObj, "L")
-            strive_authObj.logged_strive_athlete.download_pic_from_strava(strava_authObj, "M")
-            strive_authObj.logged_strive_status = True
-            strive_authObj.logged_strive_athlete.save()
-            # print(strive_authObj.logged_strive_athlete.atl_name_strava)
-        # print(general_context())
-        context = { **general_context(), }
+        cleagues_authObj = get_cleagues_authObj(request)
+        cleagues_authObj.logged_cleagues_athlete = Athlete()
+        cleagues_authObj.logged_cleagues_athlete.set_at_creation()
+        cleagues_authObj.logged_cleagues_athlete.update_from_strava(cleagues_authObj.strava_authObj)
+        cleagues_authObj.logged_cleagues_athlete.download_pic_from_strava(cleagues_authObj.strava_authObj, "L")
+        cleagues_authObj.logged_cleagues_athlete.download_pic_from_strava(cleagues_authObj.strava_authObj, "M")
+        cleagues_authObj.logged_cleagues_athlete.save()
+
+        # Login again, but now update the cleagues athelete date
+        cleagues_authObj.login(cleagues_authObj.strava_authObj.atl_strava_code,request)
+
+        context = { **general_context(request), }
         return render(request, "CLeaguesApp/register_page.html", context=context)
 
 class invite_athletesViewClass(View):
@@ -325,7 +323,7 @@ class invite_athletesViewClass(View):
         #                                         [atl_in_league.atl for atl_in_league in list_athletes_league])
         invite_athletesViewClass.list_select_athletes = []
         search_atl_form = search_athletesFormClass()
-        context = { **general_context(),
+        context = { **general_context(request),
                     'list_athletes_league' : list_athletes_league,
                     'list_select_athletes' : invite_athletesViewClass.list_select_athletes,
                     'league' : league,
@@ -390,7 +388,7 @@ class invite_athletesViewClass(View):
             search_atl_form = search_athletesFormClass()
         else:
             search_atl_form = search_athletesFormClass()
-        context = { **general_context(),
+        context = { **general_context(request),
                         'list_athletes_league' : list_athletes_league,
                         'list_select_athletes' : invite_athletesViewClass.list_select_athletes,
                         'league' : league,
@@ -402,13 +400,14 @@ class create_leagueViewClass(View):
     @logged_user_required
     def get(self, request, *args, **kwargs):
         league_form = leagueFormClass()
-        context = { **general_context() ,
+        context = { **general_context(request) ,
                     'league_form': league_form }
         return render(request, "CLeaguesApp/create_league.html", context=context)
 
     @logged_user_required
     def post(self, request, *args, **kwargs):
         league_form = leagueFormClass(request.POST, request.FILES)
+        cleagues_authObj = get_cleagues_authObj(request)
 
         # Check to see form is valid
         if league_form.is_valid() :
@@ -424,14 +423,14 @@ class create_leagueViewClass(View):
             # else:
             #     print("I did not got a picture")
 
-            league.set_at_creation(strive_authObj.logged_strive_athlete)
+            league.set_at_creation(cleagues_authObj.logged_cleagues_athlete)
             league.save()
 
             atl_in_league = AtlInLeague()
-            atl_in_league.set_at_creation(strive_authObj.logged_strive_athlete,league, "A")
+            atl_in_league.set_at_creation(cleagues_authObj.logged_cleagues_athlete,league, "A")
             atl_in_league.save()
 
-            strive_authObj.get_updated_atl_stat()
+            cleagues_authObj.get_updated_atl_stat()
 
             base_url = "/CLeaguesApp/league_details"
             query_string =  urlencode({'league': league.lg_id})
@@ -441,7 +440,7 @@ class create_leagueViewClass(View):
         # else:
         #     # print(league_form.errors)
 
-        context = { **general_context() ,
+        context = { **general_context(request) ,
                     'league_form': league_form }
         return render(request, "CLeaguesApp/create_league.html", context=context)
 
@@ -453,11 +452,11 @@ class create_tourViewClass(View):
     def get(self, request, *args, **kwargs):
         league = kwargs['league']
         tour_form = tourFormClass()
-        context = { **general_context(),
+        context = { **general_context(request),
                     'tour_form' : tour_form,
                     'league' : league  }
         return render(request, "CLeaguesApp/create_tour.html", context=context)
-        context = { **general_context(), }
+        context = { **general_context(request), }
 
     @logged_user_required
     @exist_league
@@ -465,6 +464,7 @@ class create_tourViewClass(View):
     def post(self, request, *args, **kwargs):
         league = kwargs['league']
         tour_form = tourFormClass(request.POST, request.FILES)
+        cleagues_authObj = get_cleagues_authObj(request)
         if tour_form.is_valid(league):
             tour = tour_form.save(commit=False)
 
@@ -478,7 +478,7 @@ class create_tourViewClass(View):
             # else:
             #     print("I did not got a picture")
 
-            tour.set_at_creation(league, strive_authObj.logged_strive_athlete)
+            tour.set_at_creation(league, cleagues_authObj.logged_cleagues_athlete)
             tour.save()
 
             # Include all the athletes from the League in this Tour
@@ -490,7 +490,7 @@ class create_tourViewClass(View):
                     atlintour.set_at_creation(atl_in_league.atl, tour)
                     atlintour.save()
 
-            strive_authObj.get_updated_atl_stat()
+            cleagues_authObj.get_updated_atl_stat()
 
             base_url = "/CLeaguesApp/tour_details_segments"
             query_string =  urlencode({'tour': tour.tr_id,
@@ -498,7 +498,7 @@ class create_tourViewClass(View):
             url = '{}?{}'.format(base_url, query_string)
             # print(url)
             return HttpResponseRedirect(url)
-        context = { **general_context(),
+        context = { **general_context(request),
                     'tour_form' : tour_form,
                     'league' : league
                     }
@@ -515,19 +515,20 @@ class tour_details_segmentsViewClass(View):
 
         select = request.GET.get('select')
         tour = kwargs['tour']
+        cleagues_authObj = get_cleagues_authObj(request)
 
         # Get the status of the logged Athlete in the League of this Tour
-        atl_in_league_status = AtlInLeague.objects.all().filter(ail_atl__atl_id = strive_authObj.logged_strive_athlete.atl_id,
+        atl_in_league_status = AtlInLeague.objects.all().filter(ail_atl__atl_id = cleagues_authObj.logged_cleagues_athlete.atl_id,
                                                                 ail_lg__lg_id = tour.tr_lg.lg_id)[0].ail_status
 
         # Get the list of all Athletes in this Tour
         list_atl_in_tour = list(AtlInTour.objects.all().filter(ait_tr__tr_id = tour.tr_id))
 
         # Get the Atl in Tour object for the logged Athlete
-        logged_atl_in_tour = [atl_in_tour for atl_in_tour in list_atl_in_tour if atl_in_tour.ait_atl.atl_id == strive_authObj.logged_strive_athlete.atl_id]
+        logged_atl_in_tour = [atl_in_tour for atl_in_tour in list_atl_in_tour if atl_in_tour.ait_atl.atl_id == cleagues_authObj.logged_cleagues_athlete.atl_id]
 
         # Get all segments that can be selected according to the view chosen (NoSelection, FromLeague, FromActivies)
-        list_select_segments = tour_details_segmentsViewClass.get_full_segments(tour,select)
+        list_select_segments = tour_details_segmentsViewClass.get_full_segments(tour,select,cleagues_authObj.strava_authObj)
 
         # Get all segments in this Tour
         list_tour_segments = tour.get_segments()
@@ -539,7 +540,7 @@ class tour_details_segmentsViewClass(View):
         # Get the best trials of each segment in this Tour
         list_best_trial_tour_feed = tour.get_best_trial_feed()
 
-        context = { **general_context(),
+        context = { **general_context(request),
                     'view' : "Segments",
                     'tour' : tour ,
                     **tour.get_summary(),
@@ -559,16 +560,17 @@ class tour_details_segmentsViewClass(View):
         print("I am in POST tour details")
 
         tour = kwargs['tour']
+        cleagues_authObj = get_cleagues_authObj(request)
 
         # # Get the status of the logged Athlete in the League of this Tour
-        # atl_in_league_status = AtlInLeague.objects.all().filter(ail_atl__atl_id = strive_authObj.logged_strive_athlete.atl_id,
+        # atl_in_league_status = AtlInLeague.objects.all().filter(ail_atl__atl_id = cleagues_authObj.logged_cleagues_athlete.atl_id,
         #                                                         ail_lg__lg_id = tour.tr_lg.lg_id)[0].ail_status
         #
         # # Get the list of all Athletes in this Tour
         # list_atl_in_tour = list(AtlInTour.objects.all().filter(ait_tr__tr_id = tour.tr_id))
         #
         # # Get the Atl in Tour object for the logged Athlete
-        # logged_atl_in_tour = [atl_in_tour for atl_in_tour in list_atl_in_tour if atl_in_tour.ait_atl.atl_id == strive_authObj.logged_strive_athlete.atl_id]
+        # logged_atl_in_tour = [atl_in_tour for atl_in_tour in list_atl_in_tour if atl_in_tour.ait_atl.atl_id == cleagues_authObj.logged_cleagues_athlete.atl_id]
 
         sg_id = request.GET.get('delete')
         select = request.GET.get('select')
@@ -577,7 +579,7 @@ class tour_details_segmentsViewClass(View):
         print(select)
 
         # Get the full list from CycleLeagues Segments that can be selected in this view, as defined by 'select'
-        list_select_segments = tour_details_segmentsViewClass.get_full_segments(tour,select)
+        list_select_segments = tour_details_segmentsViewClass.get_full_segments(tour,select,cleagues_authObj.strava_authObj)
 
         if sg_id:
             tour.delete_segment(sg_id)
@@ -628,7 +630,7 @@ class tour_details_segmentsViewClass(View):
         #
         # list_best_trial_tour_feed = tour.get_best_trial_feed()
         #
-        # context = { **general_context(),
+        # context = { **general_context(request),
         #             'view' : "Segments",
         #             'tour' : tour ,
         #             **tour.get_summary(),
@@ -641,7 +643,7 @@ class tour_details_segmentsViewClass(View):
         #             }
         # return render(request, "CLeaguesApp/tour_details_segments.html", context=context)
 
-    def get_full_segments(tour,select):
+    def get_full_segments(tour,select,strava_authObj):
         if select == "FromLeague":
             # print("FromLeague")
             league = tour.tr_lg
@@ -673,11 +675,12 @@ class delete_tourViewClass(View):
     def get(self, request, *args, **kwargs):
         tour = kwargs['tour']
         list_tour_segments = tour.get_segments()
-        atl_in_league_status = AtlInLeague.objects.all().filter(ail_atl__atl_id = strive_authObj.logged_strive_athlete.atl_id,
+        cleagues_authObj = get_cleagues_authObj(request)
+        atl_in_league_status = AtlInLeague.objects.all().filter(ail_atl__atl_id = cleagues_authObj.logged_cleagues_athlete.atl_id,
                                                                 ail_lg__lg_id = tour.tr_lg.lg_id)[0].ail_status
         list_atl_in_tour = list(AtlInTour.objects.all().filter(ait_tr__tr_id = tour.tr_id))
-        logged_atl_in_tour = [atl_in_tour for atl_in_tour in list_atl_in_tour if atl_in_tour.ait_atl.atl_id == strive_authObj.logged_strive_athlete.atl_id]
-        context = { **general_context(),
+        logged_atl_in_tour = [atl_in_tour for atl_in_tour in list_atl_in_tour if atl_in_tour.ait_atl.atl_id == cleagues_authObj.logged_cleagues_athlete.atl_id]
+        context = { **general_context(request),
                     'view' : "Segments",
                     'tour' : tour ,
                     **tour.get_summary(),
@@ -694,10 +697,11 @@ class delete_tourViewClass(View):
     @permit_to_update_tour
     def post(self, request, *args, **kwargs):
         tour = kwargs['tour']
+        cleagues_authObj = get_cleagues_authObj(request)
         if request.POST.get("btn_delete_tour"):
             print("dentro")
             tour.delete()
-            strive_authObj.get_updated_atl_stat()
+            cleagues_authObj.get_updated_atl_stat()
         print("fora")
         base_url = "/CLeaguesApp/league_details"
         query_string =  urlencode({'league': tour.tr_lg.lg_id})
@@ -708,7 +712,7 @@ class join_leagueViewClass(View):
     @logged_user_required
     def get(self, request, *args, **kwargs):
         join_league_form = join_leagueFormClass()
-        context = { **general_context(),
+        context = { **general_context(request),
                     'join_league_form' : join_league_form,
                 }
         return render(request, "CLeaguesApp/join_league.html", context=context)
@@ -724,19 +728,20 @@ class join_leagueViewClass(View):
             return HttpResponseRedirect(url)
 
         # print(message)
-        context = { **general_context(),
+        context = { **general_context(request),
                     'join_league_form' : join_league_form,
                     }
         return render(request, "CLeaguesApp/join_league.html", context=context)
 
-def get_league_context(ext_league_form,league):
+def get_league_context(ext_league_form,league, request):
         list_athletes_league = league.get_athletes_in_league()
         list_tours_league = league.get_tours()
-        if league.lg_atl_creator.atl_id == strive_authObj.logged_strive_athlete.atl_id:
+        cleagues_authObj = get_cleagues_authObj(request)
+        if league.lg_atl_creator.atl_id == cleagues_authObj.logged_cleagues_athlete.atl_id:
             league_admin = True
         else:
             league_admin = False
-        return { **general_context() ,
+        return { **general_context(request) ,
                     'list_athletes_league' : list_athletes_league,
                     'list_tours_league' : list_tours_league,
                     'league' : league,
@@ -751,16 +756,10 @@ class league_detailsViewClass(View):
     def get(self, request, *args, **kwargs):
         league = kwargs['league']
         context = {
-            **get_league_context('',league),
+            **get_league_context('',league,request),
             'editable' : True,
         }
         return render(request, "CLeaguesApp/league_details.html", context=context)
-
-    # @logged_user_required
-    # @exist_league
-    # def post(self, request, *args, **kwargs):
-    #     league = kwargs['league']
-    #     return render(request, "CLeaguesApp/league_details.html", context=get_league_context('',league))
 
 class confirm_join_leagueViewClass(View):
     @logged_user_required
@@ -769,7 +768,7 @@ class confirm_join_leagueViewClass(View):
         league = kwargs['league']
         confirm_join_league_form = confirm_join_leagueFormClass(request.POST)
         context = {
-            **get_league_context(confirm_join_league_form,league),
+            **get_league_context(confirm_join_league_form,league, request),
             'editable' : False,
         }
         return render(request, "CLeaguesApp/confirm_join_league.html", context=context)
@@ -779,16 +778,17 @@ class confirm_join_leagueViewClass(View):
     def post(self, request, *args, **kwargs):
         league = kwargs['league']
         confirm_join_league_form = confirm_join_leagueFormClass(request.POST)
+        cleagues_authObj = get_cleagues_authObj(request)
         context = {
-            **get_league_context(confirm_join_league_form,league),
+            **get_league_context(confirm_join_league_form,league, request),
             'editable' : False,
         }
         if request.POST.get("btn_join_league"):
             # print("The Join button was chosen")
             if confirm_join_league_form.is_valid():
 
-                strive_authObj.logged_strive_athlete.join_league(league,confirm_join_league_form.cleaned_data.get('not_join_started_tour'))
-                strive_authObj.get_updated_atl_stat()
+                cleagues_authObj.logged_cleagues_athlete.join_league(league,confirm_join_league_form.cleaned_data.get('not_join_started_tour'))
+                cleagues_authObj.get_updated_atl_stat()
 
                 base_url = "/CLeaguesApp/league_details"
                 query_string =  urlencode({'league': league.lg_id})
@@ -796,7 +796,7 @@ class confirm_join_leagueViewClass(View):
                 # print(url)
                 return HttpResponseRedirect(url)
         elif request.POST.get("btn_dismiss_league"):
-            strive_authObj.logged_strive_athlete.dismiss_league_invitation(league)
+            cleagues_authObj.logged_cleagues_athlete.dismiss_league_invitation(league)
             return HttpResponseRedirect("/CLeaguesApp/leagues_feed")
         return render(request, "CLeaguesApp/confirm_join_league.html", context=context)
 
@@ -807,7 +807,7 @@ class inact_leagueViewClass(View):
     def get(self, request, *args, **kwargs):
         league = kwargs['league']
         context = {
-            **get_league_context('',league),
+            **get_league_context('',league, request),
             'editable' : False,
         }
         return render(request, "CLeaguesApp/inact_league.html", context=context)
@@ -818,7 +818,7 @@ class inact_leagueViewClass(View):
     def post(self, request, *args, **kwargs):
         league = kwargs['league']
         context = {
-            **get_league_context('',league),
+            **get_league_context('',league, request),
             'editable' : False,
         }
         if request.POST.get("btn_inact_league"):
@@ -826,7 +826,7 @@ class inact_leagueViewClass(View):
             league = context['league']
             if league:
                 league.inactivate()
-                strive_authObj.get_updated_atl_stat()
+                cleagues_authObj.get_updated_atl_stat()
                 return HttpResponseRedirect("/CLeaguesApp/leagues_feed")
         return render(request, "CLeaguesApp/inact_league.html", context=context)
 
@@ -838,7 +838,7 @@ class react_leagueViewClass(View):
     def get(self, request, *args, **kwargs):
         league = kwargs['league']
         context = {
-            **get_league_context('',league),
+            **get_league_context('',league, request),
             'editable' : False,
         }
         return render(request, "CLeaguesApp/react_league.html", context=context)
@@ -849,7 +849,7 @@ class react_leagueViewClass(View):
     def post(self, request, *args, **kwargs):
         league = kwargs['league']
         context = {
-            **get_league_context('',league),
+            **get_league_context('',league, request),
             'editable' : False,
         }
         if request.POST.get("btn_react_league"):
@@ -858,7 +858,7 @@ class react_leagueViewClass(View):
             if league:
                 # print("Here I will reactivate the League")
                 league.reactivate()
-                strive_authObj.get_updated_atl_stat()
+                cleagues_authObj.get_updated_atl_stat()
                 return HttpResponseRedirect("/CLeaguesApp/leagues_feed")
         return render(request, "CLeaguesApp/react_league.html", context=context)
 
@@ -867,13 +867,14 @@ class tours_feedViewClass(View):
     @logged_user_required
     def get(self, request, *args, **kwargs):
         print("Entrei in Get")
-        list_tours_feed = strive_authObj.logged_strive_athlete.get_tours_feed()
+        cleagues_authObj = get_cleagues_authObj(request)
+        list_tours_feed = cleagues_authObj.logged_cleagues_athlete.get_tours_feed()
         print("Sai do get tours feed")
-        if strive_authObj.logged_strive_athlete.are_pending_invites():
+        if cleagues_authObj.logged_cleagues_athlete.are_pending_invites():
             notification = "There are pending League inviations waiting for your decision"
         else:
             notification = ''
-        context = { **general_context(),
+        context = { **general_context(request),
                     'list_tours_feed' : list_tours_feed,
                     'notification' : notification, }
         print("Vou entrar no render")
@@ -881,7 +882,7 @@ class tours_feedViewClass(View):
 
     # @logged_user_required
     # def post(self, request, *args, **kwargs):
-    #     context = { **general_context(), }
+    #     context = { **general_context(request), }
     #     return render(request, "CLeaguesApp/tours_feed.html", context=context)
 
 class tour_details_rankViewClass(View):
@@ -890,19 +891,20 @@ class tour_details_rankViewClass(View):
     @permit_to_see_tour
     def get(self, request, *args, **kwargs):
         tour = kwargs['tour']
+        cleagues_authObj = get_cleagues_authObj(request)
 
         list_atl_in_tour = list(AtlInTour.objects.all().filter(ait_tr__tr_id = tour.tr_id))
         list_atl_in_tour.sort(key=lambda x: x.ait_rank, reverse=False)
         total_seg_in_tour = len(SegInTour.objects.all().filter(sit_tr__tr_id = tour.tr_id))
         list_best_trial_tour_feed = tour.get_best_trial_feed()
-        atl_in_league_status = AtlInLeague.objects.all().filter(ail_atl__atl_id = strive_authObj.logged_strive_athlete.atl_id,
+        atl_in_league_status = AtlInLeague.objects.all().filter(ail_atl__atl_id = cleagues_authObj.logged_cleagues_athlete.atl_id,
                                                                 ail_lg__lg_id = tour.tr_lg.lg_id)[0].ail_status
-        logged_atl_in_tour_qs = [atl_in_tour for atl_in_tour in list_atl_in_tour if atl_in_tour.ait_atl.atl_id == strive_authObj.logged_strive_athlete.atl_id]
+        logged_atl_in_tour_qs = [atl_in_tour for atl_in_tour in list_atl_in_tour if atl_in_tour.ait_atl.atl_id == cleagues_authObj.logged_cleagues_athlete.atl_id]
         if logged_atl_in_tour_qs:
             logged_atl_in_tour = logged_atl_in_tour_qs[0]
         else:
             logged_atl_in_tour = ''
-        context = { **general_context(),
+        context = { **general_context(request),
                     'view' : "Rank",
                     'tour' : tour,
                     **tour.get_summary(),
@@ -915,7 +917,7 @@ class tour_details_rankViewClass(View):
 
     # @logged_user_required
     # def post(self, request, *args, **kwargs):
-    #     context = { **general_context(), }
+    #     context = { **general_context(request), }
     #     return render(request, "CLeaguesApp/tour_details_rank.html", context=context)
 
 class tour_details_athletesViewClass(View):
@@ -927,7 +929,7 @@ class tour_details_athletesViewClass(View):
         tour = kwargs['tour']
         list_atl_in_tour = list(AtlInTour.objects.all().filter(ait_tr__tr_id = tour.tr_id))
         list_atl_in_tour.sort(key=lambda x: x.ait_rank, reverse=False)
-        context = { **general_context(),
+        context = { **general_context(request),
                     'view' : "Athletes",
                     'tour' : tour,
                     **tour.get_summary(),
@@ -937,7 +939,7 @@ class tour_details_athletesViewClass(View):
 
     # @logged_user_required
     # def post(self, request, *args, **kwargs):
-    #     context = { **general_context(), }
+    #     context = { **general_context(request), }
     #     return render(request, "CLeaguesApp/tour_details_athletes.html", context=context)
 
 class edit_tourViewClass(View):
@@ -951,7 +953,7 @@ class edit_tourViewClass(View):
                                                                     })
         # tour_form.fields['tr_pic'].widget = forms.HiddenInput()
         tour_form.fields['tr_pic'].label = "Change Tour Image"
-        context = { **general_context(),
+        context = { **general_context(request),
                     'tour': tour,
                     'tour_form': tour_form,
                     'tr_name' : tour.tr_name,
@@ -996,7 +998,7 @@ class edit_tourViewClass(View):
                 # print(url)
                 return HttpResponseRedirect(url)
         # tour_form.fields['tr_pic'].widget = forms.HiddenInput()
-        context = { **general_context(),
+        context = { **general_context(request),
                     'tour_form' : tour_form,
                     'tour' : tour,
                     'tr_name' : tr_name_original,
@@ -1012,7 +1014,7 @@ class edit_leagueViewClass(View):
         league = kwargs['league']
         league_form = leagueFormClass(None, instance=league)
         league_form.fields['lg_pic'].label = "Change League Image"
-        context = { **general_context(),
+        context = { **general_context(request),
                     'league': league,
                     'league_form': league_form,
                     'lg_name' : league.lg_name,
@@ -1055,7 +1057,7 @@ class edit_leagueViewClass(View):
             url = '{}?{}'.format(base_url, query_string)
             # print(url)
             return HttpResponseRedirect(url)
-        context = { **general_context(),
+        context = { **general_context(request),
                     'league_form' : league_form,
                     'league' : league,
                     'lg_name' : lg_name_original,
@@ -1071,7 +1073,7 @@ class inact_athlete_leagueViewClass(View):
     def get(self, request, *args, **kwargs):
         league = kwargs['league']
         athlete = kwargs['athlete']
-        context = { **general_context(),
+        context = { **general_context(request),
                         'athlete' : athlete,
                         'league' : league, }
         return render(request, "CLeaguesApp/inact_athlete_league.html", context=context)
@@ -1099,7 +1101,7 @@ class inact_athlete_leagueViewClass(View):
         #     url = '{}?{}'.format(base_url, query_string)
         #     return HttpResponseRedirect(url)
 
-        context = { **general_context(),
+        context = { **general_context(request),
                         'athlete' : athlete,
                         'league' : league, }
         return render(request, "CLeaguesApp/inact_athlete_league.html", context=context)
@@ -1113,7 +1115,7 @@ class inact_self_leagueViewClass(View):
     def get(self, request, *args, **kwargs):
         league = kwargs['league']
         athlete = kwargs['athlete']
-        context = { **general_context(),
+        context = { **general_context(request),
                         'athlete' : athlete,
                         'league' : league, }
         return render(request, "CLeaguesApp/inact_self_league.html", context=context)
@@ -1125,10 +1127,11 @@ class inact_self_leagueViewClass(View):
     def post(self, request, *args, **kwargs):
         league = kwargs['league']
         athlete = kwargs['athlete']
+        cleagues_authObj = get_cleagues_authObj(request)
         if request.POST.get("btn_inact_self_league"):
 
             league.inactivate_athlete(athlete)
-            strive_authObj.get_updated_atl_stat()
+            cleagues_authObj.get_updated_atl_stat()
 
             return HttpResponseRedirect("/CLeaguesApp/leagues_feed")
 
@@ -1139,7 +1142,7 @@ class inact_self_leagueViewClass(View):
         #     url = '{}?{}'.format(base_url, query_string)
         #     return HttpResponseRedirect(url)
 
-        context = { **general_context(),
+        context = { **general_context(request),
                         'athlete' : athlete,
                         'league' : league, }
         return render(request, "CLeaguesApp/inact_self_league.html", context=context)
@@ -1153,7 +1156,7 @@ class react_athlete_leagueViewClass(View):
     def get(self, request, *args, **kwargs):
         league = kwargs['league']
         athlete = kwargs['athlete']
-        context = { **general_context(),
+        context = { **general_context(request),
                         'athlete' : athlete,
                         'league' : league, }
         return render(request, "CLeaguesApp/react_athlete_league.html", context=context)
@@ -1181,7 +1184,7 @@ class react_athlete_leagueViewClass(View):
         #     url = '{}?{}'.format(base_url, query_string)
         #     return HttpResponseRedirect(url)
 
-        context = { **general_context(),
+        context = { **general_context(request),
                         'athlete' : athlete,
                         'league' : league, }
         return render(request, "CLeaguesApp/react_athlete_league.html", context=context)
@@ -1192,36 +1195,20 @@ class react_athlete_leagueViewClass(View):
 class test_stravaViewClass(View):
     def get(self, request, *args, **kwargs):
 
-        # strava_authObj.change_access_for_query(Athlete.get_code_strava(32))
-        # strava_authObj.get_efforts_segment(774534,"2018-07-01","2018-12-22")
-        # strava_authObj.change_access_for_query(Athlete.get_code_strava(33))
-        # strava_authObj.get_efforts_segment(774534,"2018-07-01","2018-12-22")
-        # strava_authObj.change_access_for_query(Athlete.get_code_strava(34))
-        # strava_authObj.get_efforts_segment(774534,"2018-07-01","2018-12-22")
-        # strava_authObj.resume_access_after_query()
-        # strava_authObj.get_efforts_segment(774534,"2018-07-01","2018-12-22")
-
-        # list_last_efforts = strava_authObj.get_atl_last_efforts(10)
-        # list_unique_segments = strava_authObj.get_unique_segments_from_efforts(list_last_efforts)
-
         list_tours = Tour.objects.all()
         for tour in list_tours:
             tour.update_ranking()
 
-        context = { **general_context(), }
+        context = { **general_context(request), }
         return render(request, "CLeaguesApp/test_strava.html", context=context)
-
-    # def post(self, request, *args, **kwargs):
-    #     context = { **general_context(), }
-    #     return render(request, "CLeaguesApp/test_strava.html", context=context)
 
 # Empty views for a while
 
 class blankViewClass(View):
 
     def get(self, request, *args, **kwargs):
-        context = { **general_context(), }
+        context = { **general_context(request), }
         return render(request, "CLeaguesApp/blank.html", context=context)
     def post(self, request, *args, **kwargs):
-        context = { **general_context(), }
+        context = { **general_context(request), }
         return render(request, "CLeaguesApp/blank.html", context=context)

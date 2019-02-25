@@ -28,7 +28,7 @@ class strava_authClass():
     def __init__(self):
         self.client = Client()
 
-    def strava_login(self, atl_strava_code):
+    def login(self, atl_strava_code):
         self.atl_strava_code = atl_strava_code
         user_access_token = ''
         user_access_token = self.client.exchange_code_for_token(client_id=self.MY_STRAVA_CLIENT_ID,
@@ -47,9 +47,8 @@ class strava_authClass():
 
     def logout(self):
         self.atl_strava_code = ''
-        self.logged_strava_atl_id = 0
+        self.logged_strava_atl_id  = 0
         self.logged_strava_athlete = ''
-
 
     def auth_context(self):
         context = { 'logged_strava_atl_id' : self.logged_strava_atl_id,
@@ -150,6 +149,3 @@ class strava_authClass():
             return list_seg_eff
         except :
             print("não autenticado")
-
-# GLOBAL VARIABLE
-strava_authObj = strava_authClass()

@@ -4,8 +4,7 @@ from CLeaguesApp.st_functions import (tour_status_str, strive_status, athlete_st
                                  create_list, filter_atl_best_trial_feed_by_seg,
                                  filter_atl_best_trial_feed_by_atl, filter_tour_feed_by_strstatus,
                                  count_list, define, add_one, rank_translation, rank_translation_small,
-                                 append_list)
-from CLeaguesApp.st_classes import is_you
+                                 append_list, is_you)
 
 register = template.Library()
 

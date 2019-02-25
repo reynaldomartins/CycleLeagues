@@ -14,7 +14,7 @@
 
   <div class="div-elements-centered">
         <div class="info-bubble table-responsive" >
-          {% if tour.tr_lg.lg_atl_creator.atl_id == logged_strive_athlete.atl_id and not dont_edit %}
+          {% if tour.tr_lg.lg_atl_creator.atl_id == logged_cleagues_athlete.atl_id and not dont_edit %}
             {% if tour.tour_status == "A" or tour.tour_status == "T" %}
               <a class="first-right-glyph"
                   href="{% url 'CLeaguesApp:edit_tourURLName' %}?tour={{tour.tr_id}}" align=center>
@@ -65,7 +65,7 @@
                         {% endif %}
                         <strong>
                           {{leader_name}}
-                          <span class="you">{% is_you leader_id %}</span>
+                          <span class="you">{% is_you logged_cleagues_athlete.atl_id leader_id %}</span>
                         </strong>
                       </td>
                     </tr>

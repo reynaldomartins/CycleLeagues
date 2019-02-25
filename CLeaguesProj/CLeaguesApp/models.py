@@ -703,6 +703,7 @@ class Tour(models.Model):
         list_best_trial = []
         list_best_trial_updated = []
         list_atl_actives = []
+        strava_authObj = strava_authClass()
         for atl in list_atl:
             atl_in_tour_qs = AtlInTour.objects.all().filter(ait_atl__atl_id =atl.atl_id,
                                                             ait_tr__tr_id = self.tr_id)
@@ -718,7 +719,7 @@ class Tour(models.Model):
                                                             effort_list[0].start_date,
                                                             effort_list[0].elapsed_time)
                             list_best_trial.append(atl_best_trial)
-                    strava_authObj.resume_access_after_query()
+                    # strava_authObj.resume_access_after_query()
                     list_atl_actives.append(atl)
 
         # Obtain the scoring system used in this Tour

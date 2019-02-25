@@ -85,7 +85,7 @@
                     <td class='not-last-td'>{{seg.sg_distance}} Kms</td>
                     <td class='not-last-td'>{{seg.sg_avg_grade}} %</td>
                     <td class='last-td'>
-                      {% if logged_strive_athlete.atl_id == tour.tr_lg.lg_atl_creator.atl_id and tr_status == "T" %}
+                      {% if logged_cleagues_athlete.atl_id == tour.tr_lg.lg_atl_creator.atl_id and tr_status == "T" %}
                         {% if not dont_edit %}
                           <span class="glyphicon glyphicon-trash pull-right glyph-in-the-middle-td delete-segment"
                             data-toggle="tooltip" data-placement="right" title="Delete Segment"></span>
@@ -116,7 +116,7 @@
                                         <td class='not-last-td td-text-left'>
                                           <img class="img-circle" width="40" height="40"src="{{ best_trial_seg_feed.atl_best_trial.abt_atl.atl_pic_mini.url }}"/>
                                           {{ best_trial_seg_feed.atl_name_strava }}
-                                          <span class="you">{% is_you best_trial_seg_feed.atl_best_trial.abt_atl.atl_id %}</span>
+                                          <span class="you">{% is_you logged_cleagues_athlete.atl_id best_trial_seg_feed.atl_best_trial.abt_atl.atl_id %}</span>
                                         </td>
                                         <td class='not-last-td'>{{ best_trial_seg_feed.atl_best_trial.abt_date }}</td>
                                         <td class='not-last-td'>{{ best_trial_seg_feed.atl_best_trial.abt_time|time:"H:i:s" }}</td>
@@ -142,7 +142,7 @@
   {% endif %}
   <br>
 
-  {% if logged_strive_athlete.atl_id == tour.tr_lg.lg_atl_creator.atl_id and tr_status == "T" %}
+  {% if logged_cleagues_athlete.atl_id == tour.tr_lg.lg_atl_creator.atl_id and tr_status == "T" %}
     {% if not dont_edit %}
     <div class="div-selection container">
 
@@ -163,7 +163,7 @@
                       Segments used in other Tours of this League
                   {% elif select == "FromActivities" %}
                       Segments from your Last Activities
-                  {% elif logged_strive_athlete.atl_id ==  1 %}
+                  {% elif logged_cleagues_athlete.atl_id ==  1 %}
                       All Segments
                   {% endif %}
                   <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
@@ -173,7 +173,7 @@
                     href="{% url 'CLeaguesApp:tour_details_segmentsURLName' %}?tour={{tour.tr_id}}&select=FromLeague">Segments used in other Tours of this League</a></li>
                 <li><a class="replace-selection"
                     href="#">Segments from your Last Activities</a></li>
-                {% if logged_strive_athlete.atl_id ==  1 %}
+                {% if logged_cleagues_athlete.atl_id ==  1 %}
                   <li><a class="replace-selection"
                     href="{% url 'CLeaguesApp:tour_details_segmentsURLName' %}?tour={{tour.tr_id}}&select=FromAll">All Segments</a></li>
                 {% endif %}
@@ -239,7 +239,7 @@
           </div>
   </form>
 </div>
-{% elif logged_strive_athlete.atl_id == tour.tr_lg.lg_atl_creator.atl_id and tr_status == "A" %}
+{% elif logged_cleagues_athlete.atl_id == tour.tr_lg.lg_atl_creator.atl_id and tr_status == "A" %}
   <div class="info-bubble-warning">
     <p><strong>You cannot Add Segments to a Tour that is already running</strong></p>
   </div>

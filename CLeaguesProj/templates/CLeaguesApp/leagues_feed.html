@@ -26,7 +26,7 @@
           href="{% url 'CLeaguesApp:join_leagueURLName' %}" align=center>
           <span class="glyphicon glyphicon-share-alt"
             data-toggle="tooltip" data-placement="left" title="Join a League"></span>
-      </a>    
+      </a>
   </form>
 
   {% filter_league_feed_by_status list_leagues_feed "A" as list_leagues_feed_active %}
@@ -43,8 +43,8 @@
   <div class="div-elements-centered">
     <div class="info-bubble table-responsive">
       <h4 align=center><span class="strong-enhance">Leagues</span>&nbsp;Summary of&nbsp;&nbsp;
-            <img class="img-circle" width="60" height="60"src="{{ logged_strive_athlete.atl_pic.url }}" />
-            {{ logged_strive_athlete.atl_name_strava }}
+            <img class="img-circle" width="60" height="60"src="{{ logged_cleagues_athlete.atl_pic.url }}" />
+            {{ logged_cleagues_athlete.atl_name_strava }}
       </h4>
       <table align=center class="summary-table">
           <thead>
@@ -136,7 +136,7 @@
                       (the logic described above is done by the lists manipulation inside this template)
                       If the Athlete is the creator of this League, he can see the League details
                   -->
-                  {% elif num_block == 2 and league_feed.league.lg_atl_creator.atl_id == logged_strive_athlete.atl_id %}
+                  {% elif num_block == 2 and league_feed.league.lg_atl_creator.atl_id == logged_cleagues_athlete.atl_id %}
                   <tr class='clickable-row' data-href="{% url 'CLeaguesApp:league_detailsURLName' %}?league={{league_feed.league.lg_id}}">
                       <td class='not-last-td td-text-left'>
                           <img class="img-circle" width="60" height="60" src="{{ MEDIA_URL }}{{ league_feed.league.lg_pic }}" />
@@ -158,7 +158,7 @@
                     <td class='not-last-td td-text-left'>
                         <img class="img-circle" width="40" height="40" src="{{ MEDIA_URL }}{{ league_feed.league.lg_atl_creator.atl_pic }}" />
                         &nbsp;{{ league_feed.league.lg_atl_creator.atl_name_strava }}
-                        <span class="you">{% is_you league_feed.league.lg_atl_creator.atl_id %}</span>
+                        <span class="you">{% is_you logged_cleagues_athlete.atl_id  league_feed.league.lg_atl_creator.atl_id %}</span>
                     </td>
                     <td class='last-td'>{% strive_status league_feed.league.lg_status %}</td>
                 </tr>

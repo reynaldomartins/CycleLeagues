@@ -30,8 +30,8 @@
 <div class="div-elements-centered">
   <div class="info-bubble table-responsive">
     <h4 align=center><span class="strong-enhance">Tours&nbsp;</span>Summary of&nbsp;&nbsp;
-          <img class="img-circle" width="60" height="60"src="{{ logged_strive_athlete.atl_pic.url }}" />
-          {{ logged_strive_athlete.atl_name_strava }}
+          <img class="img-circle" width="60" height="60"src="{{ logged_cleagues_athlete.atl_pic.url }}" />
+          {{ logged_cleagues_athlete.atl_name_strava }}
     </h4>
     <table align=center class="summary-table">
         <thead>
@@ -116,7 +116,7 @@ $(document).ready(function(){
                           <span class='league-inactivate-for-athlete'>{{ tours_feed.league.lg_name }}</span>
                         {% endif %}
                       {% else %}
-                        {% if tours_feed.league.lg_atl_creator.atl_id == logged_strive_athlete.atl_id %}
+                        {% if tours_feed.league.lg_atl_creator.atl_id == logged_cleagues_athlete.atl_id %}
                           <a class="action-in-tour-row" href="{% url 'CLeaguesApp:league_detailsURLName' %}?league={{ tours_feed.league.lg_id }}">{{ tours_feed.league.lg_name }}</a>
                         {% else %}
                           <span class='league-inactivate-for-athlete'>{{ tours_feed.league.lg_name }}</span>
@@ -135,14 +135,14 @@ $(document).ready(function(){
                       {% endif %}
                       <strong>
                         {{tours_feed.summary.leader_name}}
-                        <span class="you">{% is_you tours_feed.summary.leader_id %}</span>
+                        <span class="you">{% is_you  logged_cleagues_athlete.atl_id tours_feed.summary.leader_id %}</span>
                       </strong>
                     </td>
                     <td class='last-td td-text-left'>
                           <!-- <img class="img-circle" width="40" height="40" src="{{ MEDIA_URL }}{{ tours_feed.league.lg_atl_creator.atl_pic_mini }}" />
                           &nbsp;&nbsp; -->
                           {{ tours_feed.league.lg_atl_creator.atl_name_strava }}
-                          <span class="you">{% is_you  tours_feed.league.lg_atl_creator.atl_id %}</span>
+                          <span class="you">{% is_you  logged_cleagues_athlete.atl_id tours_feed.league.lg_atl_creator.atl_id %}</span>
                     </td>
                 </tr>
                 <tr class="collapsed-table-row">
@@ -164,7 +164,7 @@ $(document).ready(function(){
                                         <td class='not-last-td td-text-left'>
                                             <img class="img-circle" width="40" height="40"src="{{ ait.ait_atl.atl_pic_mini.url }}" />
                                             &nbsp;&nbsp;{{ait.ait_atl.atl_name_strava}}
-                                            <span class="you">{% is_you ait.ait_atl.atl_id %}</span>
+                                            <span class="you">{% is_you logged_cleagues_athlete.atl_id ait.ait_atl.atl_id %}</span>
                                         </td>
                                         <td class='not-last-td'>{{ait.ait_points}}</td>
                                         <td class='not-last-td'>{{ait.ait_ridden}}</td>

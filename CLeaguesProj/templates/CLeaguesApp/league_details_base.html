@@ -40,7 +40,7 @@
         <i><span class="minor-minor-text">, created by &nbsp;
         <img class="img-circle" width="40" height="40" src="{{ MEDIA_URL }}{{ league.lg_atl_creator.atl_pic }}" />
         {{ league.lg_atl_creator.atl_name_strava }}
-        <span class="you">{% is_you league.lg_atl_creator.atl_id %}</span>
+        <span class="you">{% is_you logged_cleagues_athlete.atl_id league.lg_atl_creator.atl_id %}</span>
         </span></i>
         {% if league.lg_status == "I" %}
         <h4>This League is currently <span class="strong-enhance">Inactive</span></h4>
@@ -71,7 +71,7 @@
                     <img class="img-circle" width="40" height="40" src="{{ MEDIA_URL }}{{ atl_in_lg.atl.atl_pic }}" />
                     <div class="inline-element">
                       &nbsp;<strong>{{ atl_in_lg.atl.atl_name_strava }}</strong>
-                      <span class="you">{% is_you atl_in_lg.atl.atl_id %}</span>
+                      <span class="you">{% is_you logged_cleagues_athlete.atl_id  atl_in_lg.atl.atl_id %}</span>
                       ({% athlete_status_str atl_in_lg.atl_in_league_status %})&nbsp;&nbsp;&nbsp;
                       {% if league_admin and league.lg_status != "I" and editable %}
                         {% if atl_in_lg.atl_in_league_status == "A" %}
@@ -87,7 +87,7 @@
                                 data-toggle="tooltip" data-placement="right" title="Reactivate Athlete in League"></span>
                           </a>
                         {% endif %}
-                      {% elif atl_in_lg.atl.atl_id == logged_strive_athlete.atl_id and editable and league.lg_status == "A" %}
+                      {% elif atl_in_lg.atl.atl_id == logged_cleagues_athlete.atl_id and editable and league.lg_status == "A" %}
                         {% if atl_in_lg.atl_in_league_status == "A" or atl_in_lg.atl_in_league_status == "C" %}
                           <a href="{% url 'CLeaguesApp:inact_self_leagueURLName' %}?league={{league.lg_id}}&athlete={{atl_in_lg.atl.atl_id}}">
                               <span class="glyphicon glyphicon-remove-circle pull-right glyph-in-the-middle-td" id="inactivate-selfleague"
