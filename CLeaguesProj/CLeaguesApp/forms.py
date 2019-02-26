@@ -123,11 +123,17 @@ class tourFormClass(forms.ModelForm):
 class join_leagueFormClass(forms.Form):
     lg_activation_code = forms.IntegerField(widget=forms.NumberInput(), required=True,label="")
     league = ''
+    request = ''
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        super(join_leagueFormClass, self).__init__(*args, **kwargs)
 
     def clean(self):
         print("Got in the Clean")
         cleaned_data = super(join_leagueFormClass, self).clean()
         lg_activation_code = cleaned_data.get('lg_activation_code')
+        cleagues_authObj = get_cleagues_authObj(self.request)
         # print(lg_activation_code)
         if lg_activation_code:
             league_qs = League.objects.all().filter(lg_activation_code=lg_activation_code)
@@ -136,7 +142,7 @@ class join_leagueFormClass(forms.Form):
                 if league.lg_status == "I":
                     message = "The League {} was Inactivated by the creator. You cannot join it.".format(league.lg_name)
                     raise ValidationError(message)
-                atl_in_league_qs = AtlInLeague.objects.all().filter(ail_atl__atl_id=strive_authObj.logged_strive_athlete.atl_id,
+                atl_in_league_qs = AtlInLeague.objects.all().filter(ail_atl__atl_id=cleagues_authObj.logged_cleagues_athlete.atl_id,
                                                    ail_lg__lg_id=league.lg_id )
                 if atl_in_league_qs:
                     atl_in_league = atl_in_league_qs[0]

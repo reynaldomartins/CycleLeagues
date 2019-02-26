@@ -80,6 +80,14 @@ class cleagues_authClass():
         }
         return context
 
+def get_cleagues_authObj(request):
+    session_cleagues_id = request.session.get('session_cleagues_id', None)
+    if session_cleagues_id:
+        session_cleagues_id_str = str(session_cleagues_id)
+        if session_cleagues_id_str in list_logged_cleagues:
+            return list_logged_cleagues[session_cleagues_id_str]
+    return cleagues_authClass()
+
 # GLOBAL VARIABLE
 # The list of all logged users
 list_logged_cleagues = {}

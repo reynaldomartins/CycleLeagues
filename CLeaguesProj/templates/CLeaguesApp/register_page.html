@@ -27,7 +27,7 @@
     <p>You are a Strava Athlete since : <strong>{{ strava_authObj.logged_strava_athlete.created_at }}</strong></p>
   </div>
 
-  <form class="" action="{% url 'CLeaguesApp:register_pageURLName' %}" method="POST" name="accept_striveForm">
+  <form class="" action="{% url 'CLeaguesApp:register_pageURLName' %}" method="POST" name="accept_cleaguesForm">
       {% csrf_token %}
       <br>
       <br>

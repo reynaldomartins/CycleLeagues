@@ -35,7 +35,7 @@ class Athlete(models.Model):
         db_table = 'athlete'
 
     def __str__(self):
-        return("Strive Id:" + str(self.atl_id)+";"+
+        return("CLeagues Id:" + str(self.atl_id)+";"+
                "Strava Name:" + str(self.atl_name_strava)+";"+
                "Strava Id:" + str(self.atl_id_strava)+";"+
                "Status:" + str(self.atl_status))
@@ -215,7 +215,7 @@ def league_file_name(instance, filename):
 class league_feedClass():
     league : ''
     summary : ''
-    logged_strive_atl_league_status = ''
+    logged_cleagues_atl_league_status = ''
 
 class League(models.Model):
     lg_id = models.IntegerField(db_column='LG_id', primary_key=True)  # Field name made lowercase.
@@ -231,14 +231,14 @@ class League(models.Model):
         managed = False
         db_table = 'league'
 
-    def set_at_creation(self, logged_strive_athlete):
+    def set_at_creation(self, logged_cleagues_athlete):
         last = League.objects.all().aggregate(Max('lg_id'))['lg_id__max']
         if last:
             self.lg_id = last+1
         else:
             self.lg_id = 1
         self.lg_activation_code = random.randint(100000,999999)
-        self.lg_atl_creator = logged_strive_athlete
+        self.lg_atl_creator = logged_cleagues_athlete
         self.lg_status = "A"
         # self.lg_creation_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
@@ -502,13 +502,13 @@ class Segment(models.Model):
         return list_best_trial_feed
 
     def convert_list_segments(list_strava_segments):
-        ''' This function convert list of segments from Strava model to Strive model '''
-        list_strive_segments = []
+        ''' This function convert list of segments from Strava model to CLeagues model '''
+        list_cleagues_segments = []
         for strava_seg in list_strava_segments:
-            strive_seg = Segment()
-            strive_seg.update_from_strava(strava_seg)
-            list_strive_segments.append(strive_seg)
-        return list_strive_segments
+            cleagues_seg = Segment()
+            cleagues_seg.update_from_strava(strava_seg)
+            list_cleagues_segments.append(cleagues_seg)
+        return list_cleagues_segments
 
 class tours_feedClass():
     tour_summary = ''
@@ -538,7 +538,7 @@ class Tour(models.Model):
         db_table = 'tour'
         unique_together = (('tr_lg', 'tr_name'),)
 
-    def set_at_creation(self, league, logged_strive_athlete):
+    def set_at_creation(self, league, logged_cleagues_athlete):
         last = Tour.objects.all().aggregate(Max('tr_id'))['tr_id__max']
         if last:
             self.tr_id = last+1
@@ -546,7 +546,7 @@ class Tour(models.Model):
             self.tr_id = 1
         self.tr_lg = league
         self.tr_activation_code = random.randint(100000,999999)
-        self.tr_atl_creator = logged_strive_athlete
+        self.tr_atl_creator = logged_cleagues_athlete
         self.tr_status = "A"
         # self.tr_creation_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 

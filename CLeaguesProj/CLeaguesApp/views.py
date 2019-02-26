@@ -15,14 +15,6 @@ from urllib.parse import urlencode
 LAST_ACTIVITIES = 20
 DAYS_ACTIVITIES = 90
 
-def get_cleagues_authObj(request):
-    session_cleagues_id = request.session.get('session_cleagues_id', None)
-    if session_cleagues_id:
-        session_cleagues_id_str = str(session_cleagues_id)
-        if session_cleagues_id_str in list_logged_cleagues:
-            return list_logged_cleagues[session_cleagues_id_str]
-    return cleagues_authClass()
-
 def general_context(request):
     cleagues_authObj = get_cleagues_authObj(request)
     context = {
@@ -275,9 +267,9 @@ class leagues_feedViewClass(View):
             atl_in_league_qs = AtlInLeague.objects.all().filter(ail_atl__atl_id = cleagues_authObj.logged_cleagues_athlete.atl_id,
                                                              ail_lg__lg_id = league.lg_id)
             if atl_in_league_qs:
-                league_feed.logged_strive_atl_league_status = atl_in_league_qs[0].ail_status
+                league_feed.logged_cleagues_atl_league_status = atl_in_league_qs[0].ail_status
             else:
-                league_feed.logged_strive_atl_league_status = "I"
+                league_feed.logged_cleagues_atl_league_status = "I"
             list_atl_leagues_updated.append(league_feed)
         if cleagues_authObj.logged_cleagues_athlete.are_pending_invites():
             notification = "There are pending League inviations waiting for your decision"
@@ -604,7 +596,7 @@ class tour_details_segmentsViewClass(View):
 
                     # Check if the strava segment is already registered in CycleLeagues
                     if not seg_in_bd_queryset:
-                        # Save in strive DB a new segment
+                        # Save in CLeagues DB a new segment
                         seg_in_list.set_at_creation()
                         seg_in_list.save()
                         seg_in_bd = seg_in_list
@@ -719,7 +711,7 @@ class join_leagueViewClass(View):
 
     @logged_user_required
     def post(self, request, *args, **kwargs):
-        join_league_form = join_leagueFormClass(data=request.POST)
+        join_league_form = join_leagueFormClass(data=request.POST, request=request)
         if join_league_form.is_valid():
             league = join_league_form.league
             base_url = "/CLeaguesApp/confirm_join_league"

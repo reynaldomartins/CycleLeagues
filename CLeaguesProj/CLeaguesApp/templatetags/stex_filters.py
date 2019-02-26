@@ -1,5 +1,5 @@
 from django import template
-from CLeaguesApp.st_functions import (tour_status_str, strive_status, athlete_status_str,
+from CLeaguesApp.st_functions import (tour_status_str, cleagues_status, athlete_status_str,
                                  filter_league_feed_by_status, filter_league_feed_by_status_athlete,
                                  create_list, filter_atl_best_trial_feed_by_seg,
                                  filter_atl_best_trial_feed_by_atl, filter_tour_feed_by_strstatus,
@@ -14,7 +14,7 @@ def subtract(value, arg):
 register.filter('subtract', subtract)
 
 register.simple_tag(tour_status_str)
-register.simple_tag(strive_status)
+register.simple_tag(cleagues_status)
 register.simple_tag(athlete_status_str)
 register.simple_tag(filter_league_feed_by_status)
 register.simple_tag(filter_league_feed_by_status_athlete)

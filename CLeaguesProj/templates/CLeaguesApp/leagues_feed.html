@@ -4,7 +4,7 @@
 {% load staticfiles %}
 {% load static %}
 
-{% load strive_status from stex_filters %}
+{% load cleagues_status from stex_filters %}
 {% load filter_league_feed_by_status from stex_filters %}
 {% load create_list from stex_filters %}
 {% load is_you from stex_filters %}
@@ -48,7 +48,7 @@
       </h4>
       <table align=center class="summary-table">
           <thead>
-            <th>Active</th>
+            <th>Current</th>
             <th>Invited</th>
             <th>Former</th>
           </thead>
@@ -66,12 +66,12 @@
   <div class='dropdown' id='feed-filter-view-leagues-feed-id'>
     <button aria-haspopup class='btn btn-white btn-icon btn-select-view btn-icon-right dropdown-toggle'
         data-toggle='dropdown' id='feed-filter-view-btn' tabindex='0'>
-            Active Leagues
+            Current Leagues
         <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
     </button>
     <ul aria-labelledby='feed-filter-view-btn' class='options dropdown-menu' role='menu' id="feed-filter-view-leagues-feed-id">
       <li><a class="replace-selection"
-        href="#">Active Leagues</a></li>
+        href="#">Current Leagues</a></li>
       <li><a class="replace-selection"
           href="#">Invited Leagues</a></li>
       <li><a class="replace-selection"
@@ -113,7 +113,7 @@
                   <!-- In case the Athlete is Active in the League and the League is Active
                     The Athlete can see the League Details
                   -->
-                  {% if league_feed.logged_strive_atl_league_status == "A" and num_block != 2 %}
+                  {% if league_feed.logged_cleagues_atl_league_status == "A" and num_block != 2 %}
                   <tr class='clickable-row' data-href="{% url 'CLeaguesApp:league_detailsURLName' %}?league={{league_feed.league.lg_id}}">
                     <td class='not-last-td td-text-left'>
                         <img class="img-circle" width="60" height="60" src="{{ MEDIA_URL }}{{ league_feed.league.lg_pic }}" />
@@ -124,7 +124,7 @@
                     <!-- In case the Athlete has a Pending Invitation for the League and the League is Active
                       The Athlete will be redirected to Accpet the Invitation
                     -->
-                  {% elif league_feed.logged_strive_atl_league_status == "C" and num_block != 2 %}
+                  {% elif league_feed.logged_cleagues_atl_league_status == "C" and num_block != 2 %}
                   <tr class='clickable-row' data-href="{% url 'CLeaguesApp:confirm_join_leagueURLName' %}?league={{league_feed.league.lg_id}}">
                     <td class='not-last-td td-text-left'>
                         <img class="img-circle" width="60" height="60" src="{{ MEDIA_URL }}{{ league_feed.league.lg_pic }}" />
@@ -160,7 +160,7 @@
                         &nbsp;{{ league_feed.league.lg_atl_creator.atl_name_strava }}
                         <span class="you">{% is_you logged_cleagues_athlete.atl_id  league_feed.league.lg_atl_creator.atl_id %}</span>
                     </td>
-                    <td class='last-td'>{% strive_status league_feed.league.lg_status %}</td>
+                    <td class='last-td'>{% cleagues_status league_feed.league.lg_status %}</td>
                 </tr>
               {% endfor %}
               </tbody>

@@ -14,7 +14,7 @@ def filter_league_feed_by_status(list_league_feed, status):
     return [league_feed for league_feed in list_league_feed if league_feed.league.lg_status == status]
 
 def filter_league_feed_by_status_athlete(list_league_feed, status):
-    return [league_feed for league_feed in list_league_feed if league_feed.logged_strive_atl_league_status == status]
+    return [league_feed for league_feed in list_league_feed if league_feed.logged_cleagues_atl_league_status == status]
 
 def append_list(list1,list2):
     return list1 + list2
@@ -72,7 +72,7 @@ def athlete_status_str(status):
     else:
         return "Pending"
 
-def strive_status(status):
+def cleagues_status(status):
     if status == "A":
         return "Active"
     else:
