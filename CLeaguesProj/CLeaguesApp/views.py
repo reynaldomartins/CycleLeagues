@@ -809,6 +809,7 @@ class inact_leagueViewClass(View):
     @permit_to_update_league
     def post(self, request, *args, **kwargs):
         league = kwargs['league']
+        cleagues_authObj = get_cleagues_authObj(request)
         context = {
             **get_league_context('',league, request),
             'editable' : False,
@@ -840,6 +841,7 @@ class react_leagueViewClass(View):
     @permit_to_update_league
     def post(self, request, *args, **kwargs):
         league = kwargs['league']
+        cleagues_authObj = get_cleagues_authObj(request)
         context = {
             **get_league_context('',league, request),
             'editable' : False,
@@ -872,11 +874,6 @@ class tours_feedViewClass(View):
         print("Vou entrar no render")
         return render(request, "CLeaguesApp/tours_feed.html", context=context)
 
-    # @logged_user_required
-    # def post(self, request, *args, **kwargs):
-    #     context = { **general_context(request), }
-    #     return render(request, "CLeaguesApp/tours_feed.html", context=context)
-
 class tour_details_rankViewClass(View):
     @logged_user_required
     @exist_tour
@@ -906,11 +903,6 @@ class tour_details_rankViewClass(View):
                     'logged_atl_in_tour' : logged_atl_in_tour,
                     }
         return render(request, "CLeaguesApp/tour_details_rank.html", context=context)
-
-    # @logged_user_required
-    # def post(self, request, *args, **kwargs):
-    #     context = { **general_context(request), }
-    #     return render(request, "CLeaguesApp/tour_details_rank.html", context=context)
 
 class tour_details_athletesViewClass(View):
 
@@ -957,12 +949,6 @@ class edit_tourViewClass(View):
     @permit_to_update_tour
     def post(self, request, *args, **kwargs):
         tour = kwargs['tour']
-        # if request.POST.get("btn-dismiss-update-tour"):
-        #     base_url = "/CLeaguesApp/tour_details_rank"
-        #     query_string =  urlencode({'tour': tour.tr_id})
-        #     url = '{}?{}'.format(base_url, query_string)
-        #     # print(url)
-        #     return HttpResponseRedirect(url)
 
         tr_name_original = tour.tr_name
         tour_form = tourFormClass(request.POST, instance=tour)
@@ -1018,12 +1004,6 @@ class edit_leagueViewClass(View):
     @permit_to_update_league
     def post(self, request, *args, **kwargs):
         league = kwargs['league']
-        # if request.POST.get("btn-dismiss-update-league"):
-        #     base_url = "/CLeaguesApp/league_details"
-        #     query_string =  urlencode({'league': league.lg_id})
-        #     url = '{}?{}'.format(base_url, query_string)
-        #     # print(url)
-        #     return HttpResponseRedirect(url)
 
         lg_name_original = league.lg_name
         league_form = leagueFormClass(request.POST, instance=league)
@@ -1086,13 +1066,6 @@ class inact_athlete_leagueViewClass(View):
             url = '{}?{}'.format(base_url, query_string)
             return HttpResponseRedirect(url)
 
-        # elif request.POST.get("btn_inact_athlete_league_cancel"):
-        #
-        #     base_url = "/CLeaguesApp/league_details"
-        #     query_string =  urlencode({'league': league.lg_id})
-        #     url = '{}?{}'.format(base_url, query_string)
-        #     return HttpResponseRedirect(url)
-
         context = { **general_context(request),
                         'athlete' : athlete,
                         'league' : league, }
@@ -1126,13 +1099,6 @@ class inact_self_leagueViewClass(View):
             cleagues_authObj.get_updated_atl_stat()
 
             return HttpResponseRedirect("/CLeaguesApp/leagues_feed")
-
-        # elif request.POST.get("btn_inact_self_league_cancel"):
-        #
-        #     base_url = "/CLeaguesApp/league_details"
-        #     query_string =  urlencode({'league': league.lg_id})
-        #     url = '{}?{}'.format(base_url, query_string)
-        #     return HttpResponseRedirect(url)
 
         context = { **general_context(request),
                         'athlete' : athlete,
@@ -1169,18 +1135,31 @@ class react_athlete_leagueViewClass(View):
             url = '{}?{}'.format(base_url, query_string)
             return HttpResponseRedirect(url)
 
-        # elif request.POST.get("btn_react_athlete_league_cancel"):
-        #
-        #     base_url = "/CLeaguesApp/league_details"
-        #     query_string =  urlencode({'league': league.lg_id})
-        #     url = '{}?{}'.format(base_url, query_string)
-        #     return HttpResponseRedirect(url)
-
         context = { **general_context(request),
                         'athlete' : athlete,
                         'league' : league, }
         return render(request, "CLeaguesApp/react_athlete_league.html", context=context)
 
+class triumphs_feedViewClass(View):
+
+    @logged_user_required
+    def get(self, request, *args, **kwargs):
+
+        cleagues_authObj = get_cleagues_authObj(request)
+
+        list_triumphs_feed, list_triumphs_feed_rank = cleagues_authObj.logged_cleagues_athlete.get_triumphs_feed()
+
+        if cleagues_authObj.logged_cleagues_athlete.are_pending_invites():
+            notification = "There are pending League inviations waiting for your decision"
+        else:
+            notification = ''
+
+        context = { **general_context(request),
+                    'list_triumphs_feed' : list_triumphs_feed,
+                    'list_triumphs_feed_rank' : list_triumphs_feed_rank,
+                    'notification' : notification, }
+
+        return render(request, "CLeaguesApp/triumphs_feed.html", context=context)
 
 ### For Strava testing
 

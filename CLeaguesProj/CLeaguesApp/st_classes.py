@@ -9,7 +9,7 @@ class cleagues_authClass():
     strava_authObj = strava_authClass()
     stat_qty_leagues = 0
     stat_qty_tours = 0
-    stat_qty_palmares = 0
+    stat_qty_triumphs = 0
 
     def login(self, atl_strava_code, request):
         global list_logged_cleagues
@@ -52,7 +52,7 @@ class cleagues_authClass():
             self.strava_authObj.logout()
         self.stat_qty_leagues = 0
         self.stat_qty_tours = 0
-        self.stat_qty_palmares = 0
+        self.stat_qty_triumphs = 0
 
     def get_updated_atl_stat(self):
         count_league = 0
@@ -67,7 +67,7 @@ class cleagues_authClass():
                         count_league = count_league + 1
         self.stat_qty_leagues = count_league
         self.stat_qty_tours = len(self.logged_cleagues_athlete.get_visible_tours())
-        self.stat_qty_palmares = 0
+        self.stat_qty_triumphs = len(self.logged_cleagues_athlete.get_triumph_tours())
 
     def auth_context(self):
         context = {
@@ -76,7 +76,7 @@ class cleagues_authClass():
             'strava_authObj' : self.strava_authObj,
             'stat_qty_leagues' : self.stat_qty_leagues,
             'stat_qty_tours' : self.stat_qty_tours,
-            'stat_qty_palmares' : self.stat_qty_palmares,
+            'stat_qty_triumphs' : self.stat_qty_triumphs,
         }
         return context
 

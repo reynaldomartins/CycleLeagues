@@ -29,6 +29,11 @@ def filter_atl_best_trial_feed_by_atl(list_best_trial_feed, atl_id):
     list_atl_best_trial_feed_filtered.sort(key=lambda x: x.sg_name_strava, reverse=False)
     return list_atl_best_trial_feed_filtered
 
+def filter_triumphs_feed_rank(list_triumphs_rank_feed, tr_id):
+    list_triumphs_feed_rank_filtered = [triumphs_rank_feed for triumphs_rank_feed in list_triumphs_rank_feed if triumphs_rank_feed.tr_id == tr_id]
+    list_triumphs_feed_rank_filtered.sort(key=lambda x: x.rank, reverse=False)
+    return list_triumphs_feed_rank_filtered
+
 def filter_tour_feed_by_strstatus(list_tours_feed, status):
     list_tours_feed_filtered = []
     for tour_feed in list_tours_feed:
@@ -36,6 +41,7 @@ def filter_tour_feed_by_strstatus(list_tours_feed, status):
         if tour_feed.tour.tour_status() == status:
             list_tours_feed_filtered.append(tour_feed)
     return list_tours_feed_filtered
+
 
 def count_list(list):
     return len(list)

@@ -73,7 +73,7 @@
                   <ul class="nav navbar-nav sc-navbar">
                     <li> <a href="{% url 'CLeaguesApp:tours_feedURLName' %}">Tours</a></li>
                     <li> <a href="{% url 'CLeaguesApp:leagues_feedURLName' %}">Leagues</a></li>
-                    <!-- <li> <a href="{% url 'CLeaguesApp:blankURLName' %}">Achievements</a></li> -->
+                    <li> <a href="{% url 'CLeaguesApp:triumphs_feedURLName' %}">Triumphs</a></li>
                     {% if logged_cleagues_athlete.atl_id ==  1 %}
                       <li> <a href="{% url 'CLeaguesApp:test_stravaURLName' %}"><b>Update Ranks</b></a></li>
                     {% endif %}
@@ -102,7 +102,7 @@
                     <tr>
                       <td class="not-last-td"><a href="{% url 'CLeaguesApp:tours_feedURLName' %}">{{ stat_qty_tours }}</a></td>
                       <td class="not-last-td"><a href="{% url 'CLeaguesApp:leagues_feedURLName' %}">{{ stat_qty_leagues }}</a></td>
-                      <td class="last-td"><a href="#">0</a></td>
+                      <td class="last-td"><a href="{% url 'CLeaguesApp:triumphs_feedURLName' %}">{{ stat_qty_triumphs }}</a></td>
                     </tr>
                   </table>
               </div>

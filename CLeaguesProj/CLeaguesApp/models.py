@@ -13,6 +13,22 @@ import requests
 import tempfile
 import os
 
+TOP_ACHIEVEMENTS = 5
+
+class triumphs_feedClass():
+    tr_id = 0
+    tr_name = ''
+    lg_name = ''
+    lg_status = ''
+    lg_atl_creator_id = 0
+    ail_status = ''
+    year = 0
+    month = 0
+    rank = 0
+    num_athletes = 0
+    tr_pic = ''
+    lg_pic = ''
+
 class Athlete(models.Model):
     atl_id = models.IntegerField(db_column='ATL_id', primary_key=True)
     atl_name_strava = models.CharField(db_column='ATL_name_strava', max_length=80, blank=True, null=True)
@@ -121,10 +137,6 @@ class Athlete(models.Model):
                 tour_feed.list_atl_in_tour.sort(key=lambda x: x.ait_rank, reverse=False)
                 tour_feed.atl_in_league = AtlInLeague.objects.all().filter(ail_lg__lg_id = tour.tr_lg.lg_id,
                                                                             ail_atl__atl_id = self.atl_id)[0]
-                # atl_in_tour = [atl_in_tour for atl_in_tour in tour_feed.list_atl_in_tour if atl_in_tour.ait_atl.atl_id == self.atl_id]
-                # if atl_in_tour:
-                #     tour_feed.atl_in_tour_rank = atl_in_tour[0].ait_rank
-                #     tour_feed.atl_in_tour_points = atl_in_tour[0].ait_points
 
                 tour_feed.atl_in_tour_rank = this_atl_in_tour.ait_rank
                 tour_feed.atl_in_tour_points = this_atl_in_tour.ait_points
@@ -135,6 +147,49 @@ class Athlete(models.Model):
                 list_tours_feed.append(tour_feed)
                 # print("Tour: {}".format(tour.tr_name))
         return list_tours_feed
+
+    def get_triumph_tours(self):
+        list_triumphs_feed = []
+        list_atl_in_tour = AtlInTour.objects.all().filter(ait_atl__atl_id = self.atl_id,
+                                                          ait_tr__tr_status = "Z",
+                                                          ait_rank__lte = TOP_ACHIEVEMENTS)
+        for atl_in_tour in list_atl_in_tour:
+            list_triumphs_feed.append(atl_in_tour.ait_tr)
+
+        return list_triumphs_feed
+
+    def get_triumphs_feed(self):
+
+        list_triumphs_feed = []
+        list_triumphs_feed_rank = []
+
+        list_tours = self.get_triumph_tours()
+        for tour in list_tours:
+                list_rank_feed = tour.get_rank_feed()
+                atl_rank_feed = [rank_feed for rank_feed in list_rank_feed if rank_feed.atl_id == self.atl_id]
+                if atl_rank_feed:
+                    triumphs_feed = triumphs_feedClass()
+                    triumphs_feed.rank = atl_rank_feed[0].rank
+                    triumphs_feed.num_athletes = len(list_rank_feed)
+                    triumphs_feed.tr_id = tour.tr_id
+                    triumphs_feed.tr_name = tour.tr_name
+                    triumphs_feed.tr_pic = tour.tr_pic
+                    triumphs_feed.lg_name = tour.tr_lg.lg_name
+                    triumphs_feed.lg_status = tour.tr_lg.lg_status
+                    triumphs_feed.lg_atl_creator_id = tour.tr_lg.lg_atl_creator.atl_id
+                    triumphs_feed.year = tour.tr_finish_date.year
+                    triumphs_feed.month = tour.tr_finish_date.month
+                    triumphs_feed.lg_id = tour.tr_lg.lg_id
+                    triumphs_feed.lg_pic = tour.tr_lg.lg_pic
+                    atl_in_league_qs = AtlInLeague.objects.all().filter(ail_atl__atl_id = self.atl_id,
+                                                                        ail_lg__lg_id = triumphs_feed.lg_id)
+                    if atl_in_league_qs:
+                        triumphs_feed.ail_status = atl_in_league_qs[0].ail_status
+
+                    list_triumphs_feed.append(triumphs_feed)
+                    list_triumphs_feed_rank = list_triumphs_feed_rank + list_rank_feed
+
+        return list_triumphs_feed, list_triumphs_feed_rank
 
     def download_pic_from_strava(self, strava_authObj, size):
         if size == "L":
@@ -519,6 +574,15 @@ class tours_feedClass():
     atl_in_tour_points = ''
     league = ''
 
+class rank_entryClass():
+    tr_id = 0
+    atl_id = 0
+    atl_name_strava = ''
+    atl_pic_mini = ''
+    rank = 0
+    points = 0
+    ridden = 0
+
 class Tour(models.Model):
     tr_id = models.IntegerField(db_column='TR_id', primary_key=True)  # Field name made lowercase.
     tr_name = models.CharField(db_column='TR_name', max_length=80)  # Field name made lowercase.
@@ -688,6 +752,22 @@ class Tour(models.Model):
                     for atl_best_trial in atl_best_trial_qs:
                         atl_best_trial.abt_status = "A"
                         atl_best_trial.save()
+
+    def get_rank_feed(self):
+        list_rank_feed = []
+        list_atl_in_tour = AtlInTour.objects.all().filter(ait_tr__tr_id = self.tr_id)
+        if list_atl_in_tour:
+            for atl_in_tour in list_atl_in_tour:
+                rank_entry = rank_entryClass()
+                rank_entry.tr_id = self.tr_id
+                rank_entry.atl_id = atl_in_tour.ait_atl.atl_id
+                rank_entry.atl_name_strava = atl_in_tour.ait_atl.atl_name_strava
+                rank_entry.atl_pic_mini = atl_in_tour.ait_atl.atl_pic_mini
+                rank_entry.rank = atl_in_tour.ait_rank
+                rank_entry.points = atl_in_tour.ait_points
+                rank_entry.ridden = atl_in_tour.ait_ridden
+                list_rank_feed.append(rank_entry)
+        return list_rank_feed
 
     def update_ranking(self):
         tr_status = self.tour_status()

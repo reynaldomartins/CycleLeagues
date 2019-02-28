@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+{% extends "CLeaguesApp/base.html" %}
+
+{% load staticfiles %}
+{% load static %}
+
+{% load is_you from stex_filters %}
+{% load filter_triumphs_feed_rank from stex_filters %}
+{% load rank_translation_small from stex_filters %}
+{% load rank_translation from stex_filters %}
+
+{% block body_block %}
+
+  <div class="div-elements-centered">
+    <h4 align=center><span class="strong-enhance">Triumph</span>&nbsp;Summary of&nbsp;&nbsp;
+          <img class="img-circle" width="60" height="60"src="{{ logged_cleagues_athlete.atl_pic.url }}" />
+          {{ logged_cleagues_athlete.atl_name_strava }}
+    </h4>
+
+    {% if list_triumphs_feed %}
+
+          <div class="triumphs-feed table-responsive">
+          <table class="hoverTable">
+              <thead>
+                <th style="width: 20%;">Achievement</th>
+                <th style="width: 30%;">Tour</th>
+                <th style="width: 30%;">League</th>
+                <th style="width: 6%;">Month/Year</th>
+                <th style="width: 8%;">Rank</th>
+              </thead>
+
+              <tbody class="hoverTableBody">
+                {% for triumphs_feed in list_triumphs_feed %}
+
+                    <tr class="collapsable-table-row">
+                      <td class='not-last-td'>
+                        {% if triumphs_feed.rank == 1 %}
+                          <img width="36" height="36" src="{% static 'images/green.png' %}" />&nbsp<img width="36" height="36" src="{% static 'images/gold.png' %}" />
+                        {% elif triumphs_feed.rank == 2 %}
+                          <img width="36" height="36" src="{% static 'images/silver.png' %}" />
+                        {% elif triumphs_feed.rank == 3 %}
+                          <img width="36" height="36" src="{% static 'images/bronze.png' %}" />
+                        {% else %}
+                          {{triumphs_feed.rank}}th
+                        {% endif %}
+                      </td>
+                      <td class='not-last-td td-text-left'>
+                              <img class="img-circle" width="48" height="48" src="{{ MEDIA_URL }}{{ triumphs_feed.tr_pic }}" />
+                              &nbsp;&nbsp;
+                              <span class="major-text"><strong>
+                                <a class="action-in-tour-row" href="{% url 'CLeaguesApp:tour_details_rankURLName' %}?tour={{triumphs_feed.tr_id}}">{{ triumphs_feed.tr_name }}</a>
+                              </strong></span>
+                      </td>
+                      <!-- Athlete can see League details if the League is active and he is active in the League
+                           If the AThlete is the creator of the League, He can see is anyway
+                      -->
+                      <td class='not-last-td td-text-left'>
+                        <img class="img-circle" width="48" height="48" src="{{ MEDIA_URL }}{{ triumphs_feed.lg_pic }}" />
+                        &nbsp;&nbsp;
+                        {% if triumphs_feed.lg_status == "A" %}
+                          {% if triumphs_feed.ail_status == "A" %}
+                              <a class="action-in-tour-row" href="{% url 'CLeaguesApp:league_detailsURLName' %}?league={{ triumphs_feed.lg_id }}">{{ triumphs_feed.lg_name }}</a>
+                          {% else %}
+                            <span class='league-inactivate-for-athlete'>{{ triumphs_feed.lg_name }}</span>
+                          {% endif %}
+                        {% else %}
+                          {% if triumphs_feed.lg_atl_creator_id == logged_cleagues_athlete.atl_id %}
+                            <a class="action-in-tour-row" href="{% url 'CLeaguesApp:league_detailsURLName' %}?league={{ triumphs_feed.lg_id }}">{{ triumphs_feed.lg_name }}</a>
+                          {% else %}
+                            <span class='league-inactivate-for-athlete'>{{ triumphs_feed.lg_name }}</span>
+                          {% endif %}
+                        {% endif %}
+                      </td>
+                      <td class='not-last-td'>{{triumphs_feed.month}}/{{triumphs_feed.year}}</td>
+                      <td class='last-td'>
+                          <span class="td-text-realce">{% rank_translation_small triumphs_feed.rank triumphs_feed.points %} </span>/ {{ triumphs_feed.num_athletes }}
+                      </td>
+                    </tr>
+
+                    {% filter_triumphs_feed_rank list_triumphs_feed_rank triumphs_feed.tr_id as list_rank %}
+
+                      <tr class="collapsed-table-row">
+                        <td colspan="5">
+                          <div class="collapsed-table-div">
+                              <table>
+                                  <thead>
+                                    <th>Rank</th>
+                                    <th>Athlete</th>
+                                    <th>Points</th>
+                                    <th>Segments Riden</th>
+                                  </thead>
+                                  <tbody>
+                                    {% for rank_entry in list_rank %}
+                                      <tr>
+                                        <td class='not-last-td'>{% rank_translation rank_entry.rank rank_entry.points %}</td>
+                                        <td class='not-last-td td-text-left'>
+                                            <img class="img-circle" width="40" height="40"src="{{ rank_entry.atl_pic_mini.url }}" />
+                                            &nbsp;&nbsp;{{rank_entry.atl_name_strava}}
+                                            <span class="you">{% is_you logged_cleagues_athlete.atl_id rank_entry.atl_id %}</span>
+                                        </td>
+                                        <td class='not-last-td'>{{rank_entry.points}}</td>
+                                        <td class='not-last-td'>{{rank_entry.ridden}}</td>
+                                      </tr>
+                                    {% endfor %}
+                                  </tbody>
+                              </table>
+                          </div>
+                        </td>
+                      </tr>
+
+                {% endfor %}
+
+              </tbody>
+          </table>
+          </div>
+
+      {% else %}
+
+              <br>
+              <br>
+              <h5>You have not finished a Tour among the top-5 so far</h5>
+              <br>
+
+      {% endif %}
+
+    </div>
+
+{% endblock %}

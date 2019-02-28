@@ -32,5 +32,6 @@ urlpatterns = [
     url(r'^inact_athlete_league/$',views.inact_athlete_leagueViewClass.as_view(), name='inact_athlete_leagueURLName'),
     url(r'^inact_self_league/$',views.inact_self_leagueViewClass.as_view(), name='inact_self_leagueURLName'),
     url(r'^react_athlete_league/$',views.react_athlete_leagueViewClass.as_view(), name='react_athlete_leagueURLName'),
+    url(r'^triumphs_feed/$',views.triumphs_feedViewClass.as_view(), name='triumphs_feedURLName'),
     url(r'^oops/$',views.oopsViewClass.as_view(), name='oopsURLName'),
 ]

@@ -92,7 +92,11 @@ $(document).ready(function(){
                 <th style="width: 8%;">Finish</th>
                 <th style="width: 3%;">Segs.</th>
                 <th style="width: 3%;"><span class="you">Your</span>&nbsp;Rank</th>
-                <th style="width: 15%;">Leader</th>
+                {% if num_block != 2 %}
+                  <th style="width: 15%;">Leader</th>
+                {% else %}
+                  <th style="width: 15%;">Winner</th>
+                {% endif %}
                 <th style="width: 13%;">Creator</th>
               </thead>
               <tbody class="hoverTableBody">
@@ -106,7 +110,7 @@ $(document).ready(function(){
                           </strong></span>
                     </td>
                     <!-- Athlete can see League details if the League is active and he is active in the League
-                         If thr AThlete is the creator of the League, He can see is anyway
+                         If the AThlete is the creator of the League, He can see is anyway
                     -->
                     <td class='not-last-td td-text-left'>
                       {% if tours_feed.league.lg_status == "A" %}

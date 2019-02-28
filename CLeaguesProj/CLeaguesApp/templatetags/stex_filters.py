@@ -4,7 +4,7 @@ from CLeaguesApp.st_functions import (tour_status_str, cleagues_status, athlete_
                                  create_list, filter_atl_best_trial_feed_by_seg,
                                  filter_atl_best_trial_feed_by_atl, filter_tour_feed_by_strstatus,
                                  count_list, define, add_one, rank_translation, rank_translation_small,
-                                 append_list, is_you)
+                                 append_list, is_you, filter_triumphs_feed_rank)
 
 register = template.Library()
 
@@ -12,7 +12,6 @@ def subtract(value, arg):
     return value - arg
 
 register.filter('subtract', subtract)
-
 register.simple_tag(tour_status_str)
 register.simple_tag(cleagues_status)
 register.simple_tag(athlete_status_str)
@@ -29,3 +28,4 @@ register.simple_tag(add_one)
 register.simple_tag(rank_translation)
 register.simple_tag(rank_translation_small)
 register.simple_tag(append_list)
+register.simple_tag(filter_triumphs_feed_rank)
