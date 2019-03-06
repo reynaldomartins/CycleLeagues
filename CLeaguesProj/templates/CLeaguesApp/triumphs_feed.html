@@ -47,9 +47,7 @@
                       <td class='not-last-td td-text-left'>
                               <img class="img-circle" width="60" height="60" src="{{ MEDIA_URL }}{{ triumphs_feed.tr_pic }}" />
                               &nbsp;&nbsp;
-                              <span class="major-text"><strong>
-                                <a class="action-in-tour-row" href="{% url 'CLeaguesApp:tour_details_rankURLName' %}?tour={{triumphs_feed.tr_id}}">{{ triumphs_feed.tr_name }}</a>
-                              </strong></span>
+                              <a class="action-in-tour-row" href="{% url 'CLeaguesApp:tour_details_rankURLName' %}?tour={{triumphs_feed.tr_id}}">{{ triumphs_feed.tr_name }}</a>
                       </td>
                       <!-- Athlete can see League details if the League is active and he is active in the League
                            If the AThlete is the creator of the League, He can see is anyway

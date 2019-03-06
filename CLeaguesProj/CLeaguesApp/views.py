@@ -654,7 +654,7 @@ class tour_details_segmentsViewClass(View):
                 # print("I am getting a new full activity list")
                 today = datetime.now().date()
                 if cleagues_authObj.logged_cleagues_athlete.atl_id == 1:
-                    days = 365*2
+                    days = 500
                     last = None
                 else:
                     days = DAYS_ACTIVITIES

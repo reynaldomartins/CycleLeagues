@@ -56,33 +56,33 @@ class strava_authClass():
         return context
 
     def change_access_for_query(self, atl_strava_code):
-        # print(atl_strava_code)
+        print("atl_strava_code {}".format(atl_strava_code))
         user_access_token = ''
         user_access_token = self.client.exchange_code_for_token(client_id=self.MY_STRAVA_CLIENT_ID,
                     client_secret=self.MY_STRAVA_CLIENT_SECRET,
                     code=atl_strava_code)
-        # print(user_access_token)
-        if user_access_token:
-            self.query_strava_athlete = self.client.get_athlete()
-            self.query_strava_atl_id = self.query_strava_athlete.id
-            # print(self.query_strava_athlete)
-            # print(self.query_strava_atl_id)
-        return
+        # print("user_access_token {}".format(user_access_token))
+        # if user_access_token:
+        #     self.query_strava_athlete = self.client.get_athlete()
+        #     self.query_strava_atl_id = self.query_strava_athlete.id
+        #     print(self.query_strava_athlete)
+        #     print(self.query_strava_atl_id)
+        # return
 
-    def resume_access_after_query(self):
-        # print("bellow the strava code :")
-        # print(self.atl_strava_code)
-        user_access_token = ''
-        user_access_token = self.client.exchange_code_for_token(client_id=self.MY_STRAVA_CLIENT_ID,
-                    client_secret=self.MY_STRAVA_CLIENT_SECRET,
-                    code=self.atl_strava_code)
-        # print(user_access_token)
-        if user_access_token:
-            self.query_strava_athlete = ''
-            self.query_strava_atl_id = 0
-            # print(self.query_strava_athlete)
-            # print(self.query_strava_atl_id)
-        return
+    # def resume_access_after_query(self):
+    #     # print("bellow the strava code :")
+    #     # print(self.atl_strava_code)
+    #     user_access_token = ''
+    #     user_access_token = self.client.exchange_code_for_token(client_id=self.MY_STRAVA_CLIENT_ID,
+    #                 client_secret=self.MY_STRAVA_CLIENT_SECRET,
+    #                 code=self.atl_strava_code)
+    #     # print(user_access_token)
+    #     if user_access_token:
+    #         self.query_strava_athlete = ''
+    #         self.query_strava_atl_id = 0
+    #         # print(self.query_strava_athlete)
+    #         # print(self.query_strava_atl_id)
+    #     return
 
     def get_atl_last_efforts(self, limit, start_date, finish_date):
         '''
@@ -138,6 +138,8 @@ class strava_authClass():
         '''
         This function get efforts from a athlete in a segment, ordererd by the best results
         '''
+
+        print("{} {} {} {}".format(segment_id, start_date_local, end_date_local, limit))
         int_seg_eff = self.client.get_segment_efforts(segment_id=segment_id,
                             start_date_local= start_date_local, end_date_local = end_date_local,
                             limit=limit)

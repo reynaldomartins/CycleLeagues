@@ -651,7 +651,7 @@ class Tour(models.Model):
 
     def tour_status(self):
         today = datetime.now().date()
-        if self.tr_status not in ["I","Z"]:
+        if self.tr_status not in ["I","Z","X"]:
             if self.is_finished_bydate() and self.tr_status != "F":
                 self.tr_status = "F"
                 self.save()
@@ -777,7 +777,7 @@ class Tour(models.Model):
 
     def update_ranking(self):
         tr_status = self.tour_status()
-        if tr_status in ["Z","I","X"] or self.tr_lg.lg_status == 'I':
+        if tr_status in ["Z","I","X","T"] or self.tr_lg.lg_status == 'I':
             return False
 
         list_segments = self.get_segments()

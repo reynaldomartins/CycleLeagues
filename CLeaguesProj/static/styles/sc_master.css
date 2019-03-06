@@ -635,6 +635,12 @@ color:darkblue;
   overflow-y: hidden;
 }
 
+.triumphs-feed {
+  font-size: 0.9em;
+  font-weight: normal;
+  overflow-y: hidden;
+}
+
 .tours-feed {
   font-size: 0.8em;
   font-weight: normal;
