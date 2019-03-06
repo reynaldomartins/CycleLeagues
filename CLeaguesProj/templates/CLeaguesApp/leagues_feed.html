@@ -64,11 +64,35 @@
   </div>
 
   <div class='dropdown' id='feed-filter-view-leagues-feed-id'>
-    <button aria-haspopup class='btn btn-white btn-icon btn-select-view btn-icon-right dropdown-toggle'
-        data-toggle='dropdown' id='feed-filter-view-btn' tabindex='0'>
-            Current Leagues
-        <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
-    </button>
+    {% if list_leagues_feed_pending or invite_view %}
+      <button aria-haspopup class='btn btn-white btn-icon btn-select-view btn-icon-right dropdown-toggle'
+          data-toggle='dropdown' id='feed-filter-view-btn' tabindex='0'>
+              Invited Leagues
+          <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
+      </button>
+      {% define 1 as init_block %}
+    {% elif list_leagues_feed_active_active %}
+      <button aria-haspopup class='btn btn-white btn-icon btn-select-view btn-icon-right dropdown-toggle'
+          data-toggle='dropdown' id='feed-filter-view-btn' tabindex='1'>
+              Current Leagues
+          <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
+      </button>
+      {% define 0 as init_block %}
+    {% elif list_leagues_feed_former %}
+      <button aria-haspopup class='btn btn-white btn-icon btn-select-view btn-icon-right dropdown-toggle'
+          data-toggle='dropdown' id='feed-filter-view-btn' tabindex='2'>
+              Former Leagues
+          <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
+      </button>
+      {% define 2 as init_block %}
+    {% else %}
+      <button aria-haspopup class='btn btn-white btn-icon btn-select-view btn-icon-right dropdown-toggle'
+          data-toggle='dropdown' id='feed-filter-view-btn' tabindex='1'>
+              Current Leagues
+          <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
+      </button>
+      {% define 0 as init_block %}
+    {% endif %}
     <ul aria-labelledby='feed-filter-view-btn' class='options dropdown-menu' role='menu' id="feed-filter-view-leagues-feed-id">
       <li><a class="replace-selection"
         href="#">Current Leagues</a></li>
@@ -90,11 +114,23 @@
       {% if list_leagues_feed %}
 
         {% if num_block == 0 %}
-          <div class="leagues-feed-block-current">
+          {% if init_block == 0 %}
+            <div class="leagues-feed-block-current">
+          {% else %}
+            <div class="leagues-feed-block-current" style="display:none">
+          {% endif %}
         {% elif num_block == 1 %}
-          <div class="leagues-feed-block-invited" style="display:none">
+          {% if init_block == 1 %}
+            <div class="leagues-feed-block-invited">
+          {% else %}
+            <div class="leagues-feed-block-invited" style="display:none">
+          {% endif %}
         {% elif num_block == 2 %}
-          <div class="leagues-feed-block-former" style="display:none">
+          {% if init_block == 2 %}
+            <div class="leagues-feed-block-former">
+          {% else %}
+            <div class="leagues-feed-block-former" style="display:none">
+          {% endif %}
         {% endif %}
 
           <div class="leagues-feed table-responsive">
@@ -169,19 +205,31 @@
 
       {% else %}
           {% if num_block == 0 %}
-            <div class="leagues-feed-block-current">
+            {% if init_block == 0 %}
+              <div class="leagues-feed-block-current">
+            {% else %}
+              <div class="leagues-feed-block-current" style="display:none">
+            {% endif %}
               <br>
-              <h4>You are not taking part of any League right now</h4>
+              <h4><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>You are not taking part of any League right now</h4>
               <br>
           {% elif num_block == 1 %}
-            <div class="leagues-feed-block-invited" style="display:none">
+            {% if init_block == 1 %}
+              <div class="leagues-feed-block-invited" >
+            {% else %}
+              <div class="leagues-feed-block-invited" style="display:none">
+            {% endif %}
               <br>
-              <h4>There is no invitation for you to join a League at this moment</h4>
+              <h4><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>There is no invitation for you to join a League at this moment</h4>
               <br>
           {% elif num_block == 2 %}
-            <div class="leagues-feed-block-former" style="display:none">
+            {% if init_block == 2 %}
+              <div class="leagues-feed-block-former" >
+            {% else %}
+              <div class="leagues-feed-block-former" style="display:none">
+            {% endif %}
               <br>
-              <h4>There is no League you took part in the past</h4>
+              <h4><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>There is no League you took part in the past</h4>
               <br>
           {% endif %}
       {% endif %}

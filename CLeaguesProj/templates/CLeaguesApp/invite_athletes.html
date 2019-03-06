@@ -46,31 +46,32 @@
 
       <div class="row container">
         <div class="col-md-9">
-          <input type="submit" class="btn btn-primary" name="btn_search_atl" value="Search Athletes"</input>
-          <div class="fieldWrapper inline-element">
-              <label class="field-label" for="{{ search_atl_form.atl_name_strava.id_for_label }}">Athlete's Name :</label>
-              {{ search_atl_form.atl_name_strava }}&nbsp;&nbsp;&nbsp;
-          </div>
-          <div class="fieldWrapper inline-element">
-              <label class="field-label" for="{{ search_atl_form.atl_city_strava.id_for_label }}">Athlete's City :</label>
-              {{ search_atl_form.atl_city_strava }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          </div>
-          <br>
-          {% if search_atl_form.errors %}
-            <span class="form-error">
-              {{ search_atl_form.non_field_errors | striptags }}
-              {{ search_atl_form.atl_name_strava.errors | striptags }}
-              {{ search_atl_form.atl_city_strava.errors | striptags }}
-            </span>
+          <div class="div-search-atl">
+            <div class="fieldWrapper inline-element">
+                <label class="field-label" for="{{ search_atl_form.atl_name_strava.id_for_label }}">Athlete's Name :</label>
+                {{ search_atl_form.atl_name_strava }}&nbsp;&nbsp;&nbsp;
+            </div>
+            <div class="fieldWrapper inline-element">
+                <label class="field-label" for="{{ search_atl_form.atl_city_strava.id_for_label }}">Athlete's City :</label>
+                {{ search_atl_form.atl_city_strava }}&nbsp;&nbsp;&nbsp;
+            </div>
+            <input type="submit" class="btn btn-primary" name="btn_search_atl" value="Search Athletes"</input>
             <br>
-            <br>
-          {% endif %}
+            {% if search_atl_form.errors %}
+              <span class="form-error">
+                {{ search_atl_form.non_field_errors | striptags }}
+                {{ search_atl_form.atl_name_strava.errors | striptags }}
+                {{ search_atl_form.atl_city_strava.errors | striptags }}
+              </span>
+            {% endif %}
+          </div>
         </div>
 
         <!-- <div class="col-md-2 text-right div-add-button">
           <input type="submit" class="btn btn-success add-right-button" name="btn_add_selected_atl" value="Invite Selected Athletes"</input>
         </div> -->
 
+        <br>
         <div class="col-md-3 text-right div-right-button">
           <input type="submit" class="btn btn-success right-button" name="btn_add_selected_atl" value="Invite Selected Athletes"</input>
         </div>

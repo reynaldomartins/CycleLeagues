@@ -51,11 +51,37 @@
 </div>
 
 <div class='dropdown' id='feed-filter-view-tours-feed-id'>
-  <button aria-haspopup class='btn btn-white btn-icon btn-select-view btn-icon-right dropdown-toggle'
-      data-toggle='dropdown' id='feed-filter-view-btn' tabindex='0'>
-          Running Tours
-      <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
-  </button>
+
+  {% if list_tours_feed_active %}
+    <button aria-haspopup class='btn btn-white btn-icon btn-select-view btn-icon-right dropdown-toggle'
+        data-toggle='dropdown' id='feed-filter-view-btn' tabindex='0'>
+            Running Tours
+        <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
+    </button>
+    {% define 0 as init_block %}
+  {% elif list_tours_feed_tobestarted %}
+    <button aria-haspopup class='btn btn-white btn-icon btn-select-view btn-icon-right dropdown-toggle strong-enhance'
+        data-toggle='dropdown' id='feed-filter-view-btn' tabindex='1'>
+            To be Started Tours
+        <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
+    </button>
+    {% define 1 as init_block %}
+  {% elif list_tours_feed_finished %}
+    <button aria-haspopup class='btn btn-white btn-icon btn-select-view btn-icon-right dropdown-toggle strong-enhance'
+        data-toggle='dropdown' id='feed-filter-view-btn' tabindex='2'>
+            Finished Tours
+        <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
+    </button>
+    {% define 2 as init_block %}
+  {% else %}
+    <button aria-haspopup class='btn btn-white btn-icon btn-select-view btn-icon-right dropdown-toggle'
+        data-toggle='dropdown' id='feed-filter-view-btn' tabindex='0'>
+            Running Tours
+        <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
+    </button>
+    {% define 0 as init_block %}
+  {% endif %}
+
   <ul aria-labelledby='feed-filter-view-btn' class='options dropdown-menu' role='menu' id="feed-filter-view-tours-feed-id">
     <li><a class="replace-selection"
       href="#">Running Tours</a></li>
@@ -77,11 +103,23 @@ $(document).ready(function(){
     {% if list_tours_feed %}
 
       {% if num_block == 0 %}
-        <div class="tours-feed-block-active">
+        {% if init_block == 0 %}
+          <div class="tours-feed-block-active">
+        {% else %}
+          <div class="tours-feed-block-active" style="display:none">
+        {% endif %}
       {% elif num_block == 1 %}
-        <div class="tours-feed-block-to-be-started" style="display:none">
+        {% if init_block == 1 %}
+          <div class="tours-feed-block-to-be-started">
+        {% else %}
+          <div class="tours-feed-block-to-be-started" style="display:none">
+        {% endif %}
       {% elif num_block == 2 %}
-        <div class="tours-feed-block-finished" style="display:none">
+        {% if init_block == 2 %}
+          <div class="tours-feed-block-finished">
+        {% else %}
+          <div class="tours-feed-block-finished" style="display:none">
+        {% endif %}
       {% endif %}
           <div class="tours-feed table-responsive">
             <table class="hoverTable">
@@ -191,20 +229,32 @@ $(document).ready(function(){
     {% else %}
 
       {% if num_block == 0 %}
-        <div class="tours-feed-block-active">
-          <br>
-          <h4>You are not taking part of any Tour which is currently running</h4>
-          <br>
+          {% if init_block == 0 %}
+            <div class="tours-feed-block-active">
+          {% else %}
+            <div class="tours-feed-block-active" style="display:none">
+          {% endif %}
+              <br>
+              <h4><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>You are not taking part of any Tour which is currently running</h4>
+              <br>
       {% elif num_block == 1 %}
-        <div class="tours-feed-block-to-be-started" style="display:none">
-          <br>
-          <h4>At this moment, there is no Tour scheduled to be started which you are taking part</h4>
-          <br>
+        {% if init_block == 1 %}
+          <div class="tours-feed-block-to-be-started">
+        {% else %}
+          <div class="tours-feed-block-to-be-started" style="display:none">
+        {% endif %}
+              <br>
+              <h4><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>At this moment, there is no Tour scheduled to be started which you are taking part</h4>
+              <br>
       {% elif num_block == 2 %}
-        <div class="tours-feed-block-finished" style="display:none">
-          <br>
-          <h4>You have not finished any Tour so far</h4>
-          <br>
+        {% if init_block == 2 %}
+          <div class="tours-feed-block-finished">
+        {% else %}
+          <div class="tours-feed-block-finished" style="display:none">
+        {% endif %}
+              <br>
+              <h4><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>You have not finished any Tour so far</h4>
+              <br>
       {% endif %}
 
     {% endif %}

@@ -45,7 +45,7 @@
                         {% endif %}
                       </td>
                       <td class='not-last-td td-text-left'>
-                              <img class="img-circle" width="48" height="48" src="{{ MEDIA_URL }}{{ triumphs_feed.tr_pic }}" />
+                              <img class="img-circle" width="60" height="60" src="{{ MEDIA_URL }}{{ triumphs_feed.tr_pic }}" />
                               &nbsp;&nbsp;
                               <span class="major-text"><strong>
                                 <a class="action-in-tour-row" href="{% url 'CLeaguesApp:tour_details_rankURLName' %}?tour={{triumphs_feed.tr_id}}">{{ triumphs_feed.tr_name }}</a>
@@ -99,7 +99,7 @@
                                             <span class="you">{% is_you logged_cleagues_athlete.atl_id rank_entry.atl_id %}</span>
                                         </td>
                                         <td class='not-last-td'>{{rank_entry.points}}</td>
-                                        <td class='not-last-td'>{{rank_entry.ridden}}</td>
+                                        <td class='last-td'>{{rank_entry.ridden}}</td>
                                       </tr>
                                     {% endfor %}
                                   </tbody>

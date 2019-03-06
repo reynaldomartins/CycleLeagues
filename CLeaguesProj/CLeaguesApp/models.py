@@ -70,10 +70,15 @@ class Athlete(models.Model):
         if strava_authObj:
             self.atl_id_strava = strava_authObj.logged_strava_atl_id
             self.atl_code_strava = strava_authObj.atl_strava_code
-            self.atl_name_strava = re.sub('\W+',' ', strava_authObj.logged_strava_athlete.firstname ) + ' ' + re.sub('\W+',' ', strava_authObj.logged_strava_athlete.lastname )
+            if strava_authObj.logged_strava_athlete.firstname:
+                self.atl_name_strava = re.sub('\W+',' ', strava_authObj.logged_strava_athlete.firstname )
+            if strava_authObj.logged_strava_athlete.lastname:
+                self.atl_name_strava = self.atl_name_strava + ' ' + re.sub('\W+',' ', strava_authObj.logged_strava_athlete.lastname )
             self.atl_email_strava = strava_authObj.logged_strava_athlete.email
-            self.atl_city_strava = strava_authObj.logged_strava_athlete.city
-            self.atl_country_strava = strava_authObj.logged_strava_athlete.country
+            if strava_authObj.logged_strava_athlete.city:
+                self.atl_city_strava = re.sub('\W+',' ', strava_authObj.logged_strava_athlete.city )
+            if strava_authObj.logged_strava_athlete.country:
+                self.atl_country_strava = re.sub('\W+',' ', strava_authObj.logged_strava_athlete.country )
             self.atl_sex_strava = strava_authObj.logged_strava_athlete.sex
             self.atl_created_at_strava = strava_authObj.logged_strava_athlete.created_at
 
@@ -537,7 +542,8 @@ class Segment(models.Model):
 
     def update_from_strava(self, strava_segment):
         if strava_segment:
-            self.sg_name_strava = strava_segment.name
+            if strava_segment.name:
+                self.sg_name_strava = re.sub('\W+',' ', strava_segment.name )
             self.sg_id_strava = strava_segment.id
             self.sg_distance = round(float(strava_segment.distance/1000),1)
             self.sg_avg_grade = float(strava_segment.average_grade)

@@ -52,7 +52,7 @@
     <div class="container">
             <nav class="navbar navbar-default navbar-fixed-top sc-navbar">
               <div class="navbar-header sc-navbar">
-                <img class="logo-on-nav navbar-brand" width="60" height="60" src="{% static 'images/CycleLeaguesIcon.png' %}"/>
+                <img class="logo-on-nav navbar-brand" width="40" src="{% static 'images/CycleLeaguesIcon.png' %}"/>
 
                 <!-- The code bellow is used to present a hamburger icon in case the navbar collapses -->
                 <!-- it is inside navbar header area-->
@@ -79,6 +79,15 @@
                     {% endif %}
                   </ul>
                   <ul class="nav navbar-nav navbar-right sc-navbar">
+                    <li role="presentation" class="dropdown">
+                          <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                            Join League<span class="caret"></span>
+                          </a>
+                          <ul class="dropdown-menu">
+                            <li><a href="{% url 'CLeaguesApp:join_leagueURLName' %}" id="join-league-act-option">by Activation Code</a></li>
+                            <li><a href="{% url 'CLeaguesApp:leagues_feed_inviteURLName' %}" id="join-league-inv-option">by Accepting an Invitation</a></li>
+                          </ul>
+                        </li>
                     <li><a href="{% url 'CLeaguesApp:logoutURLName' %}" id="logout-option">Logout</a></li>
                   </ul>
               </div>
@@ -92,7 +101,7 @@
                   <div align=center>
                       <img class="img-circle" width="124" height="124"src="{{ logged_cleagues_athlete.atl_pic.url }}" />
                   </div>
-                  <p align=center>{{ logged_cleagues_athlete.atl_name_strava }}</p>
+                  <p align=center><strong>{{ logged_cleagues_athlete.atl_name_strava }}</strong></p>
                   <table align=center>
                     <header>
                       <th>Tours</th>

@@ -13,6 +13,7 @@ urlpatterns = [
     url(r'^authorization/$',views.indexViewClass.as_view(), name='indexURLName'),
     url(r'^register_page/$',views.register_pageViewClass.as_view(), name='register_pageURLName'),
     url(r'^leagues_feed/$',views.leagues_feedViewClass.as_view(), name='leagues_feedURLName'),
+    url(r'^leagues_feed_invite/$',views.leagues_feedViewClass.as_view(), name='leagues_feed_inviteURLName'),
     url(r'^league_details/$',views.league_detailsViewClass.as_view(), name='league_detailsURLName'),
     url(r'^tours_feed/$',views.tours_feedViewClass.as_view(), name='tours_feedURLName'),
     url(r'^create_tour/$',views.create_tourViewClass.as_view(), name='create_tourURLName'),

@@ -275,8 +275,13 @@ class leagues_feedViewClass(View):
             notification = "There are pending League inviations waiting for your decision"
         else:
             notification = ''
+        if request.path.find('invite') != -1 :
+            invite_view =  True
+        else:
+            invite_view = False
         context = { 'list_leagues_feed' : list_atl_leagues_updated,
                     'notification' : notification,
+                    'invite_view' : invite_view,
                     **general_context(request) }
         return render(request, "CLeaguesApp/leagues_feed.html", context=context)
 
@@ -520,7 +525,7 @@ class tour_details_segmentsViewClass(View):
         logged_atl_in_tour = [atl_in_tour for atl_in_tour in list_atl_in_tour if atl_in_tour.ait_atl.atl_id == cleagues_authObj.logged_cleagues_athlete.atl_id]
 
         # Get all segments that can be selected according to the view chosen (NoSelection, FromLeague, FromActivies)
-        list_select_segments = tour_details_segmentsViewClass.get_full_segments(tour,select,cleagues_authObj.strava_authObj)
+        list_select_segments = tour_details_segmentsViewClass.get_full_segments(tour,select,cleagues_authObj)
 
         # Get all segments in this Tour
         list_tour_segments = tour.get_segments()
@@ -571,7 +576,7 @@ class tour_details_segmentsViewClass(View):
         print(select)
 
         # Get the full list from CycleLeagues Segments that can be selected in this view, as defined by 'select'
-        list_select_segments = tour_details_segmentsViewClass.get_full_segments(tour,select,cleagues_authObj.strava_authObj)
+        list_select_segments = tour_details_segmentsViewClass.get_full_segments(tour,select,cleagues_authObj)
 
         if sg_id:
             tour.delete_segment(sg_id)
@@ -635,7 +640,7 @@ class tour_details_segmentsViewClass(View):
         #             }
         # return render(request, "CLeaguesApp/tour_details_segments.html", context=context)
 
-    def get_full_segments(tour,select,strava_authObj):
+    def get_full_segments(tour,select,cleagues_authObj):
         if select == "FromLeague":
             # print("FromLeague")
             league = tour.tr_lg
@@ -648,10 +653,16 @@ class tour_details_segmentsViewClass(View):
                             tour_details_segmentsViewClass.list_act_full_segments_last_date < today) :
                 # print("I am getting a new full activity list")
                 today = datetime.now().date()
-                first_date = today - timedelta(days=DAYS_ACTIVITIES)
+                if cleagues_authObj.logged_cleagues_athlete.atl_id == 1:
+                    days = 365*2
+                    last = None
+                else:
+                    days = DAYS_ACTIVITIES
+                    last = LAST_ACTIVITIES
+                first_date = today - timedelta(days=days)
                 print(today)
                 print(first_date)
-                list_last_efforts = strava_authObj.get_atl_last_efforts(LAST_ACTIVITIES,first_date,today)
+                list_last_efforts = cleagues_authObj.strava_authObj.get_atl_last_efforts(last,first_date,today)
                 list_strava_segments = strava_authClass.get_unique_segments_from_efforts(list_last_efforts)
                 tour_details_segmentsViewClass.list_act_full_segments = Segment.convert_list_segments(list_strava_segments)
             return tour_details_segmentsViewClass.list_act_full_segments
