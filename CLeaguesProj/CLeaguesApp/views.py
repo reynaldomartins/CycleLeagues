@@ -449,9 +449,20 @@ class create_tourViewClass(View):
     def get(self, request, *args, **kwargs):
         league = kwargs['league']
         tour_form = tourFormClass()
+        original_tr_id = request.GET.get('original_tour')
+        original_tour = ''
+        if original_tr_id:
+            original_tour_qs = Tour.objects.all().filter(tr_id=original_tr_id)
+            if original_tour_qs:
+                original_tour = original_tour_qs[0]
+                tour_form = tourFormClass(None, instance=original_tour, initial = {'tr_ss': original_tour.tr_ss,
+                                                                         'tr_name' : original_tour.tr_name + " - copy",
+                                                                         'tr_start_date' : datetime.now().date()+timedelta(days=5),
+                                                                         'tr_finish_date' : datetime.now().date()+timedelta(days=19), })
         context = { **general_context(request),
                     'tour_form' : tour_form,
-                    'league' : league  }
+                    'league' : league,
+                    'original_tour' : original_tour  }
         return render(request, "CLeaguesApp/create_tour.html", context=context)
         context = { **general_context(request), }
 
@@ -460,6 +471,12 @@ class create_tourViewClass(View):
     @permit_to_update_league
     def post(self, request, *args, **kwargs):
         league = kwargs['league']
+        original_tr_id = request.GET.get('original_tour')
+        original_tour = ''
+        if original_tr_id:
+            original_tour_qs = Tour.objects.all().filter(tr_id=original_tr_id)
+            if original_tour_qs:
+                original_tour = original_tour_qs[0]
         tour_form = tourFormClass(request.POST, request.FILES)
         cleagues_authObj = get_cleagues_authObj(request)
         if tour_form.is_valid(league):
@@ -487,6 +504,9 @@ class create_tourViewClass(View):
                     atlintour.set_at_creation(atl_in_league.atl, tour)
                     atlintour.save()
 
+            if original_tr_id:
+                tour.clone_segments(original_tour)
+
             cleagues_authObj.get_updated_atl_stat()
 
             base_url = "/CLeaguesApp/tour_details_segments"
@@ -497,7 +517,8 @@ class create_tourViewClass(View):
             return HttpResponseRedirect(url)
         context = { **general_context(request),
                     'tour_form' : tour_form,
-                    'league' : league
+                    'league' : league,
+                    'original_tour' : original_tour,
                     }
         return render(request, "CLeaguesApp/create_tour.html", context=context)
 
@@ -654,8 +675,10 @@ class tour_details_segmentsViewClass(View):
                 # print("I am getting a new full activity list")
                 today = datetime.now().date()
                 if cleagues_authObj.logged_cleagues_athlete.atl_id == 1:
-                    days = 500
-                    last = None
+                    # days = 500
+                    # last = None
+                    days = DAYS_ACTIVITIES
+                    last = LAST_ACTIVITIES
                 else:
                     days = DAYS_ACTIVITIES
                     last = LAST_ACTIVITIES

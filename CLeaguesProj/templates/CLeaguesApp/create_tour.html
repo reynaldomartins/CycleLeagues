@@ -7,11 +7,15 @@
 {% block body_block %}
 
 
+  {% if not original_tour %}
   <h3><span class="strong-enhance">Create a Tour </span><span class="minor-text"><i>in league&nbsp;
+  {% else %}
+  <h3><span class="strong-enhance">Duplicate Tour </span><span class="minor-text"><i>in league&nbsp;
+  {% endif %}
     <img class="img-circle" width="60" height="60" src="{{ MEDIA_URL }}{{ league.lg_pic }}"/>
     {{league.lg_name}}</i></span></h3>
 
-  <form class="" action="{% url 'CLeaguesApp:create_tourURLName' %}?league={{league.lg_id}}" method="POST" enctype="multipart/form-data">
+  <form class="" action="{% url 'CLeaguesApp:create_tourURLName' %}?league={{league.lg_id}}&original_tour={{original_tour.tr_id}}" method="POST" enctype="multipart/form-data">
 
     {% csrf_token %}
 

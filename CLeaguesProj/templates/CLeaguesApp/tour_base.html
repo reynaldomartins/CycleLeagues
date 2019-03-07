@@ -23,7 +23,13 @@
               </a>
             {% endif %}
           {% endif %}
-
+          {% if tour.tr_lg.lg_atl_creator.atl_id == logged_cleagues_athlete.atl_id %}
+              <a class="second-right-glyph"
+                  href="{% url 'CLeaguesApp:create_tourURLName' %}?league={{tour.tr_lg.lg_id}}&original_tour={{tour.tr_id}}" align=center>
+                  <span class="glyphicon glyphicon-duplicate"
+                    data-toggle="tooltip" data-placement="right" title="Duplicate Tour"></span>
+              </a>
+          {% endif %}
           <h3><span class="strong-enhance">Tour</span>&nbsp;&nbsp;
             <img class="img-circle" width="80" height="80" src="{{ MEDIA_URL }}{{ tour.tr_pic }}"/>
             <strong>{{tour.tr_name}}</strong>

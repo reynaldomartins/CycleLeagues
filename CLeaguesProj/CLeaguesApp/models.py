@@ -157,7 +157,7 @@ class Athlete(models.Model):
         list_triumphs_feed = []
         list_atl_in_tour = AtlInTour.objects.all().filter(ait_atl__atl_id = self.atl_id,
                                                           ait_tr__tr_status = "Z",
-                                                          ait_rank__lte = TOP_ACHIEVEMENTS)
+                                                          ait_rank__lte = TOP_ACHIEVEMENTS).exclude(ait_points = 0)
         for atl_in_tour in list_atl_in_tour:
             list_triumphs_feed.append(atl_in_tour.ait_tr)
 
@@ -671,6 +671,13 @@ class Tour(models.Model):
             list_seg_tour.append(link.sit_sg)
         # print(list_seg_tour)
         return list_seg_tour
+
+    def clone_segments(self,original_tour):
+        list_seg_tour_original = original_tour.get_segments()
+        for seg in list_seg_tour_original:
+            seg_in_tour = SegInTour()
+            seg_in_tour.set_at_creation(seg, self)
+            seg_in_tour.save()
 
     def get_athletes(self):
         # return self.get.athlete_set()
