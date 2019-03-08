@@ -18,11 +18,11 @@ class strava_authClass():
     def get_strava_url(self, request):
         self.MY_STRAVA_CLIENT_ID = 30858
         host_port = request.get_host()
-        print("This is host_port {}".format(host_port))
+        # print("This is host_port {}".format(host_port))
         url = self.client.authorization_url(client_id=self.MY_STRAVA_CLIENT_ID,
                                             redirect_uri='http://' + host_port + '/CLeaguesApp/authorization')
         # print("enviar essa URL")
-        print("This is url {}".format(url))
+        # print("This is url {}".format(url))
         return url
 
     def __init__(self):
@@ -56,7 +56,7 @@ class strava_authClass():
         return context
 
     def change_access_for_query(self, atl_strava_code):
-        print("atl_strava_code {}".format(atl_strava_code))
+        # print("atl_strava_code {}".format(atl_strava_code))
         user_access_token = ''
         user_access_token = self.client.exchange_code_for_token(client_id=self.MY_STRAVA_CLIENT_ID,
                     client_secret=self.MY_STRAVA_CLIENT_SECRET,
@@ -96,7 +96,7 @@ class strava_authClass():
             before_date = finish_date + timedelta(days=1)
             after_datetime = datetime.combine(after_date, datetime.min.time())
             before_datetime = datetime.combine(before_date, datetime.min.time())
-            print(before_datetime)
+            # print(before_datetime)
             int_atl_act = self.client.get_activities(after=after_datetime, before=before_datetime)
             list_atl_last_act = list_atl_last_act + list(int_atl_act)
             for atl_act in list_atl_last_act:
@@ -139,7 +139,7 @@ class strava_authClass():
         This function get efforts from a athlete in a segment, ordererd by the best results
         '''
 
-        print("{} {} {} {}".format(segment_id, start_date_local, end_date_local, limit))
+        # print("{} {} {} {}".format(segment_id, start_date_local, end_date_local, limit))
         int_seg_eff = self.client.get_segment_efforts(segment_id=segment_id,
                             start_date_local= start_date_local, end_date_local = end_date_local,
                             limit=limit)

@@ -20,7 +20,7 @@ def general_context(request):
     context = {
         **cleagues_authObj.auth_context(),
     }
-    print(list_logged_cleagues)
+    # print(list_logged_cleagues)
     return context
 
 # Decorator for Views accesses
@@ -205,7 +205,7 @@ class indexViewClass(View):
     def get(self, request, *args, **kwargs):
         cleagues_authObj = get_cleagues_authObj(request)
 
-        print("I am in index GET")
+        # print("I am in index GET")
 
         if request.path.find('logout') != -1 :
             cleagues_authObj.logout(request)
@@ -221,7 +221,7 @@ class indexViewClass(View):
             # (It means the code returned by Strava is valid)
             # Try to the log Athlete from CLeagues database
             if cleagues_authObj.strava_authObj.logged_strava_atl_id:
-                print(cleagues_authObj.strava_authObj.logged_strava_atl_id)
+                # print(cleagues_authObj.strava_authObj.logged_strava_atl_id)
 
                 # If the athlete is not registered in CLeagues database
                 # Start the registering process
@@ -236,8 +236,8 @@ class indexViewClass(View):
                     return HttpResponseRedirect("/CLeaguesApp/tours_feed/")
         else:
             cleagues_authObj.logout(request)
-            print("I logged out completely")
-        print("I am getting out of Index GET")
+            # print("I logged out completely")
+        # print("I am getting out of Index GET")
         context = { **general_context(request), }
         return render(request, "CLeaguesApp/index.html", context=context)
 
@@ -575,7 +575,7 @@ class tour_details_segmentsViewClass(View):
     @exist_tour
     @permit_to_update_tour
     def post(self, request, *args, **kwargs):
-        print("I am in POST tour details")
+        # print("I am in POST tour details")
 
         tour = kwargs['tour']
         cleagues_authObj = get_cleagues_authObj(request)
@@ -593,8 +593,8 @@ class tour_details_segmentsViewClass(View):
         sg_id = request.GET.get('delete')
         select = request.GET.get('select')
 
-        print(sg_id)
-        print(select)
+        # print(sg_id)
+        # print(select)
 
         # Get the full list from CycleLeagues Segments that can be selected in this view, as defined by 'select'
         list_select_segments = tour_details_segmentsViewClass.get_full_segments(tour,select,cleagues_authObj)
@@ -683,14 +683,14 @@ class tour_details_segmentsViewClass(View):
                     days = DAYS_ACTIVITIES
                     last = LAST_ACTIVITIES
                 first_date = today - timedelta(days=days)
-                print(today)
-                print(first_date)
+                # print(today)
+                # print(first_date)
                 list_last_efforts = cleagues_authObj.strava_authObj.get_atl_last_efforts(last,first_date,today)
                 list_strava_segments = strava_authClass.get_unique_segments_from_efforts(list_last_efforts)
                 tour_details_segmentsViewClass.list_act_full_segments = Segment.convert_list_segments(list_strava_segments)
             return tour_details_segmentsViewClass.list_act_full_segments
         elif select == "FromAll":
-            print("I got here to get all!")
+            # print("I got here to get all!")
             return Segment.objects.all()
         return []
 
@@ -725,10 +725,10 @@ class delete_tourViewClass(View):
         tour = kwargs['tour']
         cleagues_authObj = get_cleagues_authObj(request)
         if request.POST.get("btn_delete_tour"):
-            print("dentro")
+            # print("dentro")
             tour.delete()
             cleagues_authObj.get_updated_atl_stat()
-        print("fora")
+        # print("fora")
         base_url = "/CLeaguesApp/league_details"
         query_string =  urlencode({'league': tour.tr_lg.lg_id})
         url = '{}?{}'.format(base_url, query_string)
@@ -894,10 +894,10 @@ class tours_feedViewClass(View):
 
     @logged_user_required
     def get(self, request, *args, **kwargs):
-        print("Entrei in Get")
+        # print("Entrei in Get")
         cleagues_authObj = get_cleagues_authObj(request)
         list_tours_feed = cleagues_authObj.logged_cleagues_athlete.get_tours_feed()
-        print("Sai do get tours feed")
+        # print("Sai do get tours feed")
         if cleagues_authObj.logged_cleagues_athlete.are_pending_invites():
             notification = "There are pending League inviations waiting for your decision"
         else:
@@ -905,7 +905,7 @@ class tours_feedViewClass(View):
         context = { **general_context(request),
                     'list_tours_feed' : list_tours_feed,
                     'notification' : notification, }
-        print("Vou entrar no render")
+        # print("Vou entrar no render")
         return render(request, "CLeaguesApp/tours_feed.html", context=context)
 
 class tour_details_rankViewClass(View):
@@ -1195,6 +1195,11 @@ class triumphs_feedViewClass(View):
 
         return render(request, "CLeaguesApp/triumphs_feed.html", context=context)
 
+class error403ViewClass(View):
+    def get(self, request, *args, **kwargs):
+        context = { **general_context(request), }
+        return render(request, "CLeaguesApp/Error403.html", context=context)
+
 ### For Strava testing
 
 class test_stravaViewClass(View):
@@ -1207,13 +1212,11 @@ class test_stravaViewClass(View):
         context = { **general_context(request), }
         return render(request, "CLeaguesApp/test_strava.html", context=context)
 
+
+
 # Empty views for a while
 
 class blankViewClass(View):
-
     def get(self, request, *args, **kwargs):
-        context = { **general_context(request), }
-        return render(request, "CLeaguesApp/blank.html", context=context)
-    def post(self, request, *args, **kwargs):
         context = { **general_context(request), }
         return render(request, "CLeaguesApp/blank.html", context=context)

@@ -628,7 +628,7 @@ class Tour(models.Model):
         seg_in_tour_qs = SegInTour.objects.all().filter(sit_tr__tr_id = self.tr_id, sit_sg__sg_id = sg_id)
         if seg_in_tour_qs:
             seg_in_tour = seg_in_tour_qs[0]
-            print("I am inside delete")
+            # print("I am inside delete")
             seg_in_tour.delete()
 
     def is_running_bydate(self):

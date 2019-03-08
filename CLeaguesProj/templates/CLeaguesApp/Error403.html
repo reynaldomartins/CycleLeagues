@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+{% extends "CLeaguesApp/base.html" %}
+
+{% load staticfiles %}
+
+{% block body_block %}
+
+<div class="div-elements-centered">
+  <div class="info-bubble div-elements-centered">
+    <br>
+    <h4><strong>CycleLeagues</strong>
+      <img width="60" height="60" src="{% static 'images/CycleLeaguesIcon.png' %}"
+    </h4>
+    <br>
+    <h5>It is likely you have blocked cookies in your browser</h5>
+    <h5>CycleLeagues needs cookies allowed to work perfectly</h5>
+    <h5>Please modify you browser seetings and try again</h5>
+    <br>
+    <a href="{% url 'indexURLName' %}"><h4>www.CycleLeagues.com</h4></a>
+  </div>
+</div>
+
+{% endblock %}

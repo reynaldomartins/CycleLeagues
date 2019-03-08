@@ -9,6 +9,7 @@ urlpatterns = [
     url(r'^main/$',views.indexViewClass.as_view(), name='indexURLName'),
     url(r'^$',views.indexViewClass.as_view(), name='indexURLName'),
     url(r'^blank/$',views.blankViewClass.as_view(), name='blankURLName'),
+    url(r'^Error403/$',views.error403ViewClass.as_view(), name='error403URLName'),
     url(r'^logout/$',views.indexViewClass.as_view(), name='logoutURLName'),
     url(r'^authorization/$',views.indexViewClass.as_view(), name='indexURLName'),
     url(r'^register_page/$',views.register_pageViewClass.as_view(), name='register_pageURLName'),
