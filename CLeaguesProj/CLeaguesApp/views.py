@@ -1256,13 +1256,14 @@ class error403ViewClass(View):
 class test_ViewClass(View):
     def get(self, request, *args, **kwargs):
 
-        # Send Notifications
-        run_batch_notifications()
 
         # Update Rankings
-        # list_tours = Tour.objects.all()
-        # for tour in list_tours:
-        #     tour.update_ranking()
+        list_tours = Tour.objects.all()
+        for tour in list_tours:
+            tour.update_ranking()
+
+        # Send Notifications
+        run_batch_notifications()
 
         context = { **general_context(request), }
         return render(request, "CLeaguesApp/test_strava.html", context=context)

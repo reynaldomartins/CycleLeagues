@@ -58,29 +58,30 @@ def test_notification(logged_cleagues_athlete):
 def run_batch_notifications():
     event_record_qs = EventRecord.objects.all().filter(er_status="U")
     for event_record in event_record_qs:
-        # if event_record.er_type == "LEGINV":
-        #     atl_qs = Athlete.objects.all().filter(atl_id= event_record.er_arg1)
-        #     if atl_qs:
-        #         athlete = atl_qs[0]
-        #         if athlete.atl_email_strava:
-        #             league_qs = League.objects.all().filter(lg_id = event_record.er_arg2)
-        #             if league_qs:
-        #                 subject, body_text, body_html = get_email_league_invitation_notification(athlete, league_qs[0])
-        #                 if subject:
-        #                     send_email(subject, body_text, body_html, athlete.atl_email_strava)
-        #                     event_record.set_notified()
-        # elif event_record.er_type == "TRCREA":
-        if event_record.er_type == "TRCREA":
+        if event_record.er_type == "LEGINV":
+            atl_qs = Athlete.objects.all().filter(atl_id= event_record.er_arg1)
+            if atl_qs:
+                athlete = atl_qs[0]
+                if athlete.atl_email_strava:
+                    league_qs = League.objects.all().filter(lg_id = event_record.er_arg2)
+                    if league_qs:
+                        subject, body_text, body_html = get_email_league_invitation_notification(athlete, league_qs[0])
+                        if subject:
+                            send_email(subject, body_text, body_html, athlete.atl_email_strava)
+                            event_record.set_notified()
+        elif event_record.er_type in ["TRCREA" , "TRSDAY"]:
             atl_qs = Athlete.objects.all().filter(atl_id= event_record.er_arg1)
             if atl_qs:
                 athlete = atl_qs[0]
                 if athlete.atl_email_strava:
                     tour_qs = Tour.objects.all().filter(tr_id = event_record.er_arg2)
                     if tour_qs:
-                        subject, body_text, body_html = get_email_tour_creation_notification(athlete, tour_qs[0])
+                        if event_record.er_type == "TRSDAY":
+                            subject, title_html = get_subject_and_title(event_record.er_type, event_record.er_arg3)
+                        else:
+                            subject, title_html = get_subject_and_title(event_record.er_type)
+                        body_text, body_html = get_email_tour_athletes_segments_notification(athlete, tour_qs[0],title_html)
                         if body_html:
-                            print(subject)
-                            print(body_html)
                             send_email(subject, body_text, body_html, athlete.atl_email_strava)
                             event_record.set_notified()
         elif event_record.er_type in ["TRSTAR","TRFINI","TRJRN","TRFDAY"]:
@@ -100,21 +101,29 @@ def run_batch_notifications():
                             event_record.set_notified()
 
 def get_subject_and_title(er_type, *args):
-    if er_type == "TRSTAR":
+    if er_type == "TRCREA":
+        subject = "CycleLeagues - A Tour has just been Created"
+        title_html = ("""
+        <h3>You are now taking part in a
+        <span style="font-weight:bold;color:orangered;"> Tour </span>
+        which has just been
+        <span style="font-weight:bold;color:orangered;"> Created</span></h3>
+        """)
+    elif er_type == "TRSTAR":
         subject = "CycleLeagues - A Tour has just Started"
         title_html = ("""
         <h3>A
         <span style="font-weight:bold;color:orangered;"> Tour </span>
-        You are running has just
+        in which You are running has just
         <span style="font-weight:bold;color:orangered;"> Started</span>
         </h3>
         """)
     elif er_type == "TRFINI":
-        subject = "CycleLeagues - A Tour has just Finish"
+        subject = "CycleLeagues - A Tour has just Finished"
         title_html = ("""
         <h3>A
         <span style="font-weight:bold;color:orangered;"> Tour </span>
-        You are running has just
+        in which You are running has just
         <span style="font-weight:bold;color:orangered;"> Finished </span>
         - Look the FINAL RANKING
         </h3>
@@ -131,15 +140,26 @@ def get_subject_and_title(er_type, *args):
         title_html = ("""
         <h3>A
         <span style="font-weight:bold;color:orangered;"> Tour </span>
-        You are running is about to
+        in which You are running is about to
         <span style="font-weight:bold;color:orangered;"> Finish within """ + str(args[0]) + """ days</span>
         </h3>
         """)
+    elif er_type == "TRSDAY":
+        subject = "CycleLeagues - A Tour is About to Start"
+        title_html = ("""
+        <h3>A
+        <span style="font-weight:bold;color:orangered;"> Tour </span>
+        in which You are taking part is about to
+        <span style="font-weight:bold;color:orangered;"> Start within """ + str(args[0]) + """ days</span>
+        </h3>
+        """)
+    else:
+        return "", ""
     return subject, title_html
 
 def get_email_league_invitation_notification(athlete, league):
 
-    list_athletes_league = league.get_athletes_in_league()
+    list_athletes_league_ext = league.get_athletes_in_league()
     list_tours_league = league.get_tours()
 
     subject = "CycleLeagues - You have been invited to Join a League"
@@ -148,15 +168,11 @@ def get_email_league_invitation_notification(athlete, league):
     <html>
     <head></head>
     <body>
-        <div style="text-align: center;">
-            <table align=center><tbody><tr>
-              <td>
-                <img class="img-circle" width="80" height="80" src=" """ + STATIC_URL + """images/CycleLeaguesIcon.png" />
-              </td>
-              <td>
-                <h3 style="display: inline-block;">&nbsp;&nbsp;CycleLeagues</h3>
-              </td>
-            </tr></tbody></table>
+        <div style="text-align: center;"> """)
+
+    body_html = body_html + get_html_cycleleagues_head()
+
+    body_html = body_html + ("""
             <h3>You have just been Invited to <span style="font-weight:bold;color:orangered;">Join a League</span></h3>
             <table align=center><tbody><tr>
                 <td>
@@ -193,16 +209,17 @@ def get_email_league_invitation_notification(athlete, league):
                 </thead>
                 <tbody>""" )
 
-    for atl_in_lg in list_athletes_league:
-        body_html = body_html + ("""
+    for atl_in_lg_ext in list_athletes_league_ext:
+        if atl_in_lg_ext.atl_in_league_status != "I":
+            body_html = body_html + ("""
                         <tr>
                           <td>
-                            <img class="img-circle" width="40" height="40" src=" """ +  MEDIA_URL + atl_in_lg.atl.atl_pic.url + """ "/>
+                            <img class="img-circle" width="40" height="40" src=" """ +  MEDIA_URL + atl_in_lg_ext.atl.atl_pic.url + """ "/>
                           </td>
                           <td style="text-align:left;">
-                              <strong>""" + atl_in_lg.atl.atl_name_strava + """</strong>
-                              <span style="color:red;font-weight: normal;">""" + is_you(athlete.atl_id,  atl_in_lg.atl.atl_id) + """</span>
-                              (""" + athlete_status_str(atl_in_lg.atl_in_league_status) + """)
+                              <strong>""" + atl_in_lg_ext.atl.atl_name_strava + """</strong>
+                              <span style="color:red;font-weight: normal;">""" + is_you(athlete.atl_id,  atl_in_lg_ext.atl.atl_id) + """</span>
+                              (""" + athlete_status_str(atl_in_lg_ext.atl_in_league_status) + """)
                            </td>
                         </tr>""" )
 
@@ -266,17 +283,14 @@ def get_email_league_invitation_notification(athlete, league):
                     </tbody>
                 </table>
             </div>
-        <br>
-        <div style="text-align: center;">
-            <h4>
-                <a href='http://www.cycleleagues.com/'>www.CycleLeagues.com</a>
-            </h4>
-        </div>
+        <br>""")
+
+    body_html = body_html + get_html_footnote()
+
+    body_html = body_html + ("""
     </body>
     </html>
             """ )
-
-    # print(body_html)
 
     return subject, body_text, body_html
 
@@ -305,14 +319,13 @@ def get_tour_email_data(athlete, tour):
 
     return atl_in_league_status, list_athletes_tour, notified_atl_in_tour, list_tour_segments, tour_summary
 
-def get_email_tour_creation_notification(athlete, tour):
-
+def get_email_tour_athletes_segments_notification(athlete, tour, title_html):
     atl_in_league_status, list_athletes_tour, notified_atl_in_tour, list_tour_segments, tour_summary = get_tour_email_data(athlete, tour)
 
     if not notified_atl_in_tour:
         return "", "", ""
 
-    subject = "CycleLeagues - A Tour was created in a League in which you are taking part"
+
     body_text = ""
     body_html = ( """
     <html>
@@ -321,8 +334,7 @@ def get_email_tour_creation_notification(athlete, tour):
     body_html = body_html + ("""
         <div style="text-align: center;">""")
     body_html = body_html + get_html_cycleleagues_head()
-    body_html = body_html + ("""
-        <h3>You are now taking part in a <span style="font-weight:bold;color:orangered;">Tour</span> that has just been <span style="font-weight:bold;color:orangered;">Created</span></h3>""")
+    body_html = body_html + title_html
     body_html = body_html + ("""
         <br>
         <div align=center style="background-color: white;
@@ -361,7 +373,7 @@ def get_email_tour_creation_notification(athlete, tour):
     </body>
     </html>
             """ )
-    return subject, body_text, body_html
+    return body_text, body_html
 
 def get_email_tour_rank_segments_notification(athlete, tour, title_html):
     atl_in_league_status, list_athletes_tour, notified_atl_in_tour, list_tour_segments, tour_summary = get_tour_email_data(athlete, tour)
@@ -525,9 +537,9 @@ def get_html_tour_head_summary(tour, athlete, tour_summary,notified_atl_in_tour)
                           border-color : white;
                           text-align:center;">""")
 
-    if tour_summary['leader_pic'] :
-        body_html = body_html + ("""
-                <img class="img-circle" width="40" height="40" src=" """+ MEDIA_URL + tour_summary[ 'leader_pic' ] + """ "/>""")
+    # if tour_summary['leader_pic'] :
+    #     body_html = body_html + ("""
+    #             <img class="img-circle" width="40" height="40" src=" """+ MEDIA_URL + tour_summary[ 'leader_pic' ] + """ "/>""")
 
     body_html = body_html + ("""
                 <strong>
@@ -641,13 +653,16 @@ def get_html_tour_rank(list_atl_in_tour, athlete, tour_summary):
 
     for ait in list_atl_in_tour:
         if ait.ait_status == "A":
+
+            ridden_left = tour_summary[ 'num_segments' ] - ait.ait_ridden
+
             body_html = body_html + ("""
                 <tr>
                   <td style="padding-right: 5px;
                               padding-left: 5px;
                               border: 1px solid white;
                               border-color : white lightblue white white;
-                              text-align:left;">""" + rank_translation(ait.ait_rank, ait.ait_points)+ """</td>
+                              text-align:left;">""" + str(rank_translation(ait.ait_rank, ait.ait_points)) + """</td>
                   <td style="padding-right: 5px;
                               padding-left: 5px;
                               border: 1px solid white;
@@ -677,7 +692,7 @@ def get_html_tour_rank(list_atl_in_tour, athlete, tour_summary):
                               padding-left: 5px;
                               border: 1px solid white;
                               border-color : white;
-                              text-align:center;"> """ + str( tour_summary[ 'num_segments' ] - ait.ait_ridden) + """</td>
+                              text-align:center;"> """ + str(ridden_left) + """</td>
                 </tr>""")
 
     body_html = body_html + ("""
