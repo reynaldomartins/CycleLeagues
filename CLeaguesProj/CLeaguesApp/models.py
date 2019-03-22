@@ -29,6 +29,16 @@ class triumphs_feedClass():
     tr_pic = ''
     lg_pic = ''
 
+def athlete_file_name(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = "%s.%s" % (instance.atl_id, ext)
+    return os.path.join('athletes', filename)
+
+def athlete_mini_file_name(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = "%s.%s" % (instance.atl_id, ext)
+    return os.path.join('athletes_mini', filename)
+
 class Athlete(models.Model):
     atl_id = models.IntegerField(db_column='ATL_id', primary_key=True)
     atl_name_strava = models.CharField(db_column='ATL_name_strava', max_length=80, blank=True, null=True)
@@ -40,11 +50,15 @@ class Athlete(models.Model):
     atl_sex_strava = models.CharField(db_column='ATL_sex_strava', max_length=1, blank=True, null=True)
     atl_created_at_strava = models.DateField(db_column='ATL_created_at_strava', blank=True, null=True)
     atl_status = models.CharField(db_column='ATL_status', max_length=1)
-    # atl_creation_timestamp = models.DateTimeField(db_column='ATL_creation_timestamp')
-    # atl_activation_timestamp = models.DateTimeField(db_column='ATL_activation_timestamp')
-    # atl_inactivation_timestamp = models.DateTimeField(db_column='ATL_inactivation_timestamp')
-    atl_pic = models.ImageField(db_column='ATL_pic', blank=True,upload_to="athletes")
-    atl_pic_mini = models.ImageField(db_column='ATL_pic_mini', blank=True,upload_to="athletes_mini")
+    atl_pic = models.ImageField(db_column='ATL_pic', blank=True,upload_to=athlete_file_name)
+    atl_pic_mini = models.ImageField(db_column='ATL_pic_mini', blank=True,upload_to=athlete_mini_file_name)
+    atl_notific_leginv = models.BooleanField(db_column='ATL_notific_leginv', default=True, blank=True, null=True)
+    atl_notific_trcrea = models.BooleanField(db_column='ATL_notific_trcrea', default=True, blank=True, null=True)
+    atl_notific_trstar = models.BooleanField(db_column='ATL_notific_trstar', default=True, blank=True, null=True)
+    atl_notific_trfini = models.BooleanField(db_column='ATL_notific_trfini', default=True, blank=True, null=True)
+    atl_notific_trjrn = models.BooleanField(db_column='ATL_notific_trjrn', default=True, blank=True, null=True)
+    atl_notific_trsday = models.IntegerField(db_column='ATL_notific_trsday', default=0, blank=True, null=True)
+    atl_notific_trfday = models.IntegerField(db_column='ATL_notific_trfday', default=0, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -857,6 +871,8 @@ class Tour(models.Model):
         # Now, sort atls in this tour using the points obtained as a key
         list_atl_in_tour.sort(key=lambda x: x.ait_points, reverse=True)
 
+        today = datetime.now().date()
+
         # Set the position of each athlete in the Tour
         i = 1
         for atl_in_tour in list_atl_in_tour:
@@ -864,6 +880,9 @@ class Tour(models.Model):
             i=i+1
             atl_in_tour = atl_in_tour.get_saving_instance()
             atl_in_tour.save()
+            if today <= self.tr_finish_date:
+                event_record = EventRecord()
+                event_record.create_record_tour_journal_notification(atl_in_tour.ait_atl, tour)
 
         # print("Ordered rank in the Tour {} :".format(self.tr_name))
         # for atl_in_tour in list_atl_in_tour:
@@ -871,10 +890,13 @@ class Tour(models.Model):
         #                                     atl_in_tour.ait_points, atl_in_tour.ait_ridden))
 
         # If it was reached the last date of the Tour, set as finished-finished, status = "Z
-        today = datetime.now().date()
+
         if today > self.tr_finish_date:
             self.tr_status = "Z"
             self.save()
+            for atl_in_tour in list_atl_in_tour:
+                event_record = EventRecord()
+                event_record.create_record_tour_finish_notification(atl_in_tour.ait_atl, tour)
         return True
 
 NOT_RANKED = 1000
@@ -982,3 +1004,100 @@ class AtlBestTrial(models.Model):
         self.abt_time = atl_best_trial.abt_time
         self.abt_rank = atl_best_trial.abt_rank
         self.abt_points = atl_best_trial.abt_points
+
+# ER_Status Type
+# LOGIN = login (arg1 = atl_id, status = A)
+# LOGOUT = logout (arg1 = atl_id, status = A)
+# LEGINV = league invitation notification (arg1 = atl_id, arg2 = lg_ig, status = U,N)
+# TRCREA = tour creation notification (arg1 = atl_id, arg2 = tr_ig, status = U,N)
+# TRSTAR = tour start notification (arg1 = atl_id, arg2 = tr_ig, status = U,N)
+# TRFINI = tour finish notification (arg1 = atl_id, arg2 = tr_ig, status = U,N)
+# TRJRN = tour journal notification (arg1 = atl_id, arg2 = tr_ig, status = U,N)
+# TRSDAY = tour start notification (arg1 = atl_id, arg2 = tr_ig, arg3 = atl_tr_start_days, status = U,N)
+# TRFDAY = tour finish notification (arg1 = atl_id, arg2 = tr_ig, arg3 = atl_tr_finish_days, status = U,N)
+
+class EventRecord(models.Model):
+    er_datetime_event = models.DateTimeField(db_column='ER_datetime_event')
+    er_type = models.CharField(db_column='ER_type', max_length=6, blank=True, null=True)
+    er_arg1 = models.IntegerField(db_column='ER_arg1')
+    er_arg2 = models.IntegerField(db_column='ER_arg2')
+    er_arg3 = models.IntegerField(db_column='ER_arg3')
+    er_status = models.CharField(db_column='ER_status', max_length=1, blank=True, null=True)
+    er_datetime_processed = models.DateTimeField(db_column='ER_datetime_processed', null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'Event_Record'
+
+    def set_notified(self):
+        self.er_datetime_processed = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self.er_status = "N"
+        # self.save()
+
+    def create_record_login(self, athlete):
+        self.er_datetime_event = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self.er_type = "LOGIN"
+        self.er_arg1 = athlete.atl_id
+        self.er_status = "A"
+        self.save()
+
+    def create_record_logout(self, athlete):
+        self.er_datetime_event = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self.er_type = "LOGOUT"
+        self.er_arg1 = athlete.atl_id
+        self.er_status = "A"
+        self.save()
+
+    def create_record_league_invitation_notification(self, athlete, league):
+        if athlete.atl_notific_leginv == True:
+            self.er_datetime_event = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            self.er_type = "LEGINV"
+            self.er_arg1 = athlete.atl_id
+            self.er_arg2 = league.lg_id
+            self.er_status = "U"
+            self.save()
+
+    def create_record_tour_creation_notification(self, athlete, tour):
+        if athlete.atl_notific_trcrea == True:
+            self.er_datetime_event = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            self.er_type = "TRCREA"
+            self.er_arg1 = athlete.atl_id
+            self.er_arg2 = tour.tr_id
+            self.er_status = "U"
+            self.save()
+
+    def create_record_tour_finish_notification(self, athlete, tour):
+        if athlete.atl_notific_trfini == True:
+            self.er_datetime_event = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            self.er_type = "TRFINI"
+            self.er_arg1 = athlete.atl_id
+            self.er_arg2 = tour.tr_id
+            self.er_status = "U"
+            self.save()
+
+    def create_record_tour_journal_notification(self, athlete, tour):
+        if athlete.atl_notific_trjrn == True:
+            self.er_datetime_event = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            self.er_type = "TRJRN"
+            self.er_arg1 = athlete.atl_id
+            self.er_arg2 = tour.tr_id
+            self.er_status = "U"
+            self.save()
+
+    def create_record_tour_start_notification(self, athlete, tour, days):
+        self.er_datetime_event = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self.er_type = "TRSDAY"
+        self.er_arg1 = athlete.atl_id
+        self.er_arg2 = tour.tr_id
+        self.er_arg3 = days
+        self.er_status = "U"
+        self.save()
+
+    def create_record_tour_finish_notification(self, athlete, tour, days):
+        self.er_datetime_event = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self.er_type = "TRFDAY"
+        self.er_arg1 = athlete.atl_id
+        self.er_arg2 = tour.tr_id
+        self.er_arg3 = days
+        self.er_status = "U"
+        self.save()

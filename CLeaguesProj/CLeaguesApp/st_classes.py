@@ -38,11 +38,13 @@ class cleagues_authClass():
         atl_id = self.logged_cleagues_athlete.atl_id
         list_logged_cleagues[str(atl_id)] = self
         request.session['session_cleagues_id']=atl_id
+        EventRecord().create_record_login(self.logged_cleagues_athlete)
 
     def logout(self,request):
         global list_logged_cleagues
 
         if self.logged_cleagues_athlete:
+            EventRecord().create_record_logout(self.logged_cleagues_athlete)
             del(list_logged_cleagues[str(self.logged_cleagues_athlete.atl_id)])
         request.session['session_cleagues_id']=None
 
@@ -50,6 +52,7 @@ class cleagues_authClass():
         self.logged_cleagues_athlete = ''
         if self.strava_authObj:
             self.strava_authObj.logout()
+
         self.stat_qty_leagues = 0
         self.stat_qty_tours = 0
         self.stat_qty_triumphs = 0
@@ -81,10 +84,21 @@ class cleagues_authClass():
         return context
 
 def get_cleagues_authObj(request):
+    global list_logged_cleagues
     session_cleagues_id = request.session.get('session_cleagues_id', None)
     if session_cleagues_id:
         session_cleagues_id_str = str(session_cleagues_id)
         if session_cleagues_id_str in list_logged_cleagues:
+            return list_logged_cleagues[session_cleagues_id_str]
+    return cleagues_authClass()
+
+def set_cleagues_authObj_athlete(request,athlete):
+    global list_logged_cleagues
+    session_cleagues_id = request.session.get('session_cleagues_id', None)
+    if session_cleagues_id:
+        session_cleagues_id_str = str(session_cleagues_id)
+        if session_cleagues_id_str in list_logged_cleagues:
+            list_logged_cleagues[session_cleagues_id_str].logged_cleagues_athlete = athlete
             return list_logged_cleagues[session_cleagues_id_str]
     return cleagues_authClass()
 

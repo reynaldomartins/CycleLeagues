@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+{% extends "CLeaguesApp/base.html" %}
+
+{% load staticfiles %}
+{% load widget_tweaks %}
+
+{% block body_block %}
+
+  <h3><span class="strong-enhance">Edit Athlete Profile and Settings</span>
+    <img class="img-circle" width="80" height="80" src="{{ MEDIA_URL }}{{ athlete.atl_pic }}"/>
+    <strong>{{athlete.atl_name_strava}}</strong>
+  </h3>
+  <br>
+
+  <form class="" action="{% url 'CLeaguesApp:edit_athleteURLName' %}?athlete={{athlete.atl_id}}" method="POST" enctype="multipart/form-data">
+
+    {% csrf_token %}
+
+    <div class="container">
+
+      <div class="row">
+
+        <div class="col-lg-4 col-sm-4 boxy">
+
+          <div class="fieldWrapper">
+              <label class="field-label top-label" for="{{ athlete_form.atl_email_strava.id_for_label }}">Your Email</label>
+              {{ athlete_form.atl_email_strava | add_class:'field-box field-box-large'}}
+          </div>
+
+          <div class="div-pic-input">
+            <div class="fieldWrapper">
+                <label class="field-label" for="{{ athlete_form.atl_pic.id_for_label }}">Upload your Picture</label>
+                {{ athlete_form.atl_pic }}
+            </div>
+          </div>
+
+        </div>
+
+        <div class="col-lg-8 col-sm-8 boxy">
+
+          <div class="div-atl-settings">
+            <p><span class="strong-enhance">Email Notification Settings</span></strong></p>
+            <br>
+            <p><strong><i>Notify me when :</i></p></strong>
+            <div class="settings-line">
+              <p>
+              {{ athlete_form.atl_notific_leginv }}&nbsp;
+              <strong>I have just received a invitation to join a League&nbsp;</strong>
+              </p>
+            </div>
+            <div class="settings-line">
+              <p>
+              {{ athlete_form.atl_notific_trcrea }}&nbsp;
+              <strong>A new Tour has just been created and I am taking part of it&nbsp;</strong>
+              </p>
+            </div>
+            <div class="settings-line">
+              <p>
+              {{ athlete_form.atl_notific_trstar }}&nbsp;
+              <strong>A Tour which I am running has just Started&nbsp;</strong>
+              </p>
+            </div>
+            <div class="settings-line">
+              <p>
+              {{ athlete_form.atl_notific_trfini }}&nbsp;
+              <strong>A Tour which I am running has just Finished&nbsp;</strong>
+              </p>
+            </div>
+            <div class="settings-line">
+              <p>
+              {{ athlete_form.atl_notific_trjrn }}&nbsp;
+              <strong>A Tour which I am running has just updated its Ranking (Tour Journal)&nbsp;</strong>
+              </p>
+            </div>
+            <div class="settings-line">
+              <p>
+              <strong>A Tour which I am taking part is about to start within&nbsp;</strong>
+              {{ athlete_form.atl_notific_trsday | add_class:'field-days' }}&nbsp;
+              <strong>days&nbsp;<span class="info-small">(0=no notification)</span></strong>
+              </p>
+            </div>
+            <div class="settings-line">
+              <p>
+              <strong>A Tour which I am running will be finished within&nbsp;</strong>
+              {{ athlete_form.atl_notific_trfday | add_class:'field-days' }}&nbsp;
+              <strong>days&nbsp;<span class="info-small">(0=no notification)</span></strong>
+              </p>
+            </div>
+
+            {% if athlete_form.errors %}
+              <br>
+              <span class="form-error">
+                {{ athlete_form.atl_notific_trsday.errors | striptags }}
+                {{ athlete_form.atl_notific_trfday.errors | striptags }}
+              </span>
+              <br>
+          {% endif %}
+
+        </div>
+
+      </div>
+
+      <div class="row container">
+
+        <div class="col-lg-12 col-sm-12 boxy">
+
+          {% if athlete_form.errors %}
+            <br>
+            <span class="form-error">
+              {{ athlete_form.non_field_errors | striptags }}
+            </span>
+            <br>
+          {% endif %}
+
+          <button type="button" class="cancel-button btn btn"
+                data-href="{% url 'CLeaguesApp:tours_feedURLName' %}" >Cancel</button>
+          <input type="submit" class="btn btn-primary" value="Update your Profile"></input>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </form>
+
+{% endblock %}

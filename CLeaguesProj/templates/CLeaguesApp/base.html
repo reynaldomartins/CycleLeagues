@@ -75,7 +75,7 @@
                     <li> <a href="{% url 'CLeaguesApp:leagues_feedURLName' %}">Leagues</a></li>
                     <li> <a href="{% url 'CLeaguesApp:triumphs_feedURLName' %}">Triumphs</a></li>
                     {% if logged_cleagues_athlete.atl_id ==  1 %}
-                      <li> <a href="{% url 'CLeaguesApp:test_stravaURLName' %}"><b>Update Ranks</b></a></li>
+                      <li> <a href="{% url 'CLeaguesApp:test_stravaURLName' %}"><b>Batch Processes</b></a></li>
                     {% endif %}
                   </ul>
                   <ul class="nav navbar-nav navbar-right sc-navbar">
@@ -88,7 +88,17 @@
                             <li><a href="{% url 'CLeaguesApp:leagues_feed_inviteURLName' %}" id="join-league-inv-option">by Accepting an Invitation</a></li>
                           </ul>
                         </li>
-                    <li><a href="{% url 'CLeaguesApp:logoutURLName' %}" id="logout-option">Logout</a></li>
+                    <li role="presentation" class="dropdown">
+                          <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                              <img class="img-circle" width="24" height="24"src="{{ logged_cleagues_athlete.atl_pic_mini.url }}" />
+                              {{ logged_cleagues_athlete.atl_name_strava }}
+                          <span class="caret"></span>
+                          </a>
+                          <ul class="dropdown-menu">
+                            <li><a href="{% url 'CLeaguesApp:edit_athleteURLName' %}?athlete={{logged_cleagues_athlete.atl_id}}" id="edit_athlete-option">Edit Profile</a></li>
+                            <li><a href="{% url 'CLeaguesApp:logoutURLName' %}" id="logout-option">Logout</a></li>
+                          </ul>
+                    </li>
                   </ul>
               </div>
             </nav>

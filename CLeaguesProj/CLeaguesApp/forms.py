@@ -16,16 +16,25 @@ class leagueFormClass(forms.ModelForm):
                         error_messages={'unique': 'The League Name informed already exists in CycleLeagues.' })
     lg_pic = forms.ImageField(widget=forms.FileInput, label="Add a Picture to this League", required=False)
 
-    # lg_id = forms.IntegerField(widget=forms.HiddenInput(), required=False)
-    # lg_activation_code = forms.IntegerField(widget=forms.HiddenInput(), required=False)
-    # lg_atl_creator = forms.IntegerField(widget=forms.HiddenInput(), required=False)
-    # lg_status = forms.CharField(widget=forms.HiddenInput(), required=False)
-    # lg_creation_timestamp = forms.DateTimeField(widget=forms.HiddenInput(), required=False)
-    # lg_inactivation_timestamp = forms.DateTimeField(widget=forms.HiddenInput(), required=False)
-
     class Meta:
         model = League
         fields = ('lg_name', 'lg_pic')
+
+class athleteFormClass(forms.ModelForm):
+    atl_email_strava = forms.CharField(widget=forms.EmailInput, label="Your Email", required=False)
+    atl_pic = forms.ImageField(widget=forms.FileInput, label="Change your Picture", required=False)
+    atl_notific_leginv = forms.BooleanField(widget=forms.CheckboxInput, required=False)
+    atl_notific_trcrea = forms.BooleanField(widget=forms.CheckboxInput, required=False)
+    atl_notific_trstar = forms.BooleanField(widget=forms.CheckboxInput, required=False)
+    atl_notific_trfini = forms.BooleanField(widget=forms.CheckboxInput, required=False)
+    atl_notific_trjrn = forms.BooleanField(widget=forms.CheckboxInput, required=False)
+    atl_notific_trsday = forms.IntegerField(widget=forms.NumberInput, required=True)
+    atl_notific_trfday = forms.IntegerField(widget=forms.NumberInput, required=True)
+
+    class Meta:
+        model = Athlete
+        fields = ('atl_email_strava', 'atl_pic', 'atl_notific_leginv', 'atl_notific_trcrea', 'atl_notific_trstar',
+                    'atl_notific_trfini', 'atl_notific_trjrn', 'atl_notific_trsday', 'atl_notific_trfday')
 
 class SS_ModelChoiceField(ModelChoiceField):
     def label_from_instance(self, obj):

@@ -11,6 +11,7 @@ from .models import *
 from django.urls import reverse
 from django.shortcuts import redirect
 from urllib.parse import urlencode
+from .email_notifications import *
 
 LAST_ACTIVITIES = 20
 DAYS_ACTIVITIES = 90
@@ -111,7 +112,7 @@ def permit_to_update_athlete(func):
         else:
             base_url = "/CLeaguesApp/oops"
             query_string =  urlencode({'error': "NoAthleteUpdatePermit",
-                                       'code' : lg_id })
+                                       'code' : athlete.atl_id })
             url = '{}?{}'.format(base_url, query_string)
             return HttpResponseRedirect(url)
     return _wrapped_func
@@ -188,11 +189,11 @@ class oopsViewClass(View):
         elif error == "NoAthlete":
             message = "The Athlete you have informed in the URL does no exist"
         elif error == "NoLeagueUpdatePermit":
-            message = "Your cannot update this League, since you are not the creator of it"
+            message = "You cannot update this League, since you are not the creator of it"
         elif error == "NoTourUpdatePermit":
-            message = "Your cannot update this Tour, since you are not the creator of it"
+            message = "You cannot update this Tour, since you are not the creator of it"
         elif error == "NoAthleteUpdatePermit":
-            message = "Your cannot update this Athlete, since you are not him/her"
+            message = "You cannot update this Athlete, since you are not him/her"
         elif error == "NoLeagueSeePermit":
             message = "You cannot see the League you have informed in the URL, since you do not belong to it"
         elif error == "NoTourSeePermit":
@@ -372,6 +373,8 @@ class invite_athletesViewClass(View):
                     atl_in_league = AtlInLeague()
                     atl_in_league.set_at_creation(atl, league, "C")
                     atl_in_league.save()
+                    event_record = EventRecord()
+                    event_record.create_record_league_invitation_notification(atl, league)
                     atl_in_league_ext = athlete_in_league_extClass()
                     atl_in_league_ext.atl = atl_in_league.ail_atl
                     atl_in_league_ext.atl_in_league_status = atl_in_league.ail_status
@@ -503,6 +506,8 @@ class create_tourViewClass(View):
                     atlintour = AtlInTour()
                     atlintour.set_at_creation(atl_in_league.atl, tour)
                     atlintour.save()
+                    event_record = EventRecord()
+                    event_record.create_record_tour_creation_notification(atl_in_league.atl, tour)
 
             if original_tr_id:
                 tour.clone_segments(original_tour)
@@ -1195,6 +1200,52 @@ class triumphs_feedViewClass(View):
 
         return render(request, "CLeaguesApp/triumphs_feed.html", context=context)
 
+class edit_athleteViewClass(View):
+
+    @logged_user_required
+    @exist_athlete
+    @permit_to_update_athlete
+    def get(self, request, *args, **kwargs):
+        athlete = kwargs['athlete']
+        athlete_form = athleteFormClass(None, instance=athlete)
+        athlete_form.fields['atl_pic'].label = "Change your Picture"
+        context = { **general_context(request),
+                    'athlete': athlete,
+                    'athlete_form': athlete_form,
+                    }
+        return render(request, "CLeaguesApp/edit_athlete.html", context=context)
+
+    @logged_user_required
+    @exist_athlete
+    @permit_to_update_athlete
+    def post(self, request, *args, **kwargs):
+        athlete = kwargs['athlete']
+
+        athlete_form = athleteFormClass(request.POST, instance=athlete)
+        athlete_form.fields['atl_pic'].label = "Change Your Picture"
+
+        if athlete_form.is_valid():
+            athlete = athlete_form.save(commit=False)
+
+            # Check if they provided a profile picture
+            if request.FILES:
+                atl_pic = request.FILES['atl_pic']
+                if atl_pic:
+                    # print("I got a picture")
+                    athlete.atl_pic = resize_image(atl_pic,124)
+                    athlete.atl_pic_mini = resize_image(atl_pic,60)
+
+            athlete.save()
+
+            set_cleagues_authObj_athlete(request, athlete)
+
+            return HttpResponseRedirect("/CLeaguesApp/tours_feed")
+        context = { **general_context(request),
+                    'athlete_form' : athlete_form,
+                    'athlete' : athlete,
+                    }
+        return render(request, "CLeaguesApp/edit_athlete.html", context=context)
+
 class error403ViewClass(View):
     def get(self, request, *args, **kwargs):
         context = { **general_context(request), }
@@ -1202,17 +1253,19 @@ class error403ViewClass(View):
 
 ### For Strava testing
 
-class test_stravaViewClass(View):
+class test_ViewClass(View):
     def get(self, request, *args, **kwargs):
 
-        list_tours = Tour.objects.all()
-        for tour in list_tours:
-            tour.update_ranking()
+        # Send Notifications
+        run_batch_notifications()
+
+        # Update Rankings
+        # list_tours = Tour.objects.all()
+        # for tour in list_tours:
+        #     tour.update_ranking()
 
         context = { **general_context(request), }
         return render(request, "CLeaguesApp/test_strava.html", context=context)
-
-
 
 # Empty views for a while
 
