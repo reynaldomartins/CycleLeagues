@@ -55,7 +55,7 @@ def test_notification(logged_cleagues_athlete):
             subject, body_text, body_html = set_notification_tour(logged_cleagues_athlete, tour)
             send_email(subject, body_text, body_html, "reynaldo.martins@globo.com")
 
-def run_batch_notifications():
+def run_batch_send_email_notifications():
     event_record_qs = EventRecord.objects.all().filter(er_status="U")
     for event_record in event_record_qs:
         if event_record.er_type == "LEGINV":
@@ -69,6 +69,8 @@ def run_batch_notifications():
                         if subject:
                             send_email(subject, body_text, body_html, athlete.atl_email_strava)
                             event_record.set_notified()
+                else:
+                    event_record.set_notified()
         elif event_record.er_type in ["TRCREA" , "TRSDAY"]:
             atl_qs = Athlete.objects.all().filter(atl_id= event_record.er_arg1)
             if atl_qs:
@@ -84,6 +86,8 @@ def run_batch_notifications():
                         if body_html:
                             send_email(subject, body_text, body_html, athlete.atl_email_strava)
                             event_record.set_notified()
+                else:
+                    event_record.set_notified()
         elif event_record.er_type in ["TRSTAR","TRFINI","TRJRN","TRFDAY"]:
             atl_qs = Athlete.objects.all().filter(atl_id= event_record.er_arg1)
             if atl_qs:
@@ -99,6 +103,8 @@ def run_batch_notifications():
                         if body_html:
                             send_email(subject, body_text, body_html, athlete.atl_email_strava)
                             event_record.set_notified()
+                else:
+                    event_record.set_notified()
 
 def get_subject_and_title(er_type, *args):
     if er_type == "TRCREA":
@@ -432,14 +438,26 @@ def get_email_tour_rank_segments_notification(athlete, tour, title_html):
 
 def get_html_cycleleagues_head():
     return ("""
-            <table align=center><tbody><tr>
-              <td>
-                <img class="img-circle" width="80" height="80" src=" """ + STATIC_URL + """images/CycleLeaguesIcon.png" />
-              </td>
-              <td>
-                <h3 style="display: inline-block;">&nbsp;&nbsp;CycleLeagues</h3>
-              </td>
-            </tr></tbody></table>""")
+            <table align=center><tbody>
+              <tr>
+                  <td>
+                    """ + str(STATIC_DIR + "images/CycleLeaguesIcon.png") + """
+                  </td>
+              </tr>
+              <tr>
+                  <td>
+                    """ + str(STATIC_URL + "images/CycleLeaguesIcon.png") + """
+                  </td>
+              </tr>
+              <tr>
+                  <td>
+                    <img class="img-circle" width="80" height="80" src=" """ + STATIC_URL + """images/CycleLeaguesIcon.png" />
+                  </td>
+                  <td>
+                    <h3 style="display: inline-block;">&nbsp;&nbsp;CycleLeagues</h3>
+                  </td>
+              </tr>
+            </tbody></table>""")
 
 def get_html_tour_head_summary(tour, athlete, tour_summary,notified_atl_in_tour):
     body_html = ("""
@@ -591,7 +609,6 @@ def get_html_segments_in_tour(list_tour_segments):
                     </thead>
                     <tbody>""")
 
-    if list_tour_segments:
         for seg in list_tour_segments:
             body_html = body_html + ( """
                             <tr>
@@ -626,7 +643,7 @@ def get_html_segments_in_tour(list_tour_segments):
                         </tbody>
                     </table>""")
     else:
-        body_html = body_html + ("""<p>No segments were selected for this Tour yet</p>""")
+        body_html = ("""<p>No segments were selected for this Tour yet</p>""")
     return body_html
 
 def get_html_footnote():
@@ -651,12 +668,20 @@ def get_html_tour_rank(list_atl_in_tour, athlete, tour_summary):
         </thead>
         <tbody>""")
 
+    list_atl_in_tour.sort(key=lambda x: x.ait_rank, reverse=False)
+
     for ait in list_atl_in_tour:
         if ait.ait_status == "A":
 
             ridden_left = tour_summary[ 'num_segments' ] - ait.ait_ridden
 
             body_html = body_html + ("""
+                <tr>
+                    <td>""" +  str(MEDIA_DIR + ait.ait_atl.atl_pic_mini.url) + """ </td>
+                </tr>
+                <tr>
+                    <td>""" +  str(MEDIA_URL + ait.ait_atl.atl_pic_mini.url) + """ </td>
+                </tr>
                 <tr>
                   <td style="padding-right: 5px;
                               padding-left: 5px;

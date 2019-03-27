@@ -884,25 +884,25 @@ class Tour(models.Model):
             i=i+1
             atl_in_tour = atl_in_tour.get_saving_instance()
             atl_in_tour.save()
+
+            # print(atl_in_tour.ait_atl.atl_name_strava)
+            # print(atl_in_tour.ait_atl.atl_notific_trsday)
+            # print((self.tr_start_date - today).days)
+            # print(atl_in_tour.ait_atl.atl_notific_trfday)
+            # print((self.tr_finish_date - today).days)
+
             if today > self.tr_start_date and today <= self.tr_finish_date:
                 event_record = EventRecord()
                 event_record.create_record_tour_journal_notification(atl_in_tour.ait_atl, self)
-            if today == self.tr_start_date:
-                for atl_in_tour in list_atl_in_tour:
-                    event_record = EventRecord()
-                    event_record.create_record_tour_start_notification(atl_in_tour.ait_atl, self)
+
             if today > self.tr_finish_date:
-                for atl_in_tour in list_atl_in_tour:
-                    event_record = EventRecord()
-                    event_record.create_record_tour_finish_notification(atl_in_tour.ait_atl, self)
-            if atl_in_tour.ait_atl.atl_notific_trsday == (self.tr_start_date - today).days:
-                for atl_in_tour in list_atl_in_tour:
-                    event_record = EventRecord()
-                    event_record.create_record_tour_start_days_notification(atl_in_tour.ait_atl, self)
+                event_record = EventRecord()
+                event_record.create_record_tour_finish_notification(atl_in_tour.ait_atl, self)
+
             if atl_in_tour.ait_atl.atl_notific_trfday == (self.tr_finish_date - today).days:
-                for atl_in_tour in list_atl_in_tour:
-                    event_record = EventRecord()
-                    event_record.create_record_tour_finish_days_notification(atl_in_tour.ait_atl, self)
+                print("I am in finish days")
+                event_record = EventRecord()
+                event_record.create_record_tour_finish_days_notification(atl_in_tour.ait_atl, self)
 
         # print("Ordered rank in the Tour {} :".format(self.tr_name))
         # for atl_in_tour in list_atl_in_tour:
@@ -919,6 +919,22 @@ class Tour(models.Model):
         event_record.create_record_rank_calc_finish(self)
 
         return True
+
+    def create_notification_events(self):
+
+        # Get a list with all athletes in this tour
+        atl_in_tour_list = AtlInTour.objects.all().filter(ait_tr__tr_id = self.tr_id,
+                                                            ait_status = "A")
+        today = datetime.now().date()
+
+        for atl_in_tour in atl_in_tour_list:
+            atl = atl_in_tour.ait_atl
+            if today == self.tr_start_date:
+                event_record = EventRecord()
+                event_record.create_record_tour_start_notification(atl, self)
+            if atl.atl_notific_trsday == (self.tr_start_date - today).days:
+                event_record = EventRecord()
+                event_record.create_record_tour_start_days_notification(atl, self)
 
 NOT_RANKED = 1000
 
@@ -1055,7 +1071,14 @@ class EventRecord(models.Model):
     def set_notified(self):
         self.er_datetime_processed = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.er_status = "N"
-        # self.save()
+        self.save()
+
+    def create_record_atl_registering(self,athlete):
+        self.er_datetime_event = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self.er_type = "REGIST"
+        self.er_arg1 = athlete.atl_id
+        self.er_status = "A"
+        self.save()
 
     def create_record_login(self, athlete):
         self.er_datetime_event = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -1131,7 +1154,7 @@ class EventRecord(models.Model):
             self.save()
 
     def create_record_tour_start_days_notification(self, athlete, tour):
-        if athlete.atl_notific_trsday == True:
+        if athlete.atl_notific_trsday > 0:
             self.er_datetime_event = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             self.er_type = "TRSDAY"
             self.er_arg1 = athlete.atl_id
@@ -1141,7 +1164,7 @@ class EventRecord(models.Model):
             self.save()
 
     def create_record_tour_finish_days_notification(self, athlete, tour):
-        if athlete.atl_notific_trfday == True:
+        if athlete.atl_notific_trfday > 0:
             self.er_datetime_event = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             self.er_type = "TRFDAY"
             self.er_arg1 = athlete.atl_id

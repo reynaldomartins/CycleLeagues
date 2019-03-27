@@ -300,6 +300,8 @@ class register_pageViewClass(View):
         cleagues_authObj.logged_cleagues_athlete.download_pic_from_strava(cleagues_authObj.strava_authObj, "L")
         cleagues_authObj.logged_cleagues_athlete.download_pic_from_strava(cleagues_authObj.strava_authObj, "M")
         cleagues_authObj.logged_cleagues_athlete.save()
+        event_record = EventRecord()
+        event_record.create_record_atl_registering(cleagues_authObj.logged_cleagues_athlete)
 
         # Login again, but now update the cleagues athelete date
         cleagues_authObj.login(cleagues_authObj.strava_authObj.atl_strava_code,request)
@@ -1261,9 +1263,10 @@ class test_ViewClass(View):
         list_tours = Tour.objects.all()
         for tour in list_tours:
             tour.update_ranking()
+            tour.create_notification_events()
 
         # Send Notifications
-        run_batch_notifications()
+        run_batch_send_email_notifications()
 
         context = { **general_context(request), }
         return render(request, "CLeaguesApp/test_strava.html", context=context)
