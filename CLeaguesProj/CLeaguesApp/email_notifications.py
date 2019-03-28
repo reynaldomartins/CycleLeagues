@@ -1,7 +1,7 @@
 import boto3
 from botocore.exceptions import ClientError
 from .models import *
-from CLeaguesProj.settings import MEDIA_URL, STATIC_DIR, MEDIA_DIR, BASE_DIR, STATIC_URL
+from CLeaguesProj.settings_aws_prod import MEDIA_URL, STATIC_DIR, MEDIA_DIR, BASE_DIR, STATIC_URL
 from .st_functions import *
 
 SENDER = "cycleleagues@cycleleagues.com"
@@ -185,7 +185,7 @@ def get_email_league_invitation_notification(athlete, league):
                     <h4><span style="font-weight:bold;color:orangered;">League</span>&nbsp;&nbsp;
                 </td>
                 <td>
-                    <img class="img-circle" width="80" height="80" src=""" + MEDIA_URL + league.lg_pic.url + """ " />
+                    <img class="img-circle" width="80" height="80" src=""" + league.lg_pic.url + """ >
                 </td>
                 <td>
                     &nbsp;<b>""" + league.lg_name + """</b>
@@ -194,7 +194,7 @@ def get_email_league_invitation_notification(athlete, league):
                     <i><span style="font-size:.8em;">&nbsp; created by &nbsp;</span>
                 </td>
                 <td>
-                    <img class="img-circle" width="40" height="40" src=" """ + MEDIA_URL + league.lg_atl_creator.atl_pic.url + """ " />
+                    <img class="img-circle" width="40" height="40" src= """ + league.lg_atl_creator.atl_pic.url + """ >
                 </td>
                 <td>
                     <i><span style="font-size:.8em;">&nbsp;""" + league.lg_atl_creator.atl_name_strava + """
@@ -220,7 +220,7 @@ def get_email_league_invitation_notification(athlete, league):
             body_html = body_html + ("""
                         <tr>
                           <td>
-                            <img class="img-circle" width="40" height="40" src=" """ +  MEDIA_URL + atl_in_lg_ext.atl.atl_pic.url + """ "/>
+                            <img class="img-circle" width="40" height="40" src= """ +  atl_in_lg_ext.atl.atl_pic.url + """ >
                           </td>
                           <td style="text-align:left;">
                               <strong>""" + atl_in_lg_ext.atl.atl_name_strava + """</strong>
@@ -256,7 +256,7 @@ def get_email_league_invitation_notification(athlete, league):
                                         border: 1px solid white;
                                         border-color : white;
                                         text-align:center;">
-                                <img class="img-circle" width="40" height="40" src=" """ + MEDIA_URL + tour.tr_pic.url + """ " />
+                                <img class="img-circle" width="40" height="40" src= """ + tour.tr_pic.url + """ >
                             &nbsp;</td>
                             <td style="padding-right: 5px;
                                         padding-left: 5px;
@@ -441,17 +441,7 @@ def get_html_cycleleagues_head():
             <table align=center><tbody>
               <tr>
                   <td>
-                    """ + str(STATIC_DIR + "images/CycleLeaguesIcon.png") + """
-                  </td>
-              </tr>
-              <tr>
-                  <td>
-                    """ + str(STATIC_URL + "images/CycleLeaguesIcon.png") + """
-                  </td>
-              </tr>
-              <tr>
-                  <td>
-                    <img class="img-circle" width="80" height="80" src=" """ + STATIC_URL + """images/CycleLeaguesIcon.png" />
+                    <img class="img-circle" width="80" height="80" src= """ + STATIC_URL + """images/CycleLeaguesIcon.png >
                   </td>
                   <td>
                     <h3 style="display: inline-block;">&nbsp;&nbsp;CycleLeagues</h3>
@@ -466,7 +456,7 @@ def get_html_tour_head_summary(tour, athlete, tour_summary,notified_atl_in_tour)
                     <h4><span style="font-weight:bold;color:orangered;">Tour</span>&nbsp;&nbsp;
                 </td>
                 <td>
-                    <img class="img-circle" width="80" height="80" src=""" + MEDIA_URL + tour.tr_pic.url + """ " />
+                    <img class="img-circle" width="80" height="80" src=""" + tour.tr_pic.url + """>
                 </td>
                 <td>
                     &nbsp;<b>""" + tour.tr_name + """</b>
@@ -475,7 +465,7 @@ def get_html_tour_head_summary(tour, athlete, tour_summary,notified_atl_in_tour)
                     <i><span style="font-size:.8em;">&nbsp; from League&nbsp;</span>
                 </td>
                 <td>
-                    <img class="img-circle" width="40" height="40" src=" """ + MEDIA_URL + tour.tr_lg.lg_pic.url + """ " />
+                    <img class="img-circle" width="40" height="40" src=""" + tour.tr_lg.lg_pic.url + """>
                 </td>
                 <td>
                     <i><span style="font-size:.8em;">&nbsp;""" + tour.tr_lg.lg_name + """</i>
@@ -585,7 +575,7 @@ def get_html_athletes_in_tour(list_athletes_tour, athlete):
         body_html = body_html + ("""
                         <tr>
                           <td>
-                            <img class="img-circle" width="40" height="40" src=" """ +  MEDIA_URL + atl_in_tr.ait_atl.atl_pic.url + """ "/>
+                            <img class="img-circle" width="40" height="40" src=""" +  atl_in_tr.ait_atl.atl_pic.url + """ >
                           </td>
                           <td style="text-align:left;">
                               <strong>""" + atl_in_tr.ait_atl.atl_name_strava + """</strong>
@@ -677,12 +667,6 @@ def get_html_tour_rank(list_atl_in_tour, athlete, tour_summary):
 
             body_html = body_html + ("""
                 <tr>
-                    <td>""" +  str(MEDIA_DIR + ait.ait_atl.atl_pic_mini.url) + """ </td>
-                </tr>
-                <tr>
-                    <td>""" +  str(MEDIA_URL + ait.ait_atl.atl_pic_mini.url) + """ </td>
-                </tr>
-                <tr>
                   <td style="padding-right: 5px;
                               padding-left: 5px;
                               border: 1px solid white;
@@ -693,7 +677,7 @@ def get_html_tour_rank(list_atl_in_tour, athlete, tour_summary):
                               border: 1px solid white;
                               border-color : white;
                               text-align:left;">
-                      <img class="img-circle" width="40" height="40"src=" """ + MEDIA_URL + ait.ait_atl.atl_pic_mini.url + """ " />
+                      <img class="img-circle" width="40" height="40" src= """ + ait.ait_atl.atl_pic_mini.url + """ >
                   </td>
                   <td style="padding-right: 5px;
                               padding-left: 5px;
