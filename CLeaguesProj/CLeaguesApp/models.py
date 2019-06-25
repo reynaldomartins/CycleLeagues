@@ -56,9 +56,9 @@ class Athlete(models.Model):
     atl_notific_trcrea = models.BooleanField(db_column='ATL_notific_trcrea', default=True, blank=True, null=True)
     atl_notific_trstar = models.BooleanField(db_column='ATL_notific_trstar', default=True, blank=True, null=True)
     atl_notific_trfini = models.BooleanField(db_column='ATL_notific_trfini', default=True, blank=True, null=True)
-    atl_notific_trjrn = models.BooleanField(db_column='ATL_notific_trjrn', default=True, blank=True, null=True)
-    atl_notific_trsday = models.IntegerField(db_column='ATL_notific_trsday', default=0, blank=True, null=True)
-    atl_notific_trfday = models.IntegerField(db_column='ATL_notific_trfday', default=0, blank=True, null=True)
+    atl_notific_trjrn = models.IntegerField(db_column='ATL_notific_trjrn', default=1, blank=True, null=True)
+    atl_notific_trsday = models.IntegerField(db_column='ATL_notific_trsday', default=1, blank=True, null=True)
+    atl_notific_trfday = models.IntegerField(db_column='ATL_notific_trfday', default=1, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -716,8 +716,8 @@ class Tour(models.Model):
         num_athletes = len(self.get_athletes())
         num_segments = len(self.get_segments())
         days_to_go = (self.tr_finish_date - datetime.now().date()).days
-        if days_to_go < 0:
-            days_to_go = "-"
+        # if days_to_go < 0:
+        #     days_to_go = "-"
         leader_qs = AtlInTour.objects.all().filter(ait_tr__tr_id =  self.tr_id, ait_rank = 1)
 
         if leader_qs:
@@ -900,7 +900,7 @@ class Tour(models.Model):
                 event_record.create_record_tour_finish_notification(atl_in_tour.ait_atl, self)
 
             if atl_in_tour.ait_atl.atl_notific_trfday == (self.tr_finish_date - today).days:
-                print("I am in finish days")
+                # print("I am in finish days")
                 event_record = EventRecord()
                 event_record.create_record_tour_finish_days_notification(atl_in_tour.ait_atl, self)
 
@@ -1145,13 +1145,18 @@ class EventRecord(models.Model):
             self.save()
 
     def create_record_tour_journal_notification(self, athlete, tour):
-        if athlete.atl_notific_trjrn == True:
-            self.er_datetime_event = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            self.er_type = "TRJRN"
-            self.er_arg1 = athlete.atl_id
-            self.er_arg2 = tour.tr_id
-            self.er_status = "U"
-            self.save()
+        if athlete.atl_notific_trjrn == 0:
+            return
+        last_event_record_jrn = EventRecord.objects.all().filter(er_type = "TRJRN", er_arg1 = athlete.atl_id).last()
+        if last_event_record_jrn:
+             if datetime.now().date() < timedelta(days=(athlete.atl_notific_trjrn)) + last_event_record_jrn.er_datetime_event.date():
+                 return
+        self.er_datetime_event = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self.er_type = "TRJRN"
+        self.er_arg1 = athlete.atl_id
+        self.er_arg2 = tour.tr_id
+        self.er_status = "U"
+        self.save()
 
     def create_record_tour_start_days_notification(self, athlete, tour):
         if athlete.atl_notific_trsday > 0:

@@ -480,7 +480,7 @@ def get_html_tour_head_summary(tour, athlete, tour_summary,notified_atl_in_tour)
             <th>Start</th>
             <th>Finish</th>""")
 
-    if int(tour_summary['days_to_go' ]) >= 0 :
+    if tour_summary['days_to_go' ] >= 0 :
         body_html = body_html + ("""
                                   <th>Days to Go</th>
                                   <th>Status</th>

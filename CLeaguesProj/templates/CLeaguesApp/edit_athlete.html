@@ -68,8 +68,9 @@
             </div>
             <div class="settings-line">
               <p>
-              {{ athlete_form.atl_notific_trjrn }}&nbsp;
-              <strong>A Tour which I am running has just updated its Ranking (Tour Journal)&nbsp;</strong>
+              <strong>Tour Journal (which I am running) every &nbsp;</strong>
+              {{ athlete_form.atl_notific_trjrn | add_class:'field-days' }}&nbsp;
+              <strong>days&nbsp;<span class="info-small">(0=no notification)</span></strong>
               </p>
             </div>
             <div class="settings-line">

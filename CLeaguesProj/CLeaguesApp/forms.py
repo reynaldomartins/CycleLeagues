@@ -27,7 +27,7 @@ class athleteFormClass(forms.ModelForm):
     atl_notific_trcrea = forms.BooleanField(widget=forms.CheckboxInput, required=False)
     atl_notific_trstar = forms.BooleanField(widget=forms.CheckboxInput, required=False)
     atl_notific_trfini = forms.BooleanField(widget=forms.CheckboxInput, required=False)
-    atl_notific_trjrn = forms.BooleanField(widget=forms.CheckboxInput, required=False)
+    atl_notific_trjrn = forms.IntegerField(widget=forms.NumberInput, required=True)
     atl_notific_trsday = forms.IntegerField(widget=forms.NumberInput, required=True)
     atl_notific_trfday = forms.IntegerField(widget=forms.NumberInput, required=True)
 
