@@ -18,3 +18,7 @@ media/athletes_mini/*
 media/athletes_mini/*.jpg
 media/leagues/repo/*
 media/tours/repo/*
+
+# Security
+CLeaguesProj/settings.py
+CLeaguesProj/settings_aws_prod.py
