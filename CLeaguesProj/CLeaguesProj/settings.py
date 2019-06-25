@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'debug_toolbar',
     'widget_tweaks',
     'CLeaguesApp'
 ]
@@ -54,7 +53,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'CLeaguesApp.middleware.middleware_cleagues.PermissionErrorMiddleware'
 ]
 
@@ -147,6 +145,3 @@ STATICFILES_DIRS = [ STATIC_DIR,]
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = "/media/"
-
-# For debug
-INTERNAL_IPS = ['127.0.0.1']
