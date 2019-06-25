@@ -23,14 +23,12 @@ MEDIA_DIR = os.path.join(BASE_DIR,"media")
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'vz6tg7va7e3el!s@zx#*qgg$+3f1o)r7=^v%3j#vwce4mm@k2g'
+SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = [ '127.0.0.1',
-                  'localhost',
-                  'django-env.j6nzkpsnp3.us-west-2.elasticbeanstalk.com',
+ALLOWED_HOSTS = [ 'django-env.j6nzkpsnp3.us-west-2.elasticbeanstalk.com',
                   'www.cycleleagues.com', ]
 
 # Application definition
@@ -85,9 +83,9 @@ pymysql.install_as_MySQLdb()
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'tsc',
-        'USER': 'root',
-        'PASSWORD': 'ratbert2010',
+        'NAME': os.environ['RDS_DB_NAME'],
+        'USER': os.environ['RDS_USERNAME'],
+        'PASSWORD': os.environ['RDS_PASSWORD'],
         'HOST': 'cycleleagues-cluster.cluster-cw1nhyv3vgfe.us-west-2.rds.amazonaws.com',
         'PORT': 3306,
     }
@@ -130,8 +128,8 @@ USE_TZ = True
 
 # AWS settings
 
-AWS_ACCESS_KEY_ID = 'AKIAITBVKWWDYHUWCINQ'
-AWS_SECRET_ACCESS_KEY = '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'
+AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
+AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
 AWS_STORAGE_BUCKET_NAME = 'cycleleagues-static-media'
 AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 AWS_S3_OBJECT_PARAMETERS = {

@@ -30,7 +30,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [ '127.0.0.1',
                   'localhost',
-                  'django-env.j6nzkpsnp3.us-west-2.elasticbeanstalk.com' ]
+                  ]
 
 # Application definition
 
@@ -91,18 +91,6 @@ DATABASES = {
         'PORT': '3306',
     }
 }
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'tsc',
-#         'USER': 'root',
-#         'PASSWORD': 'ratbert2010',
-#         'HOST': 'cycleleagues-cluster.cluster-cw1nhyv3vgfe.us-west-2.rds.amazonaws.com',
-#         'PORT': 3306,
-#     }
-# }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
