@@ -1,7 +1,6 @@
 import boto3
 from botocore.exceptions import ClientError
 from .models import *
-from CLeaguesProj.settings_aws_prod import MEDIA_URL, STATIC_DIR, MEDIA_DIR, BASE_DIR, STATIC_URL
 from .st_functions import *
 
 SENDER = "cycleleagues@cycleleagues.com"
@@ -9,6 +8,11 @@ CHARSET = "UTF-8"
 CONFIGURATION_SET = "ConfigSet"
 AWS_REGION = "us-west-2"
 client = boto3.client('ses',region_name=AWS_REGION)
+
+AWS_STORAGE_BUCKET_NAME = 'cycleleagues-static-media'
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+AWS_LOCATION = 'static'
+STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
 
 def send_email(subject, body_text, body_html, recipient):
     # Try to send the email.
