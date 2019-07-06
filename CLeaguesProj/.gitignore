@@ -18,3 +18,7 @@ media/athletes_mini/*
 media/athletes_mini/*.jpg
 media/leagues/repo/*
 media/tours/repo/*
+
+#####
+CLeaguesProj/hiden*.*
+hiden*.*

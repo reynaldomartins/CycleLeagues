@@ -19,15 +19,15 @@ def main():
     print("Hello world")
 
     list_tours = Tour.objects.all()
-    for tour in list_tours:
-        print(tour.tr_name)
-
     # for tour in list_tours:
-    #     tour.update_ranking()
-    #     tour.create_notification_events()
-    #
-    # # Send Notifications
-    # run_batch_send_email_notifications()
+    #     print(tour.tr_name)
+
+    for tour in list_tours:
+        tour.update_ranking()
+        tour.create_notification_events()
+
+    # Send Notifications
+    run_batch_send_email_notifications()
 
     print("OK")
 
