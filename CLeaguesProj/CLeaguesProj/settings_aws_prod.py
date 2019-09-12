@@ -28,7 +28,7 @@ SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = [ 'django-env.j6nzkpsnp3.us-west-2.elasticbeanstalk.com',]
+ALLOWED_HOSTS = [ 'django-env.j6nzkpsnp3.us-west-2.elasticbeanstalk.com',
                   'Cycleleagues-env.j6nzkpsnp3.us-west-2.elasticbeanstalk.com',
                   'django-env-1.us-west-2.elasticbeanstalk.com',
                   'www.cycleleagues.com', ]
