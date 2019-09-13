@@ -1147,7 +1147,9 @@ class EventRecord(models.Model):
     def create_record_tour_journal_notification(self, athlete, tour):
         if athlete.atl_notific_trjrn == 0:
             return
-        last_event_record_jrn = EventRecord.objects.all().filter(er_type = "TRJRN", er_arg1 = athlete.atl_id).last()
+        last_event_record_jrn = EventRecord.objects.all().filter(er_type = "TRJRN",
+                                                        er_arg1 = athlete.atl_id,
+                                                        er_arg2 = tour.tr_id).last()
         if last_event_record_jrn:
              if datetime.now().date() < timedelta(days=(athlete.atl_notific_trjrn)) + last_event_record_jrn.er_datetime_event.date():
                  return
