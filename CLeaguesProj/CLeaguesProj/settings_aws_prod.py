@@ -26,11 +26,9 @@ MEDIA_DIR = os.path.join(BASE_DIR,"media")
 SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = [ 'django-env.j6nzkpsnp3.us-west-2.elasticbeanstalk.com',
-                  'Cycleleagues-env.j6nzkpsnp3.us-west-2.elasticbeanstalk.com',
-                  'django-env-1.us-west-2.elasticbeanstalk.com',
+ALLOWED_HOSTS = [ 'django-env-2.us-west-2.elasticbeanstalk.com ',
                   'www.cycleleagues.com', ]
 
 # Application definition
@@ -88,7 +86,7 @@ DATABASES = {
         'NAME': os.environ['RDS_DB_NAME'],
         'USER': os.environ['RDS_USERNAME'],
         'PASSWORD': os.environ['RDS_PASSWORD'],
-        'HOST': 'cycleleagues-cluster.cluster-cw1nhyv3vgfe.us-west-2.rds.amazonaws.com',
+        'HOST': 'aa1m0cvpo6ac1l4.cw1nhyv3vgfe.us-west-2.rds.amazonaws.com',
         'PORT': 3306,
     }
 }

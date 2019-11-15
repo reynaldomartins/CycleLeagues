@@ -1,7 +1,7 @@
 argon2-cffi==18.3.0
 arrow==0.12.1
 asn1crypto==0.24.0
-awsebcli==3.14.13
+awsebcli==3.15.2
 bcrypt==3.1.4
 boto3==1.9.99
 botocore==1.12.99
