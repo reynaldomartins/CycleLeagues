@@ -26,9 +26,9 @@ MEDIA_DIR = os.path.join(BASE_DIR,"media")
 SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = [ 'django-env-2.us-west-2.elasticbeanstalk.com ',
+ALLOWED_HOSTS = [ 'django-env-2.us-west-2.elasticbeanstalk.com',
                   'www.cycleleagues.com', ]
 
 # Application definition
@@ -80,16 +80,17 @@ WSGI_APPLICATION = 'CLeaguesProj.wsgi.application'
 import pymysql
 pymysql.install_as_MySQLdb()
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ['RDS_DB_NAME'],
-        'USER': os.environ['RDS_USERNAME'],
-        'PASSWORD': os.environ['RDS_PASSWORD'],
-        'HOST': 'aa1m0cvpo6ac1l4.cw1nhyv3vgfe.us-west-2.rds.amazonaws.com',
-        'PORT': 3306,
+if 'RDS_HOSTNAME' in os.environ:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.environ['RDS_DB_NAME'],
+            'USER': os.environ['RDS_USERNAME'],
+            'PASSWORD': os.environ['RDS_PASSWORD'],
+            'HOST': os.environ['RDS_HOSTNAME'],
+            'PORT': 3306,
+        }
     }
-}
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
@@ -139,9 +140,10 @@ AWS_S3_OBJECT_PARAMETERS = {
 AWS_DEFAULT_ACL = 'public-read'
 AWS_LOCATION = 'static'
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, 'static'),
+# ]
+
 STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
